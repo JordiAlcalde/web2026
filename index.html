@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mínim Món - Prova Pilot</title>
+    <!-- Font Montserrat -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Estils base obligatoris abans de carregar la configuració del Sheets */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #24153F; /* Color de fons de la teva paleta */
+            color: #E3D4FF; /* Text clar de la paleta */
+            line-height: 1.6;
+        }
+        header {
+            background-color: #301269;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #AC80FF;
+        }
+        .logo { font-weight: 700; font-size: 1.5rem; color: #FFF; }
+        nav a {
+            color: #C8AAFF;
+            text-decoration: none;
+            margin-left: 1.5rem;
+            font-weight: 600;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+        nav a:hover, nav a.actiu { color: #AC80FF; }
+        
+        /* Contenidor de seccions SPA */
+        .seccio-web { display: none; padding: 3rem 2rem; max-width: 1200px; margin: 0 auto; }
+        .seccio-web.activa { display: block; }
+        
+        /* Disseny de quadrícula per a Galeries */
+        .galeria {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .targeta {
+            background: #340094;
+            border: 1px solid #AC80FF;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        .targeta img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+        h1 { margin-bottom: 1rem; color: #FFF; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">Mínim Món</div>
+        <nav id="menu-navegacio">
+            <!-- El menú es generarà dinàmicament aquí -->
+        </nav>
+    </header>
+
+    <main id="pantalles-web">
+        <!-- Les seccions es crearan dinàmicament aquí -->
+    </main>
+
+<script>
+    // ⚠️ ENGANXA AQUÍ LA TEVA URL DE CONFIGURACIÓ O EL CSV RECOMPILAT
+    // Per a la prova, idealment el teu script de Sheets ha d'unificar o hem de llegir els blocs.
+    const URL_CSV = "https://docs.google.com/spreadsheets/d/e/TEU_ID_D_EXPORTACIO/pub?output=csv";
+
+    // Funció per carregar i processar el CSV manualment (sense llibreries externes)
+    async function carregarWeb() {
+        try {
+            const resposta = await fetch(URL_CSV);
+            const textData = await resposta.text();
+            const files = parsejarCSV(textData);
+            
+            // Aquí simulem la llista d'estructura basada en la teva imatge
+            const estructura = [
+                { id: 'univers_minim', titol: 'Univers Mínim', tipus: 'home' },
+                { id: 'mons_minims', titol: 'Móns Mínims', tipus: 'galeria_filtrada' },
+                { id: 'la_botiga', titol: 'La botiga', tipus: 'galeria_filtrada' },
+                { id: 'el_laboratori', titol: 'El laboratori', tipus: 'galeria_filtrada' },
+                { id: 'connecta', titol: 'Connecta', tipus: 'formulari' }
+            ];
+
+            generarMenu(estructura);
+            generarSeccions(estructura);
+            
+            // Mostrem la primera pàgina per defecte
+            canviarSeccio('univers_minim');
+            
+        } catch (error) {
+            console.error("Error carregant les dades de Mínim Món:", error);
+        }
+    }
+
+    // Un parsejador bàsic de CSV que respecta les cometes
+    function parsejarCSV(text) {
+        let files = [];
+        let linies = text.split("\n");
+        // Lògica de divisió per columnes...
+        return files;
+    }
+
+    function generarMenu(estructura) {
+        const nav = document.getElementById('menu-navegacio');
+        nav.innerHTML = '';
+        estructura.forEach(pag => {
+            const enllaç = document.createElement('a');
+            enllaç.textContent = pag.titol;
+            enllaç.onclick = () => canviarSeccio(pag.id);
+            enllaç.setAttribute('id', `bto-${pag.id}`);
+            nav.appendChild(enllaç);
+        });
+    }
+
+    function generarSeccions(estructura) {
+        const principal = document.getElementById('pantalles-web');
+        principal.innerHTML = '';
+        
+        estructura.forEach(pag => {
+            const seccio = document.createElement('section');
+            seccio.id = pag.id;
+            seccio.className = 'seccio-web';
+            
+            if (pag.tipus === 'home') {
+                seccio.innerHTML = `<h1>${pag.titol}</h1><p>Benvingut a l'univers de fusta i històries de Mínim Món.</p>`;
+            } else if (pag.tipus === 'galeria_filtrada') {
+                seccio.innerHTML = `<h1>${pag.titol}</h1><div class="galeria" id="galeria-${pag.id}"><!-- Productes dinàmics --></div>`;
+            } else {
+                seccio.innerHTML = `<h1>${pag.titol}</h1><p>Espai reservat per a interacció.</p>`;
+            }
+            
+            principal.appendChild(seccio);
+        });
+    }
+
+    function canviarSeccio(idSeccio) {
+        // Amagar totes les seccions
+        document.querySelectorAll('.seccio-web').forEach(s => s.classList.remove('activa'));
+        // Treure l'estat actiu dels botons
+        document.querySelectorAll('nav a').forEach(b => b.classList.remove('actiu'));
+        
+        // Mostrar la seleccionada
+        const seccioActiva = document.getElementById(idSeccio);
+        if (seccioActiva) seccioActiva.classList.add('activa');
+        
+        const botoActiu = document.getElementById(`bto-${idSeccio}`);
+        if (botoActiu) botoActiu.classList.add('actiu');
+    }
+
+    // Iniciar l'aplicació en carregar la pàgina
+    window.onload = carregarWeb;
+</script>
+</body>
+</html>
