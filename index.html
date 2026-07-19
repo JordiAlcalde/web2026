@@ -262,7 +262,8 @@
 
     <header>
         <div class="logo-contenidor">
-            <!-- Es pot incrustar l'SVG del logo directament o cridar a Drive -->
+            <!-- El contingut d'aquí dins es controlarà dinàmicament per JavaScript -->
+            <span id="logo-espai"></span>
             <span class="logo-text">MÍNIM MÓN</span>
         </div>
         <nav id="navbar-dinamic">
@@ -396,6 +397,17 @@
         if(dadesWeb.config['color_text_clar']) arrel.style.setProperty('--color-text-clar', dadesWeb.config['color_text_clar']);
         
         if(dadesWeb.config['titol_web']) document.title = dadesWeb.config['titol_web'];
+    
+        // CONTROL DEL LOGO DINÀMIC
+        const espaiLogo = document.getElementById('logo-espai');
+        if (espaiLogo && dadesWeb.config['logo']) {
+            const idLogoDrive = dadesWeb.config['logo'];
+            espaiLogo.innerHTML = `
+                <img src="https://drive.google.com/uc?export=view&id=${idLogoDrive}" 
+                     alt="Logo Mínim Món" 
+                     style="height: 45px; width: auto; display: block; object-fit: contain; border-radius: 4px;">
+            `;
+        }
     }
 
     // Genera el menú superior (Navbar) a partir del full 'Estructura'
