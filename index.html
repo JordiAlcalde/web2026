@@ -3,167 +3,555 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mínim Món - Prova Pilot</title>
+    <title>Mínim Món — Històries Encapsulades en Fusta</title>
     <!-- Font Montserrat -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
-        /* Estils base obligatoris abans de carregar la configuració del Sheets */
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        /* Estils Base i Resets */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        /* Variables CSS que reescriurem dinàmicament des del full Config */
+        :root {
+            --color-fons: #24153F;
+            --color-capçalera: #301269;
+            --color-targeta: #340094;
+            --color-accent: #AC80FF;
+            --color-text-mutat: #C8AAFF;
+            --color-text-clar: #E3D4FF;
+        }
+
         body {
             font-family: 'Montserrat', sans-serif;
-            background-color: #24153F; /* Color de fons de la teva paleta */
-            color: #E3D4FF; /* Text clar de la paleta */
+            background-color: var(--color-fons);
+            color: var(--color-text-clar);
             line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.4s ease;
         }
+
+        /* Capçalera i Navegació Fluïda (SPA) */
         header {
-            background-color: #301269;
-            padding: 1rem 2rem;
+            background-color: var(--color-capçalera);
+            padding: 1.2rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 2px solid #AC80FF;
+            border-bottom: 2px solid var(--color-accent);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
         }
-        .logo { font-weight: 700; font-size: 1.5rem; color: #FFF; }
+
+        .logo-contenidor {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-text {
+            font-weight: 700;
+            font-size: 1.4rem;
+            letter-spacing: 1px;
+            color: #FFFFFF;
+        }
+
+        nav {
+            display: flex;
+            gap: 1.5rem;
+        }
+
         nav a {
-            color: #C8AAFF;
+            color: var(--color-text-mutat);
             text-decoration: none;
-            margin-left: 1.5rem;
             font-weight: 600;
-            transition: color 0.3s;
+            font-size: 0.95rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
             cursor: pointer;
         }
-        nav a:hover, nav a.actiu { color: #AC80FF; }
-        
-        /* Contenidor de seccions SPA */
-        .seccio-web { display: none; padding: 3rem 2rem; max-width: 1200px; margin: 0 auto; }
-        .seccio-web.activa { display: block; }
-        
-        /* Disseny de quadrícula per a Galeries */
-        .galeria {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
+
+        nav a:hover, nav a.actiu {
+            color: #FFFFFF;
+            background-color: rgba(172, 128, 255, 0.2);
         }
-        .targeta {
-            background: #340094;
-            border: 1px solid #AC80FF;
-            border-radius: 8px;
-            padding: 1.5rem;
+
+        /* Àrea Principal de Pantalles */
+        main {
+            flex: 1;
+            padding: 3rem 1.5rem;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .seccio-web {
+            display: none;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .seccio-web.activa {
+            display: block;
+        }
+
+        /* Components Visuals Dinàmics */
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #FFFFFF;
+            margin-bottom: 1.5rem;
+            border-left: 5px solid var(--color-accent);
+            padding-left: 12px;
+        }
+
+        .introduccio-seccio {
+            font-size: 1.1rem;
+            margin-bottom: 2.5rem;
+            color: var(--color-text-mutat);
+            max-width: 800px;
+        }
+
+        /* El Bloc Hero / Presentació Exclusiva d'Inici */
+        .hero-bloc {
+            background: linear-gradient(135deg, var(--color-capçalera) 0%, rgba(52, 0, 148, 0.4) 100%);
+            border: 1px solid rgba(172, 128, 255, 0.3);
+            border-radius: 12px;
+            padding: 3rem;
             text-align: center;
+            margin-bottom: 3rem;
         }
-        .targeta img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 4px;
+        
+        .hero-bloc h2 {
+            font-size: 2rem;
             margin-bottom: 1rem;
+            color: #FFFFFF;
         }
-        h1 { margin-bottom: 1rem; color: #FFF; }
+
+        /* Targetes de Producte i Elements */
+        .galeria-graella {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .targeta-element {
+            background-color: var(--color-targeta);
+            border: 1px solid rgba(172, 128, 255, 0.2);
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+        }
+
+        .targeta-element:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+            border-color: var(--color-accent);
+        }
+
+        .imatge-contenidor {
+            width: 100%;
+            height: 240px;
+            background-color: rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .imatge-contenidor img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .contingut-cos {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .contingut-cos h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.75rem;
+            color: #FFFFFF;
+        }
+
+        .contingut-cos p {
+            font-size: 0.95rem;
+            color: var(--color-text-clar);
+            margin-bottom: 1.5rem;
+            flex: 1;
+        }
+
+        /* Botons d'Acció Directa */
+        .boto-accio {
+            display: inline-block;
+            background-color: var(--color-accent);
+            color: var(--color-capçalera);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            padding: 0.7rem 1.2rem;
+            border-radius: 4px;
+            text-align: center;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .boto-accio:hover {
+            background-color: #FFFFFF;
+        }
+
+        /* Formulari de Contacte Polit (Secció Connecta) */
+        .formulari-net {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: var(--color-capçalera);
+            padding: 2.5rem;
+            border-radius: 8px;
+            border: 1px solid rgba(172, 128, 255, 0.2);
+        }
+
+        .grup-formulari {
+            margin-bottom: 1.5rem;
+        }
+
+        .grup-formulari label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .grup-formulari input, .grup-formulari textarea {
+            width: 100%;
+            padding: 0.8rem;
+            background-color: var(--color-fons);
+            border: 1px solid rgba(172, 128, 255, 0.3);
+            border-radius: 4px;
+            color: #FFFFFF;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.95rem;
+        }
+
+        .grup-formulari input:focus, .grup-formulari textarea:focus {
+            outline: none;
+            border-color: var(--color-accent);
+        }
+
+        /* Animació de transició de pàgina */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsivitat */
+        @media (max-width: 768px) {
+            header { flex-direction: column; gap: 1rem; text-align: center; }
+            nav { width: 100%; justify-content: center; flex-wrap: wrap; }
+        }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="logo">Mínim Món</div>
-        <nav id="menu-navegacio">
-            <!-- El menú es generarà dinàmicament aquí -->
+        <div class="logo-contenidor">
+            <!-- Es pot incrustar l'SVG del logo directament o cridar a Drive -->
+            <span class="logo-text">MÍNIM MÓN</span>
+        </div>
+        <nav id="navbar-dinamic">
+            <!-- Es munta automàticament des del full Estructura -->
         </nav>
     </header>
 
-    <main id="pantalles-web">
-        <!-- Les seccions es crearan dinàmicament aquí -->
+    <main id="seccions-contenidor">
+        <!-- Es munta automàticament distribuint el full Continguts -->
+        <div style="text-align:center; padding: 5rem;" id="carregador">
+            <p>Carregant l'univers de Mínim Món...</p>
+        </div>
     </main>
 
 <script>
-    // ⚠️ ENGANXA AQUÍ LA TEVA URL DE CONFIGURACIÓ O EL CSV RECOMPILAT
-    // Per a la prova, idealment el teu script de Sheets ha d'unificar o hem de llegir els blocs.
-    const URL_CSV = "https://docs.google.com/spreadsheets/d/e/TEU_ID_D_EXPORTACIO/pub?output=csv";
+    // ═══════════════════════════════════════════════════════════════════
+    // ⚠️ CONFIGURACIÓ: Afegeix aquí les teves 3 URLs del full publicat com a CSV
+    // ═══════════════════════════════════════════════════════════════════
+    const URL_CSV_CONFIG      = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=0&single=true&output=csv";
+    const URL_CSV_ESTRUCTURA  = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=888628017&single=true&output=csv";
+    const URL_CSV_CONTINGUTS  = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=819396845&single=true&output=csv";
 
-    // Funció per carregar i processar el CSV manualment (sense llibreries externes)
-    async function carregarWeb() {
+    // Mantenidors de dades globals indexades en memòria
+    let dadesWeb = { config: {}, estructura: [], continguts: [] };
+
+    // Funció arrel per descarregar i orquestrar les dades de la web
+    async function inicialitzarAplicacio() {
         try {
-            const resposta = await fetch(URL_CSV);
-            const textData = await resposta.text();
-            const files = parsejarCSV(textData);
-            
-            // Aquí simulem la llista d'estructura basada en la teva imatge
-            const estructura = [
-                { id: 'univers_minim', titol: 'Univers Mínim', tipus: 'home' },
-                { id: 'mons_minims', titol: 'Móns Mínims', tipus: 'galeria_filtrada' },
-                { id: 'la_botiga', titol: 'La botiga', tipus: 'galeria_filtrada' },
-                { id: 'el_laboratori', titol: 'El laboratori', tipus: 'galeria_filtrada' },
-                { id: 'connecta', titol: 'Connecta', tipus: 'formulari' }
-            ];
+            // 1. Descarregar els 3 fitxers CSV en paral·lel per màxima velocitat
+            const [resConfig, resEstructura, resContinguts] = await Promise.all([
+                fetch(URL_CSV_CONFIG).then(r => r.text()),
+                fetch(URL_CSV_ESTRUCTURA).then(r => r.text()),
+                fetch(URL_CSV_CONTINGUTS).then(r => r.text())
+            ]);
 
-            generarMenu(estructura);
-            generarSeccions(estructura);
-            
-            // Mostrem la primera pàgina per defecte
-            canviarSeccio('univers_minim');
-            
+            // 2. Parsejar estructures CSV
+            processarConfig(parsejarCSV(resConfig));
+            dadesWeb.estructura = parsejarEstructura(parsejarCSV(resEstructura));
+            dadesWeb.continguts = parsejarContinguts(parsejarCSV(resContinguts));
+
+            // 3. Aplicar estil global i muntar components de la interfície
+            aplicarVariablesEstil();
+            construirMenuNavegacio();
+            construirPantallesWeb();
+
+            // 4. Mostrar la pàgina principal per defecte definida a l'estructura (ordre 1)
+            const paginaInici = dadesWeb.estructura.find(p => p.ordre === 1) || dadesWeb.estructura[0];
+            if(paginaInici) canviarSeccio(paginaInici.id);
+
+            // Retirar el missatge de càrrega inicial
+            const carregador = document.getElementById('carregador');
+            if(carregador) carregador.remove();
+
         } catch (error) {
-            console.error("Error carregant les dades de Mínim Món:", error);
+            console.error("Error en el procés de sincronització amb Google Sheets:", error);
+            document.getElementById('carregador').innerHTML = "<p>S'ha produït un error en carregar el catàleg. Si us plau, torna-ho a provar en uns minuts.</p>";
         }
     }
 
-    // Un parsejador bàsic de CSV que respecta les cometes
+    // Parsejador de cadenes CSV estàndard (gestiona correctament files i comes)
     function parsejarCSV(text) {
-        let files = [];
-        let linies = text.split("\n");
-        // Lògica de divisió per columnes...
-        return files;
+        let linies = text.split(/\r?\n/);
+        return linies.map(linia => {
+            let columnes = [];
+            let dinsCometes = false;
+            let valorActual = '';
+            
+            for (let i = 0; i < linia.length; i++) {
+                let caracter = linia[i];
+                if (caracter === '"') {
+                    dinsCometes = !dinsCometes;
+                } else if (caracter === ',' && !dinsCometes) {
+                    columnes.push(valorActual.trim());
+                    valorActual = '';
+                } else {
+                    valorActual += caracter;
+                }
+            }
+            columnes.push(valorActual.trim());
+            return columnes;
+        }).filter(fila => fila.length > 0 && fila[0] !== '');
     }
 
-    function generarMenu(estructura) {
-        const nav = document.getElementById('menu-navegacio');
+    // Processa el mapa de Clau-Valor del full 'Config'
+    function processarConfig(files) {
+        files.forEach(fila => {
+            if(fila.length >= 2) {
+                const clau = fila[0].toLowerCase();
+                const valor = fila[1];
+                dadesWeb.config[clau] = valor;
+            }
+        });
+    }
+
+    // Processa i neteja l'Estructura (Seccions)
+    function parsejarEstructura(files) {
+        const capçalera = files[0];
+        return files.slice(1).map(fila => {
+            return {
+                id: fila[0],
+                titol: fila[1],
+                ordre: parseInt(fila[2]) || 99,
+                visible: fila[3] ? fila[3].toUpperCase() === 'TRUE' : true,
+                tipus: fila[4] || 'galeria_filtrada'
+            };
+        }).sort((a, b) => a.ordre - b.ordre);
+    }
+
+    // Processa el catàleg general de Continguts
+    function parsejarContinguts(files) {
+        return files.slice(1).map(fila => {
+            return {
+                id: fila[0],
+                seccio: fila[1],
+                tipusComponent: fila[2],
+                titol: fila[3],
+                descripcio: fila[4],
+                imatgeDriveId: fila[5],
+                accioUrl: fila[6],
+                destacat: fila[7] ? fila[7].toUpperCase() === 'TRUE' : false
+            };
+        });
+    }
+
+    // Injecta dinàmicament els colors configurats a la graella CSS
+    function aplicarVariablesEstil() {
+        const arrel = document.documentElement;
+        if(dadesWeb.config['color_fons']) arrel.style.setProperty('--color-fons', dadesWeb.config['color_fons']);
+        if(dadesWeb.config['color_principal']) arrel.style.setProperty('--color-capçalera', dadesWeb.config['color_principal']);
+        if(dadesWeb.config['color_accent']) arrel.style.setProperty('--color-accent', dadesWeb.config['color_accent']);
+        if(dadesWeb.config['color_text_clar']) arrel.style.setProperty('--color-text-clar', dadesWeb.config['color_text_clar']);
+        
+        if(dadesWeb.config['titol_web']) document.title = dadesWeb.config['titol_web'];
+    }
+
+    // Genera el menú superior (Navbar) a partir del full 'Estructura'
+    function construirMenuNavegacio() {
+        const nav = document.getElementById('navbar-dinamic');
         nav.innerHTML = '';
-        estructura.forEach(pag => {
+        
+        dadesWeb.estructura.forEach(pagina => {
+            if(!pagina.visible) return;
+            
             const enllaç = document.createElement('a');
-            enllaç.textContent = pag.titol;
-            enllaç.onclick = () => canviarSeccio(pag.id);
-            enllaç.setAttribute('id', `bto-${pag.id}`);
+            enllaç.textContent = pagina.titol;
+            enllaç.id = `nav-bto-${pagina.id}`;
+            enllaç.onclick = () => canviarSeccio(pagina.id);
             nav.appendChild(enllaç);
         });
     }
 
-    function generarSeccions(estructura) {
-        const principal = document.getElementById('pantalles-web');
-        principal.innerHTML = '';
+    // Construeix l'esquelet HTML de cada secció i distribueix els continguts filtrats
+    function construirPantallesWeb() {
+        const contenidorPrincipal = document.getElementById('seccions-contenidor');
         
-        estructura.forEach(pag => {
-            const seccio = document.createElement('section');
-            seccio.id = pag.id;
-            seccio.className = 'seccio-web';
+        dadesWeb.estructura.forEach(pagina => {
+            const seccioHTML = document.createElement('section');
+            seccioHTML.id = `pantalla-${pagina.id}`;
+            seccioHTML.className = 'seccio-web';
             
-            if (pag.tipus === 'home') {
-                seccio.innerHTML = `<h1>${pag.titol}</h1><p>Benvingut a l'univers de fusta i històries de Mínim Món.</p>`;
-            } else if (pag.tipus === 'galeria_filtrada') {
-                seccio.innerHTML = `<h1>${pag.titol}</h1><div class="galeria" id="galeria-${pag.id}"><!-- Productes dinàmics --></div>`;
-            } else {
-                seccio.innerHTML = `<h1>${pag.titol}</h1><p>Espai reservat per a interacció.</p>`;
+            // Capçaleres de secció netes
+            seccioHTML.innerHTML = `<h1>${pagina.titol}</h1>`;
+            
+            // Obtenir elements vinculats exactament a aquesta secció del full de continguts
+            const elementsSeccio = dadesWeb.continguts.filter(item => item.seccio === pagina.id);
+            
+            if (pagina.tipus === 'home') {
+                // Disseny especial d'entrada per a l'Univers Mínim (Hero + Textos Curts Intensos)
+                const elementHero = elementsSeccio.find(e => e.tipusComponent === 'hero');
+                if (elementHero) {
+                    const blocHero = document.createElement('div');
+                    blocHero.className = 'hero-bloc';
+                    blocHero.innerHTML = `
+                        <h2>${elementHero.titol}</h2>
+                        <p style="margin-bottom: 1.5rem;">${elementHero.descripcio}</p>
+                        ${elementHero.accioUrl ? `<button class="boto-accio" onclick="canviarSeccio('${elementHero.accioUrl.replace('#','')}')">Explorar l'Univers</button>` : ''}
+                    `;
+                    seccioHTML.appendChild(blocHero);
+                }
+                
+                // Graella per als elements destacats a la pàgina d'inici
+                const destacats = elementsSeccio.filter(e => e.tipusComponent !== 'hero');
+                if(destacats.length > 0) {
+                    const titolDestacats = document.createElement('h2');
+                    titolDestacats.textContent = "Creacions destacades";
+                    titolDestacats.style.margin = "2rem 0 1rem 0";
+                    seccioHTML.appendChild(titolDestacats);
+                    
+                    const graellaDestacats = document.createElement('div');
+                    graellaDestacats.className = 'galeria-graella';
+                    destacats.forEach(item => graellaDestacats.appendChild(crearTargetaElement(item)));
+                    seccioHTML.appendChild(graellaDestacats);
+                }
+                
+            } else if (pagina.tipus === 'galeria_filtrada') {
+                // Galeries automàtiques (Móns Mínims / La Botiga de complements / El laboratori)
+                const descripcioSeccio = dadesWeb.config[`desc_${pagina.id}`] || `Explora les peces úniques dissenyades al detall.`;
+                seccioHTML.innerHTML += `<p class="introduccio-seccio">${descripcioSeccio}</p>`;
+                
+                const graellaGaleries = document.createElement('div');
+                graellaGaleries.className = 'galeria-graella';
+                
+                elementsSeccio.forEach(item => {
+                    graellaGaleries.appendChild(crearTargetaElement(item));
+                });
+                
+                seccioHTML.appendChild(graellaGaleries);
+                
+            } else if (pagina.tipus === 'formulari') {
+                // Secció Connecta (Formulari de contacte net per a dissenys personalitzats)
+                seccioHTML.innerHTML += `
+                    <p class="introduccio-seccio" style="text-align:center; margin:0 auto 2rem auto;">Tens una idea o un espai que t'agradaria encapsular en fusta? Connectem.</p>
+                    <form class="formulari-net" onsubmit="event.preventDefault(); alert('Gràcies per connectar! Aviat rebràs resposta de Mínim Món.');">
+                        <div class="grup-formulari">
+                            <label>El teu nom</label>
+                            <input type="text" required placeholder="Ex. Jordi">
+                        </div>
+                        <div class="grup-formulari">
+                            <label>Correu electrònic</label>
+                            <input type="email" required placeholder="nom@correu.com">
+                        </div>
+                        <div class="grup-formulari">
+                            <label>Quina història vols explicar?</label>
+                            <textarea rows="5" required placeholder="Explica'm breument la teva idea..."></textarea>
+                        </div>
+                        <button type="submit" class="boto-accio" style="width: 100%;">Enviar Proposta</button>
+                    </form>
+                `;
             }
             
-            principal.appendChild(seccio);
+            contenidorPrincipal.appendChild(seccioHTML);
         });
     }
 
-    function canviarSeccio(idSeccio) {
-        // Amagar totes les seccions
-        document.querySelectorAll('.seccio-web').forEach(s => s.classList.remove('activa'));
-        // Treure l'estat actiu dels botons
-        document.querySelectorAll('nav a').forEach(b => b.classList.remove('actiu'));
+    // Constructor dinàmic de targetes de producte (amb neteja de la URL de Google Drive)
+    function crearTargetaElement(item) {
+        const targeta = document.createElement('div');
+        targeta.className = 'targeta-element';
         
-        // Mostrar la seleccionada
-        const seccioActiva = document.getElementById(idSeccio);
-        if (seccioActiva) seccioActiva.classList.add('activa');
+        // Conversió neta de l'ID de Google Drive a URL renderitzable directa
+        const urlImatge = item.imatgeDriveId ? 
+            `https://drive.google.com/uc?export=view&id=${item.imatgeDriveId}` : 
+            'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23340094"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%23AC80FF">Mínim Món</text></svg>';
+
+        // Determinació de l'acció al botó
+        let textBoto = "Saber-ne més";
+        let funcioClick = `canviarSeccio('connecta')`; // Per defecte obre el formulari de personalització
         
-        const botoActiu = document.getElementById(`bto-${idSeccio}`);
-        if (botoActiu) botoActiu.classList.add('actiu');
+        if(item.accioUrl) {
+            if(item.accioUrl.startsWith('#')) {
+                funcioClick = `canviarSeccio('${item.accioUrl.replace('#','')}')`;
+            } else {
+                funcioClick = `window.open('${item.accioUrl}', '_blank')`;
+                textBoto = "Veure Detalls";
+            }
+        }
+
+        targeta.innerHTML = `
+            <div class="imatge-contenidor">
+                <img src="${urlImatge}" alt="${item.titol}" loading="lazy">
+            </div>
+            <div class="contingut-cos">
+                <h3>${item.titol}</h3>
+                <p>${item.descripcio}</p>
+                <button class="boto-accio" onclick="${funcioClick}">${textBoto}</button>
+            </div>
+        `;
+        return targeta;
     }
 
-    // Iniciar l'aplicació en carregar la pàgina
-    window.onload = carregarWeb;
+    // Gestor de Navegació SPA Fluïda
+    function canviarSeccio(idSeccio) {
+        // 1. Ocultar totes les pantalles i treure estats actius del menú
+        document.querySelectorAll('.seccio-web').forEach(s => s.classList.remove('activa'));
+        document.querySelectorAll('nav a').forEach(b => b.classList.remove('actiu'));
+        
+        // 2. Activar elements escollits
+        const pantallaEscollida = document.getElementById(`pantalla-${idSeccio}`);
+        if(pantallaEscollida) {
+            pantallaEscollida.classList.add('activa');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        const botoMenu = document.getElementById(`nav-bto-${idSeccio}`);
+        if(botoMenu) botoMenu.classList.add('actiu');
+    }
+
+    // Execució automàtica en muntar la finestra al navegador
+    window.onload = inicialitzarAplicacio;
 </script>
 </body>
 </html>
