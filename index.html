@@ -398,14 +398,23 @@
         
         if(dadesWeb.config['titol_web']) document.title = dadesWeb.config['titol_web'];
     
-        // CONTROL DEL LOGO DINÀMIC
+        // CONTROL DEL LOGO DINÀMIC (Optimitzat anti-Error 400)
         const espaiLogo = document.getElementById('logo-espai');
         if (espaiLogo && dadesWeb.config['logo']) {
-            const idLogoDrive = dadesWeb.config['logo'];
+            let idLogoDrive = dadesWeb.config['logo'];
+            
+            // Si per error has enganxat tota la URL al Sheets, netegem el text per extreure'n només la ID
+            if (idLogoDrive.includes('id=')) {
+                idLogoDrive = idLogoDrive.split('id=')[1].split('&')[0];
+            } else if (idLogoDrive.includes('/d/')) {
+                idLogoDrive = idLogoDrive.split('/d/')[1].split('/')[0];
+            }
+        
+            // Utilitzem l'enllaç de renderització ràpida (thumbnail) configurat a 150px d'alta per a màxima definició
             espaiLogo.innerHTML = `
-                <img src="https://drive.google.com/uc?export=view&id=${idLogoDrive}" 
+                <img src="https://drive.google.com/thumbnail?sz=h150&id=${idLogoDrive}" 
                      alt="Logo Mínim Món" 
-                     style="height: 45px; width: auto; display: block; object-fit: contain; border-radius: 4px;">
+                     style="height: 45px; width: auto; display: block; object-fit: contain;">
             `;
         }
     }
