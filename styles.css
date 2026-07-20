@@ -127,13 +127,14 @@ body {
     margin: 0 auto;
     padding: 0 1.5rem;
     width: 100%;
+    box-sizing: border-box;
 }
 
 .hero-caixa-contingut {
     display: block;
     position: relative;
     z-index: 10;
-    color: var(--color-clar);
+    box-sizing: border-box;
 }
 
 /* --- HERÈNCIA I UNIFICACIÓ DE COLOR HERO --- */
