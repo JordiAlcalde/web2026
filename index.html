@@ -116,20 +116,26 @@
         }
 
         /* El Bloc Hero / Presentació Exclusiva d'Inici */
-        .hero-bloc {
-            background: linear-gradient(135deg, var(--color-capçalera) 0%, rgba(52, 0, 148, 0.4) 100%);
-            border: 1px solid rgba(172, 128, 255, 0.3);
-            border-radius: 12px;
-            padding: 3rem;
+        .hero-pagina {
+            position: relative;
+            width: 100vw;
+            left: 50%;
+            right: 50%;
+            margin-left: -50vw;
+            margin-right: -50vw;
+            padding: 3rem 1.5rem;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             text-align: center;
-            margin-bottom: 3rem;
-        }
-        
-        .hero-bloc h2 {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-            color: #FFFFFF;
-        }
+            /* Capa fosca amb el teu fons fosc #24153F al 75% d'opacitat per destacar el text de 12px */
+            box-shadow: inset 0 0 0 2000px rgba(36, 21, 63, 0.75); 
+            border-bottom: 2px solid var(--color-accent);
+            margin-bottom: 2.5rem;
+        }        
 
         /* Targetes de Producte i Elements */
         .galeria-graella {
@@ -323,28 +329,69 @@
         }
     }
 
-    // Parsejador de cadenes CSV estàndard (gestiona correctament files i comes)
+    // Parsejador de CSV millorat per respectar els salts de línia interns de les cel·les
     function parsejarCSV(text) {
-        let linies = text.split(/\r?\n/);
-        return linies.map(linia => {
-            let columnes = [];
-            let dinsCometes = false;
-            let valorActual = '';
-            
-            for (let i = 0; i < linia.length; i++) {
-                let caracter = linia[i];
-                if (caracter === '"') {
-                    dinsCometes = !dinsCometes;
-                } else if (caracter === ',' && !dinsCometes) {
-                    columnes.push(valorActual.trim());
-                    valorActual = '';
+        let resultats = [];
+        let filaActual = [];
+        let valorActual = '';
+        let dinsCometes = false;
+    
+        for (let i = 0; i < text.length; i++) {
+            let caracter = text[i];
+            let caracterSeguent = text[i + 1];
+    
+            if (caracter === '"') {
+                if (dinsCometes && caracterSeguent === '"') {
+                    valorActual += '"';
+                    i++; // Saltem la segona cometa
                 } else {
-                    valorActual += caracter;
+                    dinsCometes = !dinsCometes;
                 }
+            } else if (caracter === ',' && !dinsCometes) {
+                filaActual.push(valorActual.trim());
+                valorActual = '';
+            } else if ((caracter === '\r' || caracter === '\n') && !dinsCometes) {
+                if (caracter === '\r' && caracterSeguent === '\n') i++;
+                filaActual.push(valorActual.trim());
+                if (filaActual.some(celda => celda !== '')) resultats.push(filaActual);
+                filaActual = [];
+                valorActual = '';
+            } else {
+                valorActual += caracter;
             }
-            columnes.push(valorActual.trim());
-            return columnes;
-        }).filter(fila => fila.length > 0 && fila[0] !== '');
+        }
+        if (valorActual || filaActual.length > 0) {
+            filaActual.push(valorActual.trim());
+            resultats.push(filaActual);
+        }
+        return resultats;
+    }
+    
+    // Transformador de gruix de text català a pes numèric de Montserrat
+    function obtenirFontWeight(nomGruix) {
+        if (!nomGruix) return '400';
+        const g = nomGruix.toLowerCase();
+        if (g.includes('seminegreta') || g.includes('semi')) return '600';
+        if (g.includes('negreta') || g.includes('bold')) return '700';
+        if (g.includes('lleuger') || g.includes('light')) return '300';
+        return '400';
+    }
+    
+    // Parsejar el full d'Estructura adaptat a les teves noves columnes (F, G, H, I)
+    function parsejarEstructura(files) {
+        return files.slice(1).map(fila => {
+            return {
+                id: fila[0],
+                titol: fila[1],
+                ordre: parseInt(fila[2]) || 99,
+                visible: fila[3] ? fila[3].toUpperCase() === 'TRUE' : true,
+                tipus: fila[4] || 'galeria_filtrada',
+                heroTitol: (fila[5] || '').replace(/\n/g, '<br>'),     // Manté els salts de línia
+                heroText: (fila[6] || '').replace(/\n/g, '<br>'),      // Manté els salts de línia
+                heroDestacat: (fila[7] || '').replace(/\n/g, '<br>'),  // Manté els salts de línia
+                heroImatge: fila[8] || ''                              // ID neta de la columna I
+            };
+        }).sort((a, b) => a.ordre - b.ordre);
     }
 
     // Processa el mapa de Clau-Valor del full 'Config'
@@ -358,19 +405,6 @@
         });
     }
 
-    // Processa i neteja l'Estructura (Seccions)
-    function parsejarEstructura(files) {
-        const capçalera = files[0];
-        return files.slice(1).map(fila => {
-            return {
-                id: fila[0],
-                titol: fila[1],
-                ordre: parseInt(fila[2]) || 99,
-                visible: fila[3] ? fila[3].toUpperCase() === 'TRUE' : true,
-                tipus: fila[4] || 'galeria_filtrada'
-            };
-        }).sort((a, b) => a.ordre - b.ordre);
-    }
 
     // Processa el catàleg general de Continguts
     function parsejarContinguts(files) {
@@ -434,6 +468,53 @@
             nav.appendChild(enllaç);
         });
     }
+
+    // Renderització del Banner Hero amb les mides i gruixos de la pestanya Config
+    function construirPantallesWeb() {
+        const contenidorPrincipal = document.getElementById('seccions-contenidor');
+        contenidorPrincipal.innerHTML = '';
+        
+        // Extreure estils globals de la font per a l'Hero des de dadesWeb.config
+        const titolMida = dadesWeb.config['font_hero_titol_mida'] ? `${dadesWeb.config['font_hero_titol_mida']}px` : '36px';
+        const titolWeight = obtenirFontWeight(dadesWeb.config['font_hero_titol_gruix']);
+        
+        const textMida = dadesWeb.config['font_hero_text_mida'] ? `${dadesWeb.config['font_hero_text_mida']}px` : '12px';
+        const textWeight = obtenirFontWeight(dadesWeb.config['font_hero_text_gruix']);
+        
+        const destacatMida = dadesWeb.config['font_hero_destacat_mida'] ? `${dadesWeb.config['font_hero_destacat_mida']}px` : '12px';
+        const destacatWeight = obtenirFontWeight(dadesWeb.config['font_hero_destacat_gruix']);
+    
+        dadesWeb.estructura.forEach(pagina => {
+            const seccioHTML = document.createElement('section');
+            seccioHTML.id = `pantalla-${pagina.id}`;
+            seccioHTML.className = 'seccio-web';
+            
+            if (pagina.heroImatge) {
+                const urlHeroImatge = `https://drive.google.com/thumbnail?sz=w1600&id=${pagina.heroImatge}`;
+                
+                seccioHTML.innerHTML = `
+                    <div class="hero-pagina" style="background-image: url('${urlHeroImatge}');">
+                        <h2 style="font-size: ${titolMida}; font-weight: ${titolWeight};">${pagina.heroTitol || pagina.titol}</h2>
+                        <p style="font-size: ${textMida}; font-weight: ${textWeight}; margin-top: 1rem;">${pagina.heroText}</p>
+                        ${pagina.heroDestacat ? `<p class="destacat-hero" style="font-size: ${destacatMida}; font-weight: ${destacatWeight}; margin-top: 1.5rem; color: var(--color-accent);">${pagina.heroDestacat}</p>` : ''}
+                    </div>
+                `;
+            } else {
+                seccioHTML.innerHTML = `<h1>${pagina.titol}</h1>`;
+            }
+            
+            // Injecció de la resta de continguts de la pàgina...
+            const elementsSeccio = dadesWeb.continguts.filter(item => item.seccio === pagina.id);
+            if (pagina.tipus === 'galeria_filtrada') {
+                const graella = document.createElement('div');
+                graella.className = 'galeria-graella';
+                elementsSeccio.forEach(item => graella.appendChild(crearTargetaElement(item)));
+                seccioHTML.appendChild(graella);
+            }
+            
+            contenidorPrincipal.appendChild(seccioHTML);
+        });
+    }    
 
     // Construeix l'esquelet HTML de cada secció i distribueix els continguts filtrats
     function construirPantallesWeb() {
