@@ -99,15 +99,14 @@
             return config;
         }
 
-        function parsejarCSVEstructura(csvText) {
+         function parsejarCSVEstructura(csvText) {
             const files = parseCSV(csvText);
             return files.slice(1).map(fila => {
                 const titolPagina = (fila[1] || '').trim();
                 const rawHeroTitol = (fila[5] || '').trim();
                 const rawHeroText = (fila[6] || '').trim();
                 const rawHeroDestacat = (fila[7] || '').trim();
-
-                // Gestió segura del desplaçament esquerra (HeroLeftSpan)
+        
                 let valSpan = (fila[13] || '').trim();
                 let leftSpanCss = '0px';
                 if (valSpan !== '') {
@@ -116,25 +115,25 @@
                         leftSpanCss = numSpan > 100 ? `${numSpan}px` : `${numSpan}%`;
                     }
                 }
-
+        
                 return {
                     id: (fila[0] || '').trim(),
                     titol: titolPagina,
                     ordre: parseInt(fila[2]) || 99,
                     visible: fila[3] ? fila[3].toUpperCase().trim() === 'TRUE' : true,
                     tipus: (fila[4] || 'galeria_filtrada').trim(),
+                    // Manté exactament els salts originals
                     heroTitol: rawHeroTitol !== '' ? rawHeroTitol.replace(/\n/g, '<br>') : titolPagina,
-                    heroText: rawHeroText.replace(/\n/g, '<br><br>'),
+                    heroText: rawHeroText.replace(/\n/g, '<br>'), 
                     heroDestacat: rawHeroDestacat.replace(/\n/g, '<br>'),
                     heroImatge: (fila[8] || '').trim(), 
                     heroAmple: fila[10] && fila[10].trim() !== '' ? `${parseInt(fila[10])}px` : '550px',
                     heroAlign: fila[11] ? fila[11].toLowerCase().trim() : 'left',
-                    heroFontColor: (fila[12] || '#E3D4FF').trim(),
+                    heroFontColor: (fila[12] || '#E3D4FF').trim(), // Color d'aplicació unificada
                     heroLeftSpan: leftSpanCss
                 };
             }).sort((a, b) => a.ordre - b.ordre);
         }
-
         function parsejarCSVContinguts(csvText) {
             const files = parseCSV(csvText);
             return files.slice(1).map(fila => ({
@@ -183,32 +182,33 @@
                 if (pagina.heroImatge) {
                     const urlHeroImatge = `https://drive.google.com/thumbnail?sz=w1600&id=${pagina.heroImatge}`;
 
-                    seccioHTML.innerHTML = `
-                        <div class="hero-pagina" style="background-image: url('${urlHeroImatge}');">
-                            <div class="hero-contenedor-flex">
-                                <div class="hero-caixa-contingut" style="
-                                    max-width: ${pagina.heroAmple}; 
-                                    margin-left: ${pagina.heroLeftSpan}; 
-                                    text-align: ${pagina.heroAlign};">
+                        seccioHTML.innerHTML = `
+                            <div class="hero-pagina" style="background-image: url('${urlHeroImatge}');">
+                                <div class="hero-contenedor-flex">
+                                    <div class="hero-caixa-contingut" style="
+                                        max-width: ${pagina.heroAmple}; 
+                                        margin-left: ${pagina.heroLeftSpan}; 
+                                        text-align: ${pagina.heroAlign};
+                                        color: ${pagina.heroFontColor};">
+                                        
+                                        <h2 style="font-size: ${titolMida}; font-weight: ${titolWeight}; color: ${pagina.heroFontColor}; line-height: 1.25;">
+                                            ${pagina.heroTitol}
+                                        </h2>
+                                        
+                                        ${pagina.heroText ? `
+                                            <div class="hero-cos-text" style="font-size: ${textMida}; font-weight: ${textWeight}; color: ${pagina.heroFontColor}; margin-top: 1rem;">
+                                                ${pagina.heroText}
+                                            </div>` : ''}
+                                        
+                                        ${pagina.heroDestacat ? `
+                                            <div class="destacat-hero" style="font-size: ${destacatMida}; font-weight: ${destacatWeight}; color: ${pagina.heroFontColor}; margin-top: 1.2rem;">
+                                                ${pagina.heroDestacat}
+                                            </div>` : ''}
                                     
-                                    <h2 style="font-size: ${titolMida}; font-weight: ${titolWeight}; color: ${pagina.heroFontColor}; line-height: 1.25;">
-                                        ${pagina.heroTitol}
-                                    </h2>
-                                    
-                                    ${pagina.heroText ? `
-                                        <div class="hero-cos-text" style="font-size: ${textMida}; font-weight: ${textWeight}; color: ${pagina.heroFontColor}; margin-top: 1.2rem;">
-                                            ${pagina.heroText}
-                                        </div>` : ''}
-                                    
-                                    ${pagina.heroDestacat ? `
-                                        <div class="destacat-hero" style="font-size: ${destacatMida}; font-weight: ${destacatWeight}; color: var(--color-accent); margin-top: 1.5rem;">
-                                            ${pagina.heroDestacat}
-                                        </div>` : ''}
-                                
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    `;
+                        `;
                 } else {
                     seccioHTML.innerHTML = `<h1>${pagina.titol}</h1>`;
                 }
