@@ -1,11 +1,11 @@
 /* ==========================================================================
-   MÍNIM MÓN - ESTILS GLOBALS CORREGITS
+   MÍNIM MÓN - ESTILS OFICIALS (PALETA & MONTSERRAT)
    ========================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
 
 :root {
-    /* Paleta Oficial Mínim Món */
+    /* Paleta Oficial extreta de PaletaColor-MínimMón.jpeg */
     --color-fons-fosc: #24153F;
     --color-primari: #301269;
     --color-vivid: #340094;
@@ -37,7 +37,7 @@ body {
     position: sticky;
     top: 0;
     z-index: 1000;
-    padding: 0.8rem 1.5rem;
+    padding: 0.6rem 1.5rem;
 }
 
 .nav-contenidor {
@@ -48,12 +48,22 @@ body {
     align-items: center;
 }
 
-.logo-text {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: var(--color-clar);
+.logo-link {
+    display: flex;
+    align-items: center;
     text-decoration: none;
-    letter-spacing: 1px;
+}
+
+.logo-imatge {
+    height: 48px;
+    width: auto;
+    display: block;
+    object-fit: contain;
+    transition: transform 0.2s ease;
+}
+
+.logo-imatge:hover {
+    transform: scale(1.03);
 }
 
 .menu-links {
@@ -71,7 +81,7 @@ body {
 }
 
 .menu-links a:hover,
-.menu-links a.actiud {
+.menu-links a.actiu {
     color: var(--color-accent);
 }
 
@@ -99,7 +109,7 @@ h1 {
     text-align: center;
 }
 
-/* --- BANNER HERO (SENSE FLEXBOX COMPRESSIU) --- */
+/* --- BANNER HERO --- */
 .hero-pagina {
     position: relative;
     width: 100vw;
@@ -123,19 +133,17 @@ h1 {
     box-sizing: border-box;
 }
 
-/* Caixa de text fluïda amb ample mínim de seguretat */
 .hero-caixa-contingut {
     display: block;
     width: 100%;
-    min-width: 280px; /* Garanteix que mai es col·lapsi en vertical */
+    min-width: 280px;
     box-sizing: border-box;
     white-space: normal;
     word-break: normal;
 }
 
-.hero-caixa-contingut h2,
-.hero-caixa-contingut p {
-    line-height: 1.4;
+.destacat-hero {
+    font-weight: 600;
 }
 
 /* --- GRAELLA I TARGETES --- */
@@ -167,7 +175,7 @@ h1 {
     margin-bottom: 1rem;
 }
 
-/* --- FORMULARI DE CONTACTE (CONNECTA) --- */
+/* --- FORMULARI DE CONTACTE --- */
 .formulari-net {
     max-width: 600px;
     margin: 0 auto;
@@ -208,7 +216,7 @@ h1 {
     font-weight: 600;
     border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .boto-accio:hover {
@@ -216,7 +224,7 @@ h1 {
     color: var(--color-fons-fosc);
 }
 
-/* --- RESPONSIVITAT EN MÒBILS --- */
+/* --- ADAPTACIÓ DISPOSITIUS MÒBILS --- */
 @media (max-width: 768px) {
     .menu-links {
         gap: 0.8rem;
