@@ -48,22 +48,34 @@ body {
     align-items: center;
 }
 
+
+/* --- MARCA I LOGO --- */
 .logo-link {
     display: flex;
     align-items: center;
+    gap: 0.8rem; /* Espaiat entre el logo i el text */
     text-decoration: none;
 }
 
 .logo-imatge {
-    height: 45px; /* Alçada màxima controlada per no desquadrar la barra */
+    height: 38px; /* Mida continguda per no desquadrar la barra */
     width: auto;
     display: block;
     object-fit: contain;
-    background-color: transparent;
+    border-radius: 3px; /* Acabat net si porta fons blanc */
 }
 
 .logo-imatge:hover {
     transform: scale(1.03);
+}
+
+.nom-marca {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-clar); /* #E3D4FF */
+    letter-spacing: 0.5px;
+    white-space: nowrap;
 }
 
 .menu-links {
