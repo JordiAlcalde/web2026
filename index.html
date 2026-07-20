@@ -3,616 +3,188 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mínim Món — Històries Encapsulades en Fusta</title>
-    <!-- Font Montserrat -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <style>
-        /* Estils Base i Resets */
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        
-        /* Variables CSS que reescriurem dinàmicament des del full Config */
-        :root {
-            --color-fons: #24153F;
-            --color-capçalera: #301269;
-            --color-targeta: #340094;
-            --color-accent: #AC80FF;
-            --color-text-mutat: #C8AAFF;
-            --color-text-clar: #E3D4FF;
-        }
-
-        body {
-            font-family: 'Montserrat', sans-serif;
-            background-color: var(--color-fons);
-            color: var(--color-text-clar);
-            line-height: 1.6;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            transition: background-color 0.4s ease;
-        }
-
-        /* Capçalera i Navegació Fluïda (SPA) */
-        header {
-            background-color: var(--color-capçalera);
-            padding: 1.2rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid var(--color-accent);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-        }
-
-        .logo-contenidor {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .logo-text {
-            font-weight: 700;
-            font-size: 1.4rem;
-            letter-spacing: 1px;
-            color: #FFFFFF;
-        }
-
-        nav {
-            display: flex;
-            gap: 1.5rem;
-        }
-
-        nav a {
-            color: var(--color-text-mutat);
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.95rem;
-            padding: 0.4rem 0.8rem;
-            border-radius: 4px;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        nav a:hover, nav a.actiu {
-            color: #FFFFFF;
-            background-color: rgba(172, 128, 255, 0.2);
-        }
-
-        /* Àrea Principal de Pantalles */
-        main {
-            flex: 1;
-            padding: 3rem 1.5rem;
-            max-width: 1200px;
-            width: 100%;
-            margin: 0 auto;
-        }
-
-        .seccio-web {
-            display: none;
-            animation: fadeIn 0.4s ease forwards;
-        }
-
-        .seccio-web.activa {
-            display: block;
-        }
-
-        /* Components Visuals Dinàmics */
-        h1 {
-            font-size: 2.2rem;
-            font-weight: 700;
-            color: #FFFFFF;
-            margin-bottom: 1.5rem;
-            border-left: 5px solid var(--color-accent);
-            padding-left: 12px;
-        }
-
-        .introduccio-seccio {
-            font-size: 1.1rem;
-            margin-bottom: 2.5rem;
-            color: var(--color-text-mutat);
-            max-width: 800px;
-        }
-
-        /* Banner Hero Ajustable */
-        .hero-pagina {
-            position: relative;
-            width: 100vw;
-            left: 50%;
-            right: 50%;
-            margin-left: -50vw;
-            margin-right: -50vw;
-            padding: 3.5rem 2rem;
-            background-size: cover;
-            background-position: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            box-shadow: inset 0 0 0 2000px rgba(36, 21, 63, 0.70); 
-            border-bottom: 2px solid var(--color-accent);
-            margin-bottom: 2.5rem;
-        }
-        
-        /* Caixa contenidora interior que respecta HeroAmple i HeroFontColor */
-        .hero-caixa-contingut {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .hero-caixa-contingut h2,
-        .hero-caixa-contingut p {
-            line-height: 1.4;
-        }        
-
-        /* Targetes de Producte i Elements */
-        .galeria-graella {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2.5rem;
-        }
-
-        .targeta-element {
-            background-color: var(--color-targeta);
-            border: 1px solid rgba(172, 128, 255, 0.2);
-            border-radius: 8px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
-        }
-
-        .targeta-element:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-            border-color: var(--color-accent);
-        }
-
-        .imatge-contenidor {
-            width: 100%;
-            height: 240px;
-            background-color: rgba(0,0,0,0.2);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .imatge-contenidor img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .contingut-cos {
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-        }
-
-        .contingut-cos h3 {
-            font-size: 1.3rem;
-            margin-bottom: 0.75rem;
-            color: #FFFFFF;
-        }
-
-        .contingut-cos p {
-            font-size: 0.95rem;
-            color: var(--color-text-clar);
-            margin-bottom: 1.5rem;
-            flex: 1;
-        }
-
-        /* Botons d'Acció Directa */
-        .boto-accio {
-            display: inline-block;
-            background-color: var(--color-accent);
-            color: var(--color-capçalera);
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 0.9rem;
-            padding: 0.7rem 1.2rem;
-            border-radius: 4px;
-            text-align: center;
-            transition: background-color 0.2s ease, transform 0.1s ease;
-            border: none;
-            cursor: pointer;
-        }
-
-        .boto-accio:hover {
-            background-color: #FFFFFF;
-        }
-
-        /* Formulari de Contacte Polit (Secció Connecta) */
-        .formulari-net {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: var(--color-capçalera);
-            padding: 2.5rem;
-            border-radius: 8px;
-            border: 1px solid rgba(172, 128, 255, 0.2);
-        }
-
-        .grup-formulari {
-            margin-bottom: 1.5rem;
-        }
-
-        .grup-formulari label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .grup-formulari input, .grup-formulari textarea {
-            width: 100%;
-            padding: 0.8rem;
-            background-color: var(--color-fons);
-            border: 1px solid rgba(172, 128, 255, 0.3);
-            border-radius: 4px;
-            color: #FFFFFF;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 0.95rem;
-        }
-
-        .grup-formulari input:focus, .grup-formulari textarea:focus {
-            outline: none;
-            border-color: var(--color-accent);
-        }
-
-        /* Animació de transició de pàgina */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Responsivitat */
-        @media (max-width: 768px) {
-            header { flex-direction: column; gap: 1rem; text-align: center; }
-            nav { width: 100%; justify-content: center; flex-wrap: wrap; }
-        }
-    </style>
+    <title>Mínim Món | Recreacions Simbòliques i Fusta Làser</title>
+    <!-- CSS Extern -->
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-    <header>
-        <div class="logo-contenidor">
-            <!-- El contingut d'aquí dins es controlarà dinàmicament per JavaScript -->
-            <span id="logo-espai"></span>
-            <span class="logo-text">Mínim Món</span>
-        </div>
-        <nav id="navbar-dinamic">
-            <!-- Es munta automàticament des del full Estructura -->
-        </nav>
-    </header>
-
     <main id="seccions-contenidor">
-        <!-- Es munta automàticament distribuint el full Continguts -->
-        <div style="text-align:center; padding: 5rem;" id="carregador">
-            <p>Carregant l'univers de Mínim Món...</p>
-        </div>
+        <!-- El contingut es genera dinàmicament des de Google Sheets -->
     </main>
 
-<script>
-    // ═══════════════════════════════════════════════════════════════════
-    // ⚠️ CONFIGURACIÓ: Afegeix aquí les teves 3 URLs del full publicat com a CSV
-    // ═══════════════════════════════════════════════════════════════════
-    const URL_CSV_CONFIG      = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=0&single=true&output=csv";
-    const URL_CSV_ESTRUCTURA  = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=888628017&single=true&output=csv";
-    const URL_CSV_CONTINGUTS  = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=819396845&single=true&output=csv";
+    <script>
+        // Lloc de les dades de Google Sheets (Appscript / API endpoint)
+        const URL_DADES = 'AQUÍ_LA_TEVA_URL_DE_APPS_SCRIPT';
 
-    // Mantenidors de dades globals indexades en memòria
-    let dadesWeb = { config: {}, estructura: [], continguts: [] };
+        let dadesWeb = {
+            config: {},
+            estructura: [],
+            continguts: []
+        };
 
-    // Funció arrel per descarregar i orquestrar les dades de la web
-    async function inicialitzarAplicacio() {
-        try {
-            // 1. Descarregar els 3 fitxers CSV en paral·lel per màxima velocitat
-            const [resConfig, resEstructura, resContinguts] = await Promise.all([
-                fetch(URL_CSV_CONFIG).then(r => r.text()),
-                fetch(URL_CSV_ESTRUCTURA).then(r => r.text()),
-                fetch(URL_CSV_CONTINGUTS).then(r => r.text())
-            ]);
-
-            // 2. Parsejar estructures CSV
-            processarConfig(parsejarCSV(resConfig));
-            dadesWeb.estructura = parsejarEstructura(parsejarCSV(resEstructura));
-            dadesWeb.continguts = parsejarContinguts(parsejarCSV(resContinguts));
-
-            // 3. Aplicar estil global i muntar components de la interfície
-            aplicarVariablesEstil();
-            construirMenuNavegacio();
-            construirPantallesWeb();
-
-            // 4. Mostrar la pàgina principal per defecte definida a l'estructura (ordre 1)
-            const paginaInici = dadesWeb.estructura.find(p => p.ordre === 1) || dadesWeb.estructura[0];
-            if(paginaInici) canviarSeccio(paginaInici.id);
-
-            // Retirar el missatge de càrrega inicial
-            const carregador = document.getElementById('carregador');
-            if(carregador) carregador.remove();
-
-        } catch (error) {
-            console.error("Error en el procés de sincronització amb Google Sheets:", error);
-            document.getElementById('carregador').innerHTML = "<p>S'ha produït un error en carregar el catàleg. Si us plau, torna-ho a provar en uns minuts.</p>";
-        }
-    }
-
-    // Parsejador de CSV millorat per respectar els salts de línia interns de les cel·les
-    function parsejarCSV(text) {
-        let resultats = [];
-        let filaActual = [];
-        let valorActual = '';
-        let dinsCometes = false;
-    
-        for (let i = 0; i < text.length; i++) {
-            let caracter = text[i];
-            let caracterSeguent = text[i + 1];
-    
-            if (caracter === '"') {
-                if (dinsCometes && caracterSeguent === '"') {
-                    valorActual += '"';
-                    i++; // Saltem la segona cometa
-                } else {
-                    dinsCometes = !dinsCometes;
-                }
-            } else if (caracter === ',' && !dinsCometes) {
-                filaActual.push(valorActual.trim());
-                valorActual = '';
-            } else if ((caracter === '\r' || caracter === '\n') && !dinsCometes) {
-                if (caracter === '\r' && caracterSeguent === '\n') i++;
-                filaActual.push(valorActual.trim());
-                if (filaActual.some(celda => celda !== '')) resultats.push(filaActual);
-                filaActual = [];
-                valorActual = '';
-            } else {
-                valorActual += caracter;
-            }
-        }
-        if (valorActual || filaActual.length > 0) {
-            filaActual.push(valorActual.trim());
-            resultats.push(filaActual);
-        }
-        return resultats;
-    }
-    
-    // Transformador de gruix de text català a pes numèric de Montserrat
-    function obtenirFontWeight(nomGruix) {
-        if (!nomGruix) return '400';
-        const g = nomGruix.toLowerCase();
-        if (g.includes('seminegreta') || g.includes('semi')) return '600';
-        if (g.includes('negreta') || g.includes('bold')) return '700';
-        if (g.includes('lleuger') || g.includes('light')) return '300';
-        return '400';
-    }    
-    
-    // Parsejar el full d'Estructura amb les columnes fins a M (HeroAmple, HeroAlign, HeroFontColor)
-    function parsejarEstructura(files) {
-        return files.slice(1).map(fila => {
-            return {
-                id: fila[0],
-                titol: fila[1],
-                ordre: parseInt(fila[2]) || 99,
-                visible: fila[3] ? fila[3].toUpperCase() === 'TRUE' : true,
-                tipus: fila[4] || 'galeria_filtrada',
-                heroTitol: (fila[5] || '').replace(/\n/g, '<br>'),
-                heroText: (fila[6] || '').replace(/\n/g, '<br>'),
-                heroDestacat: (fila[7] || '').replace(/\n/g, '<br>'),
-                heroImatge: fila[8] || '', // ID de la imatge de la columna I
-                heroAmple: fila[10] ? `${parseInt(fila[10])}px` : '100%', // Columna K (ex: 300)
-                heroAlign: fila[11] ? fila[11].toLowerCase() : 'center',  // Columna L (ex: Left / Center / Right)
-                heroFontColor: fila[12] || '#FFFFFF'                     // Columna M (ex: #FFFFFF)
-            };
-        }).sort((a, b) => a.ordre - b.ordre);
-    }
-
-    // Processa el mapa de Clau-Valor del full 'Config'
-    function processarConfig(files) {
-        files.forEach(fila => {
-            if(fila.length >= 2) {
-                const clau = fila[0].toLowerCase();
-                const valor = fila[1];
-                dadesWeb.config[clau] = valor;
-            }
+        // Carregar dades inicials
+        document.addEventListener('DOMContentLoaded', () => {
+            carregarDadesPàgina();
         });
-    }
 
+        function carregarDadesPàgina() {
+            fetch(URL_DADES)
+                .then(resposta => resposta.json())
+                .then(dades => {
+                    dadesWeb.config = dades.config || {};
+                    dadesWeb.estructura = parsejarEstructura(dades.estructura || []);
+                    dadesWeb.continguts = dades.continguts || [];
 
-    // Processa el catàleg general de Continguts
-    function parsejarContinguts(files) {
-        return files.slice(1).map(fila => {
-            return {
-                id: fila[0],
-                seccio: fila[1],
-                tipusComponent: fila[2],
-                titol: fila[3],
-                descripcio: fila[4],
-                imatgeDriveId: fila[5],
-                accioUrl: fila[6],
-                destacat: fila[7] ? fila[7].toUpperCase() === 'TRUE' : false
-            };
-        });
-    }
-
-    // Injecta dinàmicament els colors configurats a la graella CSS
-    function aplicarVariablesEstil() {
-        const arrel = document.documentElement;
-        if(dadesWeb.config['color_fons']) arrel.style.setProperty('--color-fons', dadesWeb.config['color_fons']);
-        if(dadesWeb.config['color_principal']) arrel.style.setProperty('--color-capçalera', dadesWeb.config['color_principal']);
-        if(dadesWeb.config['color_accent']) arrel.style.setProperty('--color-accent', dadesWeb.config['color_accent']);
-        if(dadesWeb.config['color_text_clar']) arrel.style.setProperty('--color-text-clar', dadesWeb.config['color_text_clar']);
-        
-        if(dadesWeb.config['titol_web']) document.title = dadesWeb.config['titol_web'];
-    
-        // CONTROL DEL LOGO DINÀMIC (Optimitzat anti-Error 400)
-        const espaiLogo = document.getElementById('logo-espai');
-        if (espaiLogo && dadesWeb.config['logo']) {
-            let idLogoDrive = dadesWeb.config['logo'];
-            
-            // Si per error has enganxat tota la URL al Sheets, netegem el text per extreure'n només la ID
-            if (idLogoDrive.includes('id=')) {
-                idLogoDrive = idLogoDrive.split('id=')[1].split('&')[0];
-            } else if (idLogoDrive.includes('/d/')) {
-                idLogoDrive = idLogoDrive.split('/d/')[1].split('/')[0];
-            }
-        
-            // Utilitzem l'enllaç de renderització ràpida (thumbnail) configurat a 150px d'alta per a màxima definició
-            espaiLogo.innerHTML = `
-                <img src="https://drive.google.com/thumbnail?sz=h150&id=${idLogoDrive}" 
-                     alt="Logo Mínim Món" 
-                     style="height: 45px; width: auto; display: block; object-fit: contain;">
-            `;
+                    construirPantallesWeb();
+                    activarSeccioInicial();
+                })
+                .catch(error => console.error("Error carregant les dades de Mínim Món:", error));
         }
-    }
 
-    // Genera el menú superior (Navbar) a partir del full 'Estructura'
-    function construirMenuNavegacio() {
-        const nav = document.getElementById('navbar-dinamic');
-        nav.innerHTML = '';
-        
-        dadesWeb.estructura.forEach(pagina => {
-            if(!pagina.visible) return;
-            
-            const enllaç = document.createElement('a');
-            enllaç.textContent = pagina.titol;
-            enllaç.id = `nav-bto-${pagina.id}`;
-            enllaç.onclick = () => canviarSeccio(pagina.id);
-            nav.appendChild(enllaç);
-        });
-    }
+        // Parsejar la pestanya Estructura fins a la Columna N (HeroLeftSpan)
+        function parsejarEstructura(files) {
+            return files.slice(1).map(fila => {
+                return {
+                    id: fila[0],
+                    titol: fila[1],
+                    ordre: parseInt(fila[2]) || 99,
+                    visible: fila[3] ? fila[3].toUpperCase() === 'TRUE' : true,
+                    tipus: fila[4] || 'galeria_filtrada',
+                    heroTitol: (fila[5] || '').replace(/\n/g, '<br>'),
+                    heroText: (fila[6] || '').replace(/\n/g, '<br>'),
+                    heroDestacat: (fila[7] || '').replace(/\n/g, '<br>'),
+                    heroImatge: fila[8] || '', 
+                    heroAmple: fila[10] ? `${parseInt(fila[10])}px` : '100%', // Columna K
+                    heroAlign: fila[11] ? fila[11].toLowerCase() : 'center',  // Columna L
+                    heroFontColor: fila[12] || '#FFFFFF',                    // Columna M
+                    heroLeftSpan: fila[13] ? `${parseInt(fila[13])}%` : '0%'  // Columna N
+                };
+            }).sort((a, b) => a.ordre - b.ordre);
+        }
 
-    function construirPantallesWeb() {
-        const contenidorPrincipal = document.getElementById('seccions-contenidor');
-        contenidorPrincipal.innerHTML = '';
-        
-        // Extreure estils globals des de dadesWeb.config
-        const titolMida = dadesWeb.config['font_hero_titol_mida'] ? `${dadesWeb.config['font_hero_titol_mida']}px` : '36px';
-        const titolWeight = obtenirFontWeight(dadesWeb.config['font_hero_titol_gruix']);
-        
-        const textMida = dadesWeb.config['font_hero_text_mida'] ? `${dadesWeb.config['font_hero_text_mida']}px` : '12px';
-        const textWeight = obtenirFontWeight(dadesWeb.config['font_hero_text_gruix']);
-        
-        const destacatMida = dadesWeb.config['font_hero_destacat_mida'] ? `${dadesWeb.config['font_hero_destacat_mida']}px` : '12px';
-        const destacatWeight = obtenirFontWeight(dadesWeb.config['font_hero_destacat_gruix']);
-    
-        dadesWeb.estructura.forEach(pagina => {
-            const seccioHTML = document.createElement('section');
-            seccioHTML.id = `pantalla-${pagina.id}`;
-            seccioHTML.className = 'seccio-web';
+        // Construeix l'esquelet HTML de la web
+        function construirPantallesWeb() {
+            const contenidorPrincipal = document.getElementById('seccions-contenidor');
+            contenidorPrincipal.innerHTML = '';
             
-            // Renderització del Banner Hero
-            if (pagina.heroImatge) {
-                const urlHeroImatge = `https://drive.google.com/thumbnail?sz=w1600&id=${pagina.heroImatge}`;
+            // Mides i gruixos de font des de Config
+            const titolMida = dadesWeb.config['font_hero_titol_mida'] ? `${dadesWeb.config['font_hero_titol_mida']}px` : '36px';
+            const titolWeight = obtenirFontWeight(dadesWeb.config['font_hero_titol_gruix']);
+            
+            const textMida = dadesWeb.config['font_hero_text_mida'] ? `${dadesWeb.config['font_hero_text_mida']}px` : '14px';
+            const textWeight = obtenirFontWeight(dadesWeb.config['font_hero_text_gruix']);
+            
+            const destacatMida = dadesWeb.config['font_hero_destacat_mida'] ? `${dadesWeb.config['font_hero_destacat_mida']}px` : '14px';
+            const destacatWeight = obtenirFontWeight(dadesWeb.config['font_hero_destacat_gruix']);
+
+            dadesWeb.estructura.forEach(pagina => {
+                if (!pagina.visible) return;
+
+                const seccioHTML = document.createElement('section');
+                seccioHTML.id = `pantalla-${pagina.id}`;
+                seccioHTML.className = 'seccio-web';
                 
-                // Mapegem la justificació de la caixa segons l'alineació del text
-                let opcionsAliniament = 'center';
-                if (pagina.heroAlign === 'left') opcionsAliniament = 'flex-start';
-                if (pagina.heroAlign === 'right') opcionsAliniament = 'flex-end';
-    
-                seccioHTML.innerHTML = `
-                    <div class="hero-pagina" style="background-image: url('${urlHeroImatge}'); align-items: ${opcionsAliniament}; text-align: ${pagina.heroAlign};">
-                        <div class="hero-caixa-contingut" style="max-width: ${pagina.heroAmple}; color: ${pagina.heroFontColor};">
-                            <h2 style="font-size: ${titolMida}; font-weight: ${titolWeight}; color: ${pagina.heroFontColor};">${pagina.heroTitol || pagina.titol}</h2>
-                            <p style="font-size: ${textMida}; font-weight: ${textWeight}; color: ${pagina.heroFontColor}; margin-top: 1rem;">${pagina.heroText}</p>
-                            ${pagina.heroDestacat ? `<p class="destacat-hero" style="font-size: ${destacatMida}; font-weight: ${destacatWeight}; color: ${pagina.heroFontColor}; margin-top: 1.5rem;">${pagina.heroDestacat}</p>` : ''}
+                // 1. DISSENY HERO AMB ELS PARÀMETRES DE LES COLUMNES K, L, M, N
+                if (pagina.heroImatge) {
+                    const urlHeroImatge = `https://drive.google.com/thumbnail?sz=w1600&id=${pagina.heroImatge}`;
+
+                    seccioHTML.innerHTML = `
+                        <div class="hero-pagina" style="background-image: url('${urlHeroImatge}');">
+                            <div class="hero-contenedor-flex">
+                                <div class="hero-caixa-contingut" style="
+                                    max-width: ${pagina.heroAmple}; 
+                                    margin-left: ${pagina.heroLeftSpan}; 
+                                    text-align: ${pagina.heroAlign}; 
+                                    color: ${pagina.heroFontColor};">
+                                    
+                                    <h2 style="font-size: ${titolMida}; font-weight: ${titolWeight}; color: ${pagina.heroFontColor};">${pagina.heroTitol || pagina.titol}</h2>
+                                    <p style="font-size: ${textMida}; font-weight: ${textWeight}; color: ${pagina.heroFontColor}; margin-top: 1rem;">${pagina.heroText}</p>
+                                    ${pagina.heroDestacat ? `<p class="destacat-hero" style="font-size: ${destacatMida}; font-weight: ${destacatWeight}; color: ${pagina.heroFontColor}; margin-top: 1.5rem;">${pagina.heroDestacat}</p>` : ''}
+                                
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                `;
-            } else {
-                seccioHTML.innerHTML = `<h1>${pagina.titol}</h1>`;
-            }
-            
-            // Injecció de la resta de continguts de la pàgina
-            const elementsSeccio = dadesWeb.continguts.filter(item => item.seccio === pagina.id);
-    
-            if (pagina.tipus === 'galeria_filtrada' || pagina.tipus === 'home') {
-                if (elementsSeccio.length > 0) {
-                    const graella = document.createElement('div');
-                    graella.className = 'galeria-graella';
-                    elementsSeccio.forEach(item => graella.appendChild(crearTargetaElement(item)));
-                    seccioHTML.appendChild(graella);
+                    `;
+                } else {
+                    seccioHTML.innerHTML = `<h1>${pagina.titol}</h1>`;
                 }
-            } else if (pagina.tipus === 'formulari') {
-                seccioHTML.innerHTML += `
-                    <p class="introduccio-seccio" style="text-align:center; margin:0 auto 2rem auto;">Tens una idea o un espai que t'agradaria encapsular en fusta? Connectem.</p>
-                    <form class="formulari-net" onsubmit="event.preventDefault(); alert('Gràcies per connectar! Aviat rebràs resposta de Mínim Món.');">
-                        <div class="grup-formulari">
-                            <label>El teu nom</label>
-                            <input type="text" required placeholder="Ex. Jordi">
-                        </div>
-                        <div class="grup-formulari">
-                            <label>Correu electrònic</label>
-                            <input type="email" required placeholder="nom@correu.com">
-                        </div>
-                        <div class="grup-formulari">
-                            <label>Quina història vols explicar?</label>
-                            <textarea rows="5" required placeholder="Explica'm breument la teva idea..."></textarea>
-                        </div>
-                        <button type="submit" class="boto-accio" style="width: 100%;">Enviar Proposta</button>
-                    </form>
-                `;
-            }
+                
+                // 2. CONTINGUT ESPECÍFIC DE CADA SECCIÓ
+                const elementsSeccio = dadesWeb.continguts.filter(item => item.seccio === pagina.id);
+
+                if (pagina.tipus === 'galeria_filtrada' || pagina.tipus === 'home') {
+                    if (elementsSeccio.length > 0) {
+                        const graella = document.createElement('div');
+                        graella.className = 'galeria-graella';
+                        elementsSeccio.forEach(item => graella.appendChild(crearTargetaElement(item)));
+                        seccioHTML.appendChild(graella);
+                    }
+                } else if (pagina.tipus === 'formulari') {
+                    seccioHTML.innerHTML += `
+                        <p style="text-align:center; margin:0 auto 2rem auto; color: var(--color-suau);">Tens una idea o un espai que t'agradaria encapsular en fusta? Connectem.</p>
+                        <form class="formulari-net" onsubmit="event.preventDefault(); alert('Gràcies per connectar! Aviat rebràs resposta de Mínim Món.');">
+                            <div class="grup-formulari">
+                                <label>El teu nom</label>
+                                <input type="text" required placeholder="Ex. Jordi">
+                            </div>
+                            <div class="grup-formulari">
+                                <label>Correu electrònic</label>
+                                <input type="email" required placeholder="nom@correu.com">
+                            </div>
+                            <div class="grup-formulari">
+                                <label>Quina història vols explicar?</label>
+                                <textarea rows="5" required placeholder="Explica'm breument la teva idea..."></textarea>
+                            </div>
+                            <button type="submit" class="boto-accio" style="width: 100%;">Enviar Proposta</button>
+                        </form>
+                    `;
+                }
+                
+                contenidorPrincipal.appendChild(seccioHTML);
+            });
+        }
+
+        // Targeta individual per a galeries
+        function crearTargetaElement(item) {
+            const card = document.createElement('div');
+            card.className = 'targeta-element';
             
-            contenidorPrincipal.appendChild(seccioHTML);
-        });
-    }
+            const urlImatge = item.imatgeId ? `https://drive.google.com/thumbnail?sz=w800&id=${item.imatgeId}` : 'https://via.placeholder.com/300x200';
 
-    
-    // Constructor dinàmic de targetes de producte (amb neteja de la URL de Google Drive)
-    function crearTargetaElement(item) {
-        const targeta = document.createElement('div');
-        targeta.className = 'targeta-element';
-        
-        // Conversió neta de l'ID de Google Drive a URL renderitzable directa
-        const urlImatge = item.imatgeDriveId ? 
-            `https://drive.google.com/uc?export=view&id=${item.imatgeDriveId}` : 
-            'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23340094"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%23AC80FF">Mínim Món</text></svg>';
+            card.innerHTML = `
+                <img src="${urlImatge}" alt="${item.titol}">
+                <h3 style="color: var(--color-clar); font-size: 1.1rem; margin-bottom: 0.5rem;">${item.titol}</h3>
+                <p style="color: var(--color-suau); font-size: 0.85rem;">${item.descripcio || ''}</p>
+            `;
+            return card;
+        }
 
-        // Determinació de l'acció al botó
-        let textBoto = "Saber-ne més";
-        let funcioClick = `canviarSeccio('connecta')`; // Per defecte obre el formulari de personalització
-        
-        if(item.accioUrl) {
-            if(item.accioUrl.startsWith('#')) {
-                funcioClick = `canviarSeccio('${item.accioUrl.replace('#','')}')`;
-            } else {
-                funcioClick = `window.open('${item.accioUrl}', '_blank')`;
-                textBoto = "Veure Detalls";
+        // Funció auxiliar de pes de font
+        function obtenirFontWeight(textGruix) {
+            if (!textGruix) return '400';
+            const t = textGruix.toString().toLowerCase();
+            if (t.includes('bold') || t.includes('negreta')) return '700';
+            if (t.includes('medium') || t.includes('mitjana')) return '500';
+            if (t.includes('light') || t.includes('fina')) return '300';
+            return '400';
+        }
+
+        // Canviar de seccio (Navegació)
+        function canviarSeccio(idSeccio) {
+            document.querySelectorAll('.seccio-web').forEach(s => s.classList.remove('activa'));
+            const seccioDesti = document.getElementById(`pantalla-${idSeccio}`);
+            if (seccioDesti) {
+                seccioDesti.classList.add('activa');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         }
 
-        targeta.innerHTML = `
-            <div class="imatge-contenidor">
-                <img src="${urlImatge}" alt="${item.titol}" loading="lazy">
-            </div>
-            <div class="contingut-cos">
-                <h3>${item.titol}</h3>
-                <p>${item.descripcio}</p>
-                <button class="boto-accio" onclick="${funcioClick}">${textBoto}</button>
-            </div>
-        `;
-        return targeta;
-    }
-
-    // Gestor de Navegació SPA Fluïda
-    function canviarSeccio(idSeccio) {
-        // 1. Ocultar totes les pantalles i treure estats actius del menú
-        document.querySelectorAll('.seccio-web').forEach(s => s.classList.remove('activa'));
-        document.querySelectorAll('nav a').forEach(b => b.classList.remove('actiu'));
-        
-        // 2. Activar elements escollits
-        const pantallaEscollida = document.getElementById(`pantalla-${idSeccio}`);
-        if(pantallaEscollida) {
-            pantallaEscollida.classList.add('activa');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+        function activarSeccioInicial() {
+            if (dadesWeb.estructura.length > 0) {
+                canviarSeccio(dadesWeb.estructura[0].id);
+            }
         }
-        
-        const botoMenu = document.getElementById(`nav-bto-${idSeccio}`);
-        if(botoMenu) botoMenu.classList.add('actiu');
-    }
-
-    // Execució automàtica en muntar la finestra al navegador
-    window.onload = inicialitzarAplicacio;
-</script>
+    </script>
 </body>
 </html>
