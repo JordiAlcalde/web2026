@@ -8,12 +8,14 @@
 </head>
 <body>
 
-    <!-- BARRA DE NAVEGACIÓ GENERADA DINÀMICAMENT -->
+    <!-- BARRA DE NAVEGACIÓ SUPERIOR AMB LOGO INTEGRAT -->
     <header class="nav-principal">
         <div class="nav-contenidor">
-            <a href="#" class="logo-text" onclick="activarSeccioInicial(); return false;">MÍNIM MÓN</a>
+            <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
+                <img id="logo-img" src="logo_mm_600.jpg" alt="Mínim Món Logo" class="logo-imatge">
+            </a>
             <ul id="menu-navegacio" class="menu-links">
-                <!-- Els botons es construeixen des de la pestanya Estructura -->
+                <!-- Es construeix dinàmicament des de Google Sheets -->
             </ul>
         </div>
     </header>
@@ -48,6 +50,7 @@
                 dadesWeb.estructura = parsejarCSVEstructura(csvEstructura);
                 dadesWeb.continguts = parsejarCSVContinguts(csvContinguts);
 
+                actualitzarLogo();
                 construirMenuNavegacio();
                 construirPantallesWeb();
                 activarSeccioInicial();
@@ -55,7 +58,19 @@
             .catch(error => console.error("Error carregant les dades de Mínim Món des dels CSVs:", error));
         }
 
-        // Parsejador de CSV
+        // Enllaçar el logo llegint la clau "logo" de la pestanya CONFIG
+        function actualitzarLogo() {
+            const logoId = dadesWeb.config['logo'] || dadesWeb.config['logo_id'];
+            const imgElement = document.getElementById('logo-img');
+            
+            if (logoId && imgElement) {
+                imgElement.src = `https://drive.google.com/thumbnail?sz=w600&id=${logoId.trim()}`;
+            } else if (imgElement) {
+                imgElement.src = 'logo_mm_600.jpg';
+            }
+        }
+
+        // Parsejador robust de CSV per gestionar cometes i salts de línia
         function parseCSV(text) {
             let p = '', c = '', r = [];
             let q = false;
@@ -94,19 +109,22 @@
         function parsejarCSVEstructura(csvText) {
             const files = parseCSV(csvText);
             return files.slice(1).map(fila => {
+                const titolPàgina = (fila[1] || '').trim();
+                const heroTitolCSV = (fila[5] || '').trim();
+
                 return {
                     id: (fila[0] || '').trim(),
-                    titol: (fila[1] || '').trim(),
+                    titol: titolPàgina,
                     ordre: parseInt(fila[2]) || 99,
                     visible: fila[3] ? fila[3].toUpperCase().trim() === 'TRUE' : true,
                     tipus: (fila[4] || 'galeria_filtrada').trim(),
-                    heroTitol: (fila[5] || '').replace(/\n/g, '<br>'),
-                    heroText: (fila[6] || '').replace(/\n/g, '<br>'),
-                    heroDestacat: (fila[7] || '').replace(/\n/g, '<br>'),
+                    heroTitol: heroTitolCSV !== '' ? heroTitolCSV.replace(/\n/g, '<br>') : titolPàgina,
+                    heroText: (fila[6] || '').trim().replace(/\n/g, '<br>'),
+                    heroDestacat: (fila[7] || '').trim().replace(/\n/g, '<br>'),
                     heroImatge: (fila[8] || '').trim(), 
-                    heroAmple: fila[10] && fila[10].trim() !== '' ? `${parseInt(fila[10])}px` : '100%',
-                    heroAlign: fila[11] ? fila[11].toLowerCase().trim() : 'center',
-                    heroFontColor: (fila[12] || '#FFFFFF').trim(),
+                    heroAmple: fila[10] && fila[10].trim() !== '' ? `${parseInt(fila[10])}px` : '450px',
+                    heroAlign: fila[11] ? fila[11].toLowerCase().trim() : 'left',
+                    heroFontColor: (fila[12] || '#E3D4FF').trim(),
                     heroLeftSpan: fila[13] && fila[13].trim() !== '' ? `${parseInt(fila[13])}%` : '0%'
                 };
             }).sort((a, b) => a.ordre - b.ordre);
@@ -127,7 +145,6 @@
             });
         }
 
-        // Construir el menú de navegació superior
         function construirMenuNavegacio() {
             const menuUL = document.getElementById('menu-navegacio');
             menuUL.innerHTML = '';
@@ -144,10 +161,10 @@
             const contenidorPrincipal = document.getElementById('seccions-contenidor');
             contenidorPrincipal.innerHTML = '';
             
-            const titolMida = dadesWeb.config['font_hero_titol_mida'] ? `${dadesWeb.config['font_hero_titol_mida']}px` : '36px';
+            const titolMida = dadesWeb.config['font_hero_titol_mida'] ? `${dadesWeb.config['font_hero_titol_mida']}px` : '32px';
             const titolWeight = obtenirFontWeight(dadesWeb.config['font_hero_titol_gruix']);
             
-            const textMida = dadesWeb.config['font_hero_text_mida'] ? `${dadesWeb.config['font_hero_text_mida']}px` : '14px';
+            const textMida = dadesWeb.config['font_hero_text_mida'] ? `${dadesWeb.config['font_hero_text_mida']}px` : '15px';
             const textWeight = obtenirFontWeight(dadesWeb.config['font_hero_text_gruix']);
             
             const destacatMida = dadesWeb.config['font_hero_destacat_mida'] ? `${dadesWeb.config['font_hero_destacat_mida']}px` : '14px';
@@ -169,12 +186,13 @@
                                 <div class="hero-caixa-contingut" style="
                                     max-width: ${pagina.heroAmple}; 
                                     margin-left: ${pagina.heroLeftSpan}; 
-                                    text-align: ${pagina.heroAlign}; 
-                                    color: ${pagina.heroFontColor};">
+                                    text-align: ${pagina.heroAlign};">
                                     
-                                    <h2 style="font-size: ${titolMida}; font-weight: ${titolWeight}; color: ${pagina.heroFontColor};">${pagina.heroTitol || pagina.titol}</h2>
-                                    <p style="font-size: ${textMida}; font-weight: ${textWeight}; color: ${pagina.heroFontColor}; margin-top: 1rem;">${pagina.heroText}</p>
-                                    ${pagina.heroDestacat ? `<p class="destacat-hero" style="font-size: ${destacatMida}; font-weight: ${destacatWeight}; color: ${pagina.heroFontColor}; margin-top: 1.5rem;">${pagina.heroDestacat}</p>` : ''}
+                                    <h2 style="font-size: ${titolMida}; font-weight: ${titolWeight}; color: ${pagina.heroFontColor};">${pagina.heroTitol}</h2>
+                                    
+                                    ${pagina.heroText ? `<p style="font-size: ${textMida}; font-weight: ${textWeight}; color: ${pagina.heroFontColor}; margin-top: 1rem;">${pagina.heroText}</p>` : ''}
+                                    
+                                    ${pagina.heroDestacat ? `<p class="destacat-hero" style="font-size: ${destacatMida}; font-weight: ${destacatWeight}; color: var(--color-accent); margin-top: 1.2rem;">${pagina.heroDestacat}</p>` : ''}
                                 
                                 </div>
                             </div>
