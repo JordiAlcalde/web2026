@@ -148,14 +148,16 @@
         function parsejarCSVContinguts(csvText) {
             const files = parseCSV(csvText);
             return files.slice(1).map(fila => ({
-                id: (fila[0] || '').trim(),
-                seccio: (fila[1] || '').trim(),
-                titol: (fila[2] || '').trim(),
-                descripcio: (fila[3] || '').trim(),
-                imatgeId: (fila[4] || '').trim(),
-                destacat: fila[5] ? fila[5].toUpperCase().trim() === 'TRUE' : false,
-                tipusComponent: (fila[6] || '').trim()
-            }));
+                id: (fila[0] || '').trim(),               // Columna A (ID)
+                seccio: (fila[1] || '').trim(),           // Columna B (Seccio)
+                titol: (fila[2] || '').trim(),            // Columna C (Titol)
+                descripcio: (fila[3] || '').trim(),       // Columna D (Descripcio)
+                imatgeId: (fila[4] || '').trim(),         // Columna E (IDImatge)
+                // La columna F (fila[5]) correspon a "Link sencer" i s'omet intencionadament
+                destacat: fila[6] ? fila[6].toUpperCase().trim() === 'TRUE' : false, // Columna G
+                tipusComponent: (fila[7] || '').trim(),   // Columna H (TipusComponent)
+                situacioImatge: (fila[8] || 'Esquerra').trim() // Columna I (SituacioImatge)
+            })).filter(item => item.id !== '');
         }
 
         function construirMenuNavegacio() {
@@ -289,6 +291,33 @@
             if (menu) menu.classList.remove('obert'); // Tanca el menú mòbil
             canviarSeccioOriginal(idSeccio);
         };
+
+
+        function crearBlocImatgeText(item) {
+            const bloc = document.createElement('div');
+            bloc.className = 'bloc-imatge-text';
+            
+            // Si a la columna I posa 'Dreta', invertim l'ordre visual
+            if (item.situacioImatge && item.situacioImatge.toLowerCase() === 'dreta') {
+                bloc.classList.add('orientacio-dreta');
+            }
+        
+            // Agafem directament IDImatge (Columna E)
+            const urlImatge = item.imatgeId && item.imatgeId !== '#N/A' && item.imatgeId.trim() !== ''
+                ? `https://drive.google.com/thumbnail?sz=w800&id=${item.imatgeId.trim()}` 
+                : 'logo_mm_600.jpg';
+        
+            bloc.innerHTML = `
+                <div class="caixa-imatge">
+                    <img src="${urlImatge}" alt="${item.titol || 'Mínim Món'}">
+                </div>
+                <div class="caixa-text">
+                    ${item.titol ? `<h2>${item.titol}</h2>` : ''}
+                    ${item.descripcio ? `<p>${item.descripcio.replace(/\n/g, '<br>')}</p>` : ''}
+                </div>
+            `;
+            return bloc;
+        }
         
     </script>
 </body>
