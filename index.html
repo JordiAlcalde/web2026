@@ -99,7 +99,7 @@
             return config;
         }
 
-         function parsejarCSVEstructura(csvText) {
+        function parsejarCSVEstructura(csvText) {
             const files = parseCSV(csvText);
             return files.slice(1).map(fila => {
                 const titolPagina = (fila[1] || '').trim();
@@ -107,12 +107,13 @@
                 const rawHeroText = (fila[6] || '').trim();
                 const rawHeroDestacat = (fila[7] || '').trim();
         
+                // Interpretació directa en píxels sense restricció de llindar
                 let valSpan = (fila[13] || '').trim();
                 let leftSpanCss = '0px';
                 if (valSpan !== '') {
                     let numSpan = parseInt(valSpan);
                     if (!isNaN(numSpan)) {
-                        leftSpanCss = numSpan > 100 ? `${numSpan}px` : `${numSpan}%`;
+                        leftSpanCss = `${numSpan}px`;
                     }
                 }
         
@@ -122,29 +123,16 @@
                     ordre: parseInt(fila[2]) || 99,
                     visible: fila[3] ? fila[3].toUpperCase().trim() === 'TRUE' : true,
                     tipus: (fila[4] || 'galeria_filtrada').trim(),
-                    // Manté exactament els salts originals
                     heroTitol: rawHeroTitol !== '' ? rawHeroTitol.replace(/\n/g, '<br>') : titolPagina,
-                    heroText: rawHeroText.replace(/\n/g, '<br>'), 
+                    heroText: rawHeroText.replace(/\n/g, '<br>'),
                     heroDestacat: rawHeroDestacat.replace(/\n/g, '<br>'),
                     heroImatge: (fila[8] || '').trim(), 
                     heroAmple: fila[10] && fila[10].trim() !== '' ? `${parseInt(fila[10])}px` : '550px',
                     heroAlign: fila[11] ? fila[11].toLowerCase().trim() : 'left',
-                    heroFontColor: (fila[12] || '#E3D4FF').trim(), // Color d'aplicació unificada
+                    heroFontColor: (fila[12] || '#E3D4FF').trim(),
                     heroLeftSpan: leftSpanCss
                 };
             }).sort((a, b) => a.ordre - b.ordre);
-        }
-        function parsejarCSVContinguts(csvText) {
-            const files = parseCSV(csvText);
-            return files.slice(1).map(fila => ({
-                id: (fila[0] || '').trim(),
-                seccio: (fila[1] || '').trim(),
-                titol: (fila[2] || '').trim(),
-                descripcio: (fila[3] || '').trim(),
-                imatgeId: (fila[4] || '').trim(),
-                destacat: fila[5] ? fila[5].toUpperCase().trim() === 'TRUE' : false,
-                tipusComponent: (fila[6] || '').trim()
-            }));
         }
 
         function construirMenuNavegacio() {
