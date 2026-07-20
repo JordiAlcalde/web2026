@@ -107,13 +107,14 @@
                 const rawHeroText = (fila[6] || '').trim();
                 const rawHeroDestacat = (fila[7] || '').trim();
         
-                // Interpretació directa en píxels sense restricció de llindar
+                // Control segur de la columna HeroLeftSpan (N)
                 let valSpan = (fila[13] || '').trim();
                 let leftSpanCss = '0px';
                 if (valSpan !== '') {
                     let numSpan = parseInt(valSpan);
                     if (!isNaN(numSpan)) {
-                        leftSpanCss = `${numSpan}px`;
+                        // Si el valor és menor o igual a 100 s'interpreta com a percentatge de seguretat, si no en px
+                        leftSpanCss = numSpan > 0 ? `${numSpan}px` : '0px';
                     }
                 }
         
@@ -129,10 +130,10 @@
                     heroImatge: (fila[8] || '').trim(), 
                     heroAmple: fila[10] && fila[10].trim() !== '' ? `${parseInt(fila[10])}px` : '550px',
                     heroAlign: fila[11] ? fila[11].toLowerCase().trim() : 'left',
-                    heroFontColor: (fila[12] || '#E3D4FF').trim(),
+                    heroFontColor: (fila[12] && fila[12].trim() !== '') ? fila[12].trim() : '#E3D4FF',
                     heroLeftSpan: leftSpanCss
                 };
-            }).sort((a, b) => a.ordre - b.ordre);
+            }).filter(p => p.id !== '').sort((a, b) => a.ordre - b.ordre);
         }
 
         function construirMenuNavegacio() {
