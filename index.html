@@ -10,12 +10,16 @@
 <body>
 
     <main id="seccions-contenidor">
-        <!-- El contingut es genera dinàmicament des de Google Sheets -->
+        <!-- El contingut es genera dinàmicament des de Google Sheets CSV -->
     </main>
 
     <script>
-        // Lloc de les dades de Google Sheets (Appscript / API endpoint)
-        const URL_DADES = 'AQUÍ_LA_TEVA_URL_DE_APPS_SCRIPT';
+        // ═══════════════════════════════════════════════════════════════════
+        // ⚠️ CONFIGURACIÓ: Les teves 3 URLs del full publicat com a CSV
+        // ═══════════════════════════════════════════════════════════════════
+        const URL_CSV_CONFIG      = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=0&single=true&output=csv";
+        const URL_CSV_ESTRUCTURA  = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=888628017&single=true&output=csv";
+        const URL_CSV_CONTINGUTS  = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=819396845&single=true&output=csv";
 
         let dadesWeb = {
             config: {},
@@ -23,52 +27,112 @@
             continguts: []
         };
 
-        // Carregar dades inicials
+        // Carregar dades inicials des dels 3 CSVs
         document.addEventListener('DOMContentLoaded', () => {
             carregarDadesPàgina();
         });
 
         function carregarDadesPàgina() {
-            fetch(URL_DADES)
-                .then(resposta => resposta.json())
-                .then(dades => {
-                    dadesWeb.config = dades.config || {};
-                    dadesWeb.estructura = parsejarEstructura(dades.estructura || []);
-                    dadesWeb.continguts = dades.continguts || [];
+            Promise.all([
+                fetch(URL_CSV_CONFIG).then(r => r.text()),
+                fetch(URL_CSV_ESTRUCTURA).then(r => r.text()),
+                fetch(URL_CSV_CONTINGUTS).then(r => r.text())
+            ])
+            .then(([csvConfig, csvEstructura, csvContinguts]) => {
+                dadesWeb.config = parsejarCSVConfig(csvConfig);
+                dadesWeb.estructura = parsejarCSVEstructura(csvEstructura);
+                dadesWeb.continguts = parsejarCSVContinguts(csvContinguts);
 
-                    construirPantallesWeb();
-                    activarSeccioInicial();
-                })
-                .catch(error => console.error("Error carregant les dades de Mínim Món:", error));
+                construirPantallesWeb();
+                activarSeccioInicial();
+            })
+            .catch(error => console.error("Error carregant les dades de Mínim Món des dels CSVs:", error));
         }
 
-        // Parsejar la pestanya Estructura fins a la Columna N (HeroLeftSpan)
-        function parsejarEstructura(files) {
+        // --- PARSEJADORS DE CSV ROBUSTS ---
+        
+        // Funció genèrica per dividir matrius de text CSV respectant cometes i salts de línia
+        function parseCSV(text) {
+            let p = '', c = '', r = [];
+            let q = false;
+            let row = [''];
+            for (let i = 0; i < text.length; i++) {
+                c = text[i];
+                p = text[i - 1];
+                if (c === '"') {
+                    if (q && text[i + 1] === '"') { row[row.length - 1] += '"'; i++; }
+                    else { q = !q; }
+                } else if (c === ',' && !q) {
+                    row.push('');
+                } else if ((c === '\r' || c === '\n') && !q) {
+                    if (c === '\r' && text[i + 1] === '\n') { i++; }
+                    r.push(row);
+                    row = [''];
+                } else {
+                    row[row.length - 1] += c;
+                }
+            }
+            if (row.length > 1 || row[0] !== '') { r.push(row); }
+            return r;
+        }
+
+        // Parsejar la pestanya Config (Clau, Valor)
+        function parsejarCSVConfig(csvText) {
+            const files = parseCSV(csvText);
+            const config = {};
+            files.slice(1).forEach(fila => {
+                if (fila[0] && fila[1]) {
+                    config[fila[0].trim()] = fila[1].trim();
+                }
+            });
+            return config;
+        }
+
+        // Parsejar la pestanya Estructura fins a les noves columnes (HeroAmple, HeroAlign, HeroFontColor, HeroLeftSpan)
+        function parsejarCSVEstructura(csvText) {
+            const files = parseCSV(csvText);
             return files.slice(1).map(fila => {
                 return {
-                    id: fila[0],
-                    titol: fila[1],
+                    id: (fila[0] || '').trim(),
+                    titol: (fila[1] || '').trim(),
                     ordre: parseInt(fila[2]) || 99,
-                    visible: fila[3] ? fila[3].toUpperCase() === 'TRUE' : true,
-                    tipus: fila[4] || 'galeria_filtrada',
+                    visible: fila[3] ? fila[3].toUpperCase().trim() === 'TRUE' : true,
+                    tipus: (fila[4] || 'galeria_filtrada').trim(),
                     heroTitol: (fila[5] || '').replace(/\n/g, '<br>'),
                     heroText: (fila[6] || '').replace(/\n/g, '<br>'),
                     heroDestacat: (fila[7] || '').replace(/\n/g, '<br>'),
-                    heroImatge: fila[8] || '', 
-                    heroAmple: fila[10] ? `${parseInt(fila[10])}px` : '100%', // Columna K
-                    heroAlign: fila[11] ? fila[11].toLowerCase() : 'center',  // Columna L
-                    heroFontColor: fila[12] || '#FFFFFF',                    // Columna M
-                    heroLeftSpan: fila[13] ? `${parseInt(fila[13])}%` : '0%'  // Columna N
+                    heroImatge: (fila[8] || '').trim(), 
+                    heroAmple: fila[10] && fila[10].trim() !== '' ? `${parseInt(fila[10])}px` : '100%', // Columna K
+                    heroAlign: fila[11] ? fila[11].toLowerCase().trim() : 'center',                      // Columna L
+                    heroFontColor: (fila[12] || '#FFFFFF').trim(),                                       // Columna M
+                    heroLeftSpan: fila[13] && fila[13].trim() !== '' ? `${parseInt(fila[13])}%` : '0%'   // Columna N
                 };
             }).sort((a, b) => a.ordre - b.ordre);
         }
 
-        // Construeix l'esquelet HTML de la web
+        // Parsejar la pestanya Continguts
+        function parsejarCSVContinguts(csvText) {
+            const files = parseCSV(csvText);
+            return files.slice(1).map(fila => {
+                return {
+                    id: (fila[0] || '').trim(),
+                    seccio: (fila[1] || '').trim(),
+                    titol: (fila[2] || '').trim(),
+                    descripcio: (fila[3] || '').trim(),
+                    imatgeId: (fila[4] || '').trim(),
+                    destacat: fila[5] ? fila[5].toUpperCase().trim() === 'TRUE' : false,
+                    tipusComponent: (fila[6] || '').trim()
+                };
+            });
+        }
+
+        // --- RENDERITZACIÓ DE LA INTERFÍCIE ---
+
         function construirPantallesWeb() {
             const contenidorPrincipal = document.getElementById('seccions-contenidor');
             contenidorPrincipal.innerHTML = '';
             
-            // Mides i gruixos de font des de Config
+            // Mides i gruixos de font des de la pestanya Config
             const titolMida = dadesWeb.config['font_hero_titol_mida'] ? `${dadesWeb.config['font_hero_titol_mida']}px` : '36px';
             const titolWeight = obtenirFontWeight(dadesWeb.config['font_hero_titol_gruix']);
             
@@ -85,7 +149,7 @@
                 seccioHTML.id = `pantalla-${pagina.id}`;
                 seccioHTML.className = 'seccio-web';
                 
-                // 1. DISSENY HERO AMB ELS PARÀMETRES DE LES COLUMNES K, L, M, N
+                // 1. BANNER HERO AMB PARÀMETRES PERSONALITZATS
                 if (pagina.heroImatge) {
                     const urlHeroImatge = `https://drive.google.com/thumbnail?sz=w1600&id=${pagina.heroImatge}`;
 
@@ -110,7 +174,7 @@
                     seccioHTML.innerHTML = `<h1>${pagina.titol}</h1>`;
                 }
                 
-                // 2. CONTINGUT ESPECÍFIC DE CADA SECCIÓ
+                // 2. CONTINGUTS DE LA SECCIÓ
                 const elementsSeccio = dadesWeb.continguts.filter(item => item.seccio === pagina.id);
 
                 if (pagina.tipus === 'galeria_filtrada' || pagina.tipus === 'home') {
@@ -145,7 +209,6 @@
             });
         }
 
-        // Targeta individual per a galeries
         function crearTargetaElement(item) {
             const card = document.createElement('div');
             card.className = 'targeta-element';
@@ -160,7 +223,6 @@
             return card;
         }
 
-        // Funció auxiliar de pes de font
         function obtenirFontWeight(textGruix) {
             if (!textGruix) return '400';
             const t = textGruix.toString().toLowerCase();
@@ -170,7 +232,6 @@
             return '400';
         }
 
-        // Canviar de seccio (Navegació)
         function canviarSeccio(idSeccio) {
             document.querySelectorAll('.seccio-web').forEach(s => s.classList.remove('activa'));
             const seccioDesti = document.getElementById(`pantalla-${idSeccio}`);
