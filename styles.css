@@ -1,5 +1,5 @@
 /* ==========================================================================
-   MÍNIM MÓN - ESTILS GLOBALS I RESPONSIUS
+   MÍNIM MÓN - ESTILS GLOBALS CORREGITS
    ========================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
@@ -30,6 +30,51 @@ body {
     overflow-x: hidden;
 }
 
+/* --- BARRA DE NAVEGACIÓ SUPERIOR --- */
+.nav-principal {
+    background-color: var(--color-primari);
+    border-bottom: 2px solid var(--color-vivid);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    padding: 0.8rem 1.5rem;
+}
+
+.nav-contenidor {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo-text {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--color-clar);
+    text-decoration: none;
+    letter-spacing: 1px;
+}
+
+.menu-links {
+    display: flex;
+    gap: 1.5rem;
+    list-style: none;
+}
+
+.menu-links a {
+    color: var(--color-suau);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: color 0.2s ease;
+}
+
+.menu-links a:hover,
+.menu-links a.actiud {
+    color: var(--color-accent);
+}
+
 /* --- CONTENIDOR PRINCIPAL --- */
 #seccions-contenidor {
     width: 100%;
@@ -39,7 +84,7 @@ body {
 }
 
 .seccio-web {
-    display: none; /* Es gestiona per JS segons la navegació */
+    display: none;
 }
 
 .seccio-web.activa {
@@ -54,7 +99,7 @@ h1 {
     text-align: center;
 }
 
-/* --- BANNER HERO D'AMPLADA COMPLETA --- */
+/* --- BANNER HERO (SENSE FLEXBOX COMPRESSIU) --- */
 .hero-pagina {
     position: relative;
     width: 100vw;
@@ -75,13 +120,17 @@ h1 {
     margin: 0 auto;
     padding: 0 1.5rem;
     width: 100%;
+    box-sizing: border-box;
 }
 
+/* Caixa de text fluïda amb ample mínim de seguretat */
 .hero-caixa-contingut {
-    display: flex;
-    flex-direction: column;
+    display: block;
+    width: 100%;
+    min-width: 280px; /* Garanteix que mai es col·lapsi en vertical */
     box-sizing: border-box;
-    transition: all 0.3s ease;
+    white-space: normal;
+    word-break: normal;
 }
 
 .hero-caixa-contingut h2,
@@ -167,8 +216,13 @@ h1 {
     color: var(--color-fons-fosc);
 }
 
-/* --- RESPONSIVITAT PER A MÒBILS I TABLETS --- */
+/* --- RESPONSIVITAT EN MÒBILS --- */
 @media (max-width: 768px) {
+    .menu-links {
+        gap: 0.8rem;
+        font-size: 0.85rem;
+    }
+    
     .hero-caixa-contingut {
         margin-left: 0 !important;
         max-width: 100% !important;
