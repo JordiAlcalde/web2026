@@ -103,7 +103,10 @@ body {
     display: block;
 }
 
-/* --- BANNER HERO --- */
+/* ==========================================================================
+   MÍNIM MÓN - ESTILS HERO OPTIMITZATS
+   ========================================================================== */
+
 .hero-pagina {
     position: relative;
     width: 100vw;
@@ -133,13 +136,27 @@ body {
     color: var(--color-clar);
 }
 
+/* --- HERÈNCIA I UNIFICACIÓ DE COLOR HERO --- */
+.hero-caixa-contingut h2,
+.hero-cos-text,
+.destacat-hero {
+    color: inherit; /* Respecta estrictament el color definit a la columna M (HeroFontColor) */
+    font-family: 'Montserrat', sans-serif;
+}
+
+.hero-cos-text {
+    line-height: 1.5;
+}
+
+/* Gestió d'espaiats per respectar exactament els salts originals del Sheets */
 .hero-cos-text p {
-    margin-bottom: 0.8rem;
+    margin-bottom: 0;
 }
 
 .destacat-hero {
     font-weight: 600;
 }
+
 
 /* --- GRAELLA I TARGETES --- */
 .galeria-graella {
