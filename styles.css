@@ -141,8 +141,8 @@ body {
 .hero-caixa-contingut h2,
 .hero-cos-text,
 .destacat-hero {
-    color: inherit; /* Respecta estrictament el color definit a la columna M (HeroFontColor) */
-    font-family: 'Montserrat', sans-serif;
+    color: inherit; /* Respecta el color definit a la columna M del Sheets */
+    font-family: var(--font-principal);
 }
 
 .hero-cos-text {
@@ -157,7 +157,6 @@ body {
 .destacat-hero {
     font-weight: 600;
 }
-
 
 /* --- GRAELLA I TARGETES --- */
 .galeria-graella {
@@ -196,7 +195,7 @@ body {
     }
     
     .hero-caixa-contingut {
-        margin-left: 0 !important;
+        transform: none !important; /* Anul·la el translateX en mòbil per evitar desbordaments */
         max-width: 100% !important;
         text-align: center !important;
     }
