@@ -1,11 +1,10 @@
 /* ==========================================================================
-   MÍNIM MÓN - ESTILS OFICIALS (PALETA & MONTSERRAT)
+   MÍNIM MÓN - ESTILS BASE (MONTSERRAT & PALETA OFICIAL)
    ========================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
 
 :root {
-    /* Paleta Oficial extreta de PaletaColor-MínimMón.jpeg */
     --color-fons-fosc: #24153F;
     --color-primari: #301269;
     --color-vivid: #340094;
@@ -30,7 +29,7 @@ body {
     overflow-x: hidden;
 }
 
-/* --- BARRA DE NAVEGACIÓ SUPERIOR --- */
+/* --- BARRA DE NAVEGACIÓ --- */
 .nav-principal {
     background-color: var(--color-primari);
     border-bottom: 2px solid var(--color-vivid);
@@ -48,32 +47,24 @@ body {
     align-items: center;
 }
 
-
-/* --- MARCA I LOGO --- */
 .logo-link {
     display: flex;
     align-items: center;
-    gap: 0.8rem; /* Espaiat entre el logo i el text */
+    gap: 0.8rem;
     text-decoration: none;
 }
 
 .logo-imatge {
-    height: 38px; /* Mida continguda per no desquadrar la barra */
+    height: 40px;
     width: auto;
     display: block;
     object-fit: contain;
-    border-radius: 3px; /* Acabat net si porta fons blanc */
-}
-
-.logo-imatge:hover {
-    transform: scale(1.03);
 }
 
 .nom-marca {
-    font-family: 'Montserrat', sans-serif;
     font-size: 1.25rem;
     font-weight: 600;
-    color: var(--color-clar); /* #E3D4FF */
+    color: var(--color-clar);
     letter-spacing: 0.5px;
     white-space: nowrap;
 }
@@ -92,8 +83,7 @@ body {
     transition: color 0.2s ease;
 }
 
-.menu-links a:hover,
-.menu-links a.actiu {
+.menu-links a:hover {
     color: var(--color-accent);
 }
 
@@ -113,14 +103,6 @@ body {
     display: block;
 }
 
-h1 {
-    font-size: 2.2rem;
-    font-weight: 600;
-    color: var(--color-clar);
-    margin-bottom: 1.5rem;
-    text-align: center;
-}
-
 /* --- BANNER HERO --- */
 .hero-pagina {
     position: relative;
@@ -132,23 +114,9 @@ h1 {
     padding: 4rem 0;
     background-size: cover;
     background-position: center;
-    /* Fons fosc semitransparent per garantir contrast i lectura del text */
-    box-shadow: inset 0 0 0 2000px rgba(36, 21, 63, 0.75); 
+    box-shadow: inset 0 0 0 2000px rgba(36, 21, 63, 0.72); 
     border-bottom: 2px solid var(--color-accent);
     margin-bottom: 2.5rem;
-}
-
-.hero-caixa-contingut {
-    position: relative;
-    z-index: 10; /* Assegura que el text quedi per sobre de la imatge de fons */
-    color: var(--color-clar) !important;
-}
-
-.hero-caixa-contingut h2,
-.hero-caixa-contingut p {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
 }
 
 .hero-contenedor-flex {
@@ -156,7 +124,17 @@ h1 {
     margin: 0 auto;
     padding: 0 1.5rem;
     width: 100%;
-    box-sizing: border-box;
+}
+
+.hero-caixa-contingut {
+    display: block;
+    position: relative;
+    z-index: 10;
+    color: var(--color-clar);
+}
+
+.hero-cos-text p {
+    margin-bottom: 0.8rem;
 }
 
 .destacat-hero {
@@ -192,56 +170,7 @@ h1 {
     margin-bottom: 1rem;
 }
 
-/* --- FORMULARI DE CONTACTE --- */
-.formulari-net {
-    max-width: 600px;
-    margin: 0 auto;
-    background: rgba(48, 18, 105, 0.5);
-    padding: 2rem;
-    border-radius: 8px;
-    border: 1px solid var(--color-accent);
-}
-
-.grup-formulari {
-    margin-bottom: 1.2rem;
-}
-
-.grup-formulari label {
-    display: block;
-    margin-bottom: 0.4rem;
-    font-weight: 500;
-    color: var(--color-suau);
-}
-
-.grup-formulari input,
-.grup-formulari textarea {
-    width: 100%;
-    padding: 0.8rem;
-    border-radius: 4px;
-    border: 1px solid var(--color-accent);
-    background: var(--color-fons-fosc);
-    color: #FFFFFF;
-    font-family: var(--font-principal);
-}
-
-.boto-accio {
-    background-color: var(--color-vivid);
-    color: #FFFFFF;
-    border: 1px solid var(--color-accent);
-    padding: 0.8rem 1.5rem;
-    font-family: var(--font-principal);
-    font-weight: 600;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-.boto-accio:hover {
-    background-color: var(--color-accent);
-    color: var(--color-fons-fosc);
-}
-
-/* --- ADAPTACIÓ DISPOSITIUS MÒBILS --- */
+/* --- ADAPTACIÓ MÒBIL --- */
 @media (max-width: 768px) {
     .menu-links {
         gap: 0.8rem;
