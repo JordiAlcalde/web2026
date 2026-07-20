@@ -11,10 +11,18 @@
     <!-- BARRA DE NAVEGACIÓ SUPERIOR -->
     <header class="nav-principal">
         <div class="nav-contenidor">
+            <!-- Botó Hamburguesa (S'activa només en mòbil) -->
+            <button class="btn-hamburguesa" id="btn-hamburguesa" aria-label="Obrir menú" onclick="toggleMenuMobil()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+    
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_600.jpg" alt="Logo Mínim Món" class="logo-imatge">
                 <span class="nom-marca">Mínim Món</span>
             </a>
+    
             <ul id="menu-navegacio" class="menu-links">
                 <!-- Es construeix des de Google Sheets -->
             </ul>
@@ -268,6 +276,20 @@
                 canviarSeccio(dadesWeb.estructura[0].id);
             }
         }
+
+        function toggleMenuMobil() {
+            const menu = document.getElementById('menu-navegacio');
+            menu.classList.toggle('obert');
+        }
+        
+        // Modifiquem la funció de canviar secció per tancar el menú mòbil automàticament al fer clic
+        const canviarSeccioOriginal = canviarSeccio;
+        canviarSeccio = function(idSeccio) {
+            const menu = document.getElementById('menu-navegacio');
+            if (menu) menu.classList.remove('obert'); // Tanca el menú mòbil
+            canviarSeccioOriginal(idSeccio);
+        };
+        
     </script>
 </body>
 </html>
