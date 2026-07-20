@@ -187,15 +187,61 @@ body {
     margin-bottom: 1rem;
 }
 
-/* --- ADAPTACIÓ MÒBIL --- */
+/* --- BOTÓ HAMBURGUESA (OCULT EN ESCRIPTORI) --- */
+.btn-hamburguesa {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 28px;
+    height: 20px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 1001;
+}
+
+.btn-hamburguesa span {
+    width: 100%;
+    height: 3px;
+    background-color: var(--color-clar);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+/* --- ADAPTACIÓ MÒBIL (MENYS DE 768PX) --- */
 @media (max-width: 768px) {
-    .menu-links {
-        gap: 0.8rem;
-        font-size: 0.85rem;
+    .btn-hamburguesa {
+        display: flex; /* Apareix el botó de 3 línies */
     }
-    
+
+    .nav-contenidor {
+        justify-content: flex-start;
+        gap: 1rem;
+    }
+
+    /* Transformem la llista de links en un desplegable */
+    .menu-links {
+        display: none; /* Amagat per defecte */
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background-color: var(--color-primari);
+        flex-direction: column;
+        padding: 1rem 1.5rem;
+        gap: 1rem;
+        border-bottom: 2px solid var(--color-vivid);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+    }
+
+    /* Classe que s'activa amb JS al fer clic a l'hamburguesa */
+    .menu-links.obert {
+        display: flex;
+    }
+
     .hero-caixa-contingut {
-        transform: none !important; /* Anul·la el translateX en mòbil per evitar desbordaments */
+        transform: none !important;
         max-width: 100% !important;
         text-align: center !important;
     }
