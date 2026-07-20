@@ -164,22 +164,23 @@
             const titolMida = dadesWeb.config['font_hero_titol_mida'] ? `${dadesWeb.config['font_hero_titol_mida']}px` : '32px';
             const titolWeight = obtenirFontWeight(dadesWeb.config['font_hero_titol_gruix']);
             
-            const textMida = dadesWeb.config['font_hero_text_mida'] ? `${dadesWeb.config['font_hero_text_mida']}px` : '15px';
+            const textMida = dadesWeb.config['font_hero_text_mida'] ? `${dadesWeb.config['font_hero_text_mida']}px` : '16px';
             const textWeight = obtenirFontWeight(dadesWeb.config['font_hero_text_gruix']);
             
-            const destacatMida = dadesWeb.config['font_hero_destacat_mida'] ? `${dadesWeb.config['font_hero_destacat_mida']}px` : '14px';
+            const destacatMida = dadesWeb.config['font_hero_destacat_mida'] ? `${dadesWeb.config['font_hero_destacat_mida']}px` : '15px';
             const destacatWeight = obtenirFontWeight(dadesWeb.config['font_hero_destacat_gruix']);
-
+        
             dadesWeb.estructura.forEach(pagina => {
                 if (!pagina.visible) return;
-
+        
                 const seccioHTML = document.createElement('section');
                 seccioHTML.id = `pantalla-${pagina.id}`;
                 seccioHTML.className = 'seccio-web';
                 
                 if (pagina.heroImatge) {
                     const urlHeroImatge = `https://drive.google.com/thumbnail?sz=w1600&id=${pagina.heroImatge}`;
-
+        
+                    // Renderitzat del bloc Hero
                     seccioHTML.innerHTML = `
                         <div class="hero-pagina" style="background-image: url('${urlHeroImatge}');">
                             <div class="hero-contenedor-flex">
@@ -188,11 +189,19 @@
                                     margin-left: ${pagina.heroLeftSpan}; 
                                     text-align: ${pagina.heroAlign};">
                                     
-                                    <h2 style="font-size: ${titolMida}; font-weight: ${titolWeight}; color: ${pagina.heroFontColor};">${pagina.heroTitol}</h2>
+                                    <h2 style="font-size: ${titolMida}; font-weight: ${titolWeight}; color: ${pagina.heroFontColor}; line-height: 1.2;">
+                                        ${pagina.heroTitol || pagina.titol}
+                                    </h2>
                                     
-                                    ${pagina.heroText ? `<p style="font-size: ${textMida}; font-weight: ${textWeight}; color: ${pagina.heroFontColor}; margin-top: 1rem;">${pagina.heroText}</p>` : ''}
+                                    ${pagina.heroText ? `
+                                        <p style="font-size: ${textMida}; font-weight: ${textWeight}; color: ${pagina.heroFontColor}; margin-top: 1rem;">
+                                            ${pagina.heroText}
+                                        </p>` : ''}
                                     
-                                    ${pagina.heroDestacat ? `<p class="destacat-hero" style="font-size: ${destacatMida}; font-weight: ${destacatWeight}; color: var(--color-accent); margin-top: 1.2rem;">${pagina.heroDestacat}</p>` : ''}
+                                    ${pagina.heroDestacat ? `
+                                        <p class="destacat-hero" style="font-size: ${destacatMida}; font-weight: ${destacatWeight}; color: var(--color-accent); margin-top: 1.2rem;">
+                                            ${pagina.heroDestacat}
+                                        </p>` : ''}
                                 
                                 </div>
                             </div>
@@ -202,8 +211,9 @@
                     seccioHTML.innerHTML = `<h1>${pagina.titol}</h1>`;
                 }
                 
+                // Càrrega de targetes i continguts inferiors
                 const elementsSeccio = dadesWeb.continguts.filter(item => item.seccio === pagina.id);
-
+        
                 if (pagina.tipus === 'galeria_filtrada' || pagina.tipus === 'home') {
                     if (elementsSeccio.length > 0) {
                         const graella = document.createElement('div');
@@ -211,25 +221,6 @@
                         elementsSeccio.forEach(item => graella.appendChild(crearTargetaElement(item)));
                         seccioHTML.appendChild(graella);
                     }
-                } else if (pagina.tipus === 'formulari') {
-                    seccioHTML.innerHTML += `
-                        <p style="text-align:center; margin:0 auto 2rem auto; color: var(--color-suau);">Tens una idea o un espai que t'agradaria encapsular en fusta? Connectem.</p>
-                        <form class="formulari-net" onsubmit="event.preventDefault(); alert('Gràcies per connectar! Aviat rebràs resposta de Mínim Món.');">
-                            <div class="grup-formulari">
-                                <label>El teu nom</label>
-                                <input type="text" required placeholder="Ex. Jordi">
-                            </div>
-                            <div class="grup-formulari">
-                                <label>Correu electrònic</label>
-                                <input type="email" required placeholder="nom@correu.com">
-                            </div>
-                            <div class="grup-formulari">
-                                <label>Quina història vols explicar?</label>
-                                <textarea rows="5" required placeholder="Explica'm breument la teva idea..."></textarea>
-                            </div>
-                            <button type="submit" class="boto-accio" style="width: 100%;">Enviar Proposta</button>
-                        </form>
-                    `;
                 }
                 
                 contenidorPrincipal.appendChild(seccioHTML);
