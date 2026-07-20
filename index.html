@@ -115,7 +115,7 @@
             max-width: 800px;
         }
 
-        /* El Bloc Hero / Presentació Exclusiva d'Inici */
+        /* Banner Hero Ajustable */
         .hero-pagina {
             position: relative;
             width: 100vw;
@@ -123,18 +123,27 @@
             right: 50%;
             margin-left: -50vw;
             margin-right: -50vw;
-            padding: 3rem 1.5rem;
+            padding: 3.5rem 2rem;
             background-size: cover;
             background-position: center;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            align-items: center;
-            text-align: center;
-            /* Capa fosca amb el teu fons fosc #24153F al 75% d'opacitat per destacar el text de 12px */
-            box-shadow: inset 0 0 0 2000px rgba(36, 21, 63, 0.75); 
+            box-shadow: inset 0 0 0 2000px rgba(36, 21, 63, 0.70); 
             border-bottom: 2px solid var(--color-accent);
             margin-bottom: 2.5rem;
+        }
+        
+        /* Caixa contenidora interior que respecta HeroAmple i HeroFontColor */
+        .hero-caixa-contingut {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .hero-caixa-contingut h2,
+        .hero-caixa-contingut p {
+            line-height: 1.4;
         }        
 
         /* Targetes de Producte i Elements */
@@ -270,7 +279,7 @@
         <div class="logo-contenidor">
             <!-- El contingut d'aquí dins es controlarà dinàmicament per JavaScript -->
             <span id="logo-espai"></span>
-            <span class="logo-text">MÍNIM MÓN</span>
+            <span class="logo-text">Mínim Món</span>
         </div>
         <nav id="navbar-dinamic">
             <!-- Es munta automàticament des del full Estructura -->
@@ -375,9 +384,9 @@
         if (g.includes('negreta') || g.includes('bold')) return '700';
         if (g.includes('lleuger') || g.includes('light')) return '300';
         return '400';
-    }
+    }    
     
-    // Parsejar el full d'Estructura adaptat a les teves noves columnes (F, G, H, I)
+    // Parsejar el full d'Estructura amb les columnes fins a M (HeroAmple, HeroAlign, HeroFontColor)
     function parsejarEstructura(files) {
         return files.slice(1).map(fila => {
             return {
@@ -386,10 +395,13 @@
                 ordre: parseInt(fila[2]) || 99,
                 visible: fila[3] ? fila[3].toUpperCase() === 'TRUE' : true,
                 tipus: fila[4] || 'galeria_filtrada',
-                heroTitol: (fila[5] || '').replace(/\n/g, '<br>'),     // Manté els salts de línia
-                heroText: (fila[6] || '').replace(/\n/g, '<br>'),      // Manté els salts de línia
-                heroDestacat: (fila[7] || '').replace(/\n/g, '<br>'),  // Manté els salts de línia
-                heroImatge: fila[8] || ''                              // ID neta de la columna I
+                heroTitol: (fila[5] || '').replace(/\n/g, '<br>'),
+                heroText: (fila[6] || '').replace(/\n/g, '<br>'),
+                heroDestacat: (fila[7] || '').replace(/\n/g, '<br>'),
+                heroImatge: fila[8] || '', // ID de la imatge de la columna I
+                heroAmple: fila[10] ? `${parseInt(fila[10])}px` : '100%', // Columna K (ex: 300)
+                heroAlign: fila[11] ? fila[11].toLowerCase() : 'center',  // Columna L (ex: Left / Center / Right)
+                heroFontColor: fila[12] || '#FFFFFF'                     // Columna M (ex: #FFFFFF)
             };
         }).sort((a, b) => a.ordre - b.ordre);
     }
@@ -469,12 +481,11 @@
         });
     }
 
-    // Renderització del Banner Hero amb les mides i gruixos de la pestanya Config
     function construirPantallesWeb() {
         const contenidorPrincipal = document.getElementById('seccions-contenidor');
         contenidorPrincipal.innerHTML = '';
         
-        // Extreure estils globals de la font per a l'Hero des de dadesWeb.config
+        // Extreure estils globals des de dadesWeb.config
         const titolMida = dadesWeb.config['font_hero_titol_mida'] ? `${dadesWeb.config['font_hero_titol_mida']}px` : '36px';
         const titolWeight = obtenirFontWeight(dadesWeb.config['font_hero_titol_gruix']);
         
@@ -489,32 +500,62 @@
             seccioHTML.id = `pantalla-${pagina.id}`;
             seccioHTML.className = 'seccio-web';
             
+            // Renderització del Banner Hero
             if (pagina.heroImatge) {
                 const urlHeroImatge = `https://drive.google.com/thumbnail?sz=w1600&id=${pagina.heroImatge}`;
                 
+                // Mapegem la justificació de la caixa segons l'alineació del text
+                let opcionsAliniament = 'center';
+                if (pagina.heroAlign === 'left') opcionsAliniament = 'flex-start';
+                if (pagina.heroAlign === 'right') opcionsAliniament = 'flex-end';
+    
                 seccioHTML.innerHTML = `
-                    <div class="hero-pagina" style="background-image: url('${urlHeroImatge}');">
-                        <h2 style="font-size: ${titolMida}; font-weight: ${titolWeight};">${pagina.heroTitol || pagina.titol}</h2>
-                        <p style="font-size: ${textMida}; font-weight: ${textWeight}; margin-top: 1rem;">${pagina.heroText}</p>
-                        ${pagina.heroDestacat ? `<p class="destacat-hero" style="font-size: ${destacatMida}; font-weight: ${destacatWeight}; margin-top: 1.5rem; color: var(--color-accent);">${pagina.heroDestacat}</p>` : ''}
+                    <div class="hero-pagina" style="background-image: url('${urlHeroImatge}'); align-items: ${opcionsAliniament}; text-align: ${pagina.heroAlign};">
+                        <div class="hero-caixa-contingut" style="max-width: ${pagina.heroAmple}; color: ${pagina.heroFontColor};">
+                            <h2 style="font-size: ${titolMida}; font-weight: ${titolWeight}; color: ${pagina.heroFontColor};">${pagina.heroTitol || pagina.titol}</h2>
+                            <p style="font-size: ${textMida}; font-weight: ${textWeight}; color: ${pagina.heroFontColor}; margin-top: 1rem;">${pagina.heroText}</p>
+                            ${pagina.heroDestacat ? `<p class="destacat-hero" style="font-size: ${destacatMida}; font-weight: ${destacatWeight}; color: ${pagina.heroFontColor}; margin-top: 1.5rem;">${pagina.heroDestacat}</p>` : ''}
+                        </div>
                     </div>
                 `;
             } else {
                 seccioHTML.innerHTML = `<h1>${pagina.titol}</h1>`;
             }
             
-            // Injecció de la resta de continguts de la pàgina...
+            // Injecció de la resta de continguts de la pàgina
             const elementsSeccio = dadesWeb.continguts.filter(item => item.seccio === pagina.id);
-            if (pagina.tipus === 'galeria_filtrada') {
-                const graella = document.createElement('div');
-                graella.className = 'galeria-graella';
-                elementsSeccio.forEach(item => graella.appendChild(crearTargetaElement(item)));
-                seccioHTML.appendChild(graella);
+    
+            if (pagina.tipus === 'galeria_filtrada' || pagina.tipus === 'home') {
+                if (elementsSeccio.length > 0) {
+                    const graella = document.createElement('div');
+                    graella.className = 'galeria-graella';
+                    elementsSeccio.forEach(item => graella.appendChild(crearTargetaElement(item)));
+                    seccioHTML.appendChild(graella);
+                }
+            } else if (pagina.tipus === 'formulari') {
+                seccioHTML.innerHTML += `
+                    <p class="introduccio-seccio" style="text-align:center; margin:0 auto 2rem auto;">Tens una idea o un espai que t'agradaria encapsular en fusta? Connectem.</p>
+                    <form class="formulari-net" onsubmit="event.preventDefault(); alert('Gràcies per connectar! Aviat rebràs resposta de Mínim Món.');">
+                        <div class="grup-formulari">
+                            <label>El teu nom</label>
+                            <input type="text" required placeholder="Ex. Jordi">
+                        </div>
+                        <div class="grup-formulari">
+                            <label>Correu electrònic</label>
+                            <input type="email" required placeholder="nom@correu.com">
+                        </div>
+                        <div class="grup-formulari">
+                            <label>Quina història vols explicar?</label>
+                            <textarea rows="5" required placeholder="Explica'm breument la teva idea..."></textarea>
+                        </div>
+                        <button type="submit" class="boto-accio" style="width: 100%;">Enviar Proposta</button>
+                    </form>
+                `;
             }
             
             contenidorPrincipal.appendChild(seccioHTML);
         });
-    }    
+    }
 
     
     // Constructor dinàmic de targetes de producte (amb neteja de la URL de Google Drive)
