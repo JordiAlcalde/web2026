@@ -55,11 +55,11 @@ body {
 }
 
 .logo-imatge {
-    height: 48px;
+    height: 45px; /* Alçada màxima controlada per no desquadrar la barra */
     width: auto;
     display: block;
     object-fit: contain;
-    transition: transform 0.2s ease;
+    background-color: transparent;
 }
 
 .logo-imatge:hover {
@@ -120,9 +120,23 @@ h1 {
     padding: 4rem 0;
     background-size: cover;
     background-position: center;
-    box-shadow: inset 0 0 0 2000px rgba(36, 21, 63, 0.65); 
+    /* Fons fosc semitransparent per garantir contrast i lectura del text */
+    box-shadow: inset 0 0 0 2000px rgba(36, 21, 63, 0.75); 
     border-bottom: 2px solid var(--color-accent);
     margin-bottom: 2.5rem;
+}
+
+.hero-caixa-contingut {
+    position: relative;
+    z-index: 10; /* Assegura que el text quedi per sobre de la imatge de fons */
+    color: var(--color-clar) !important;
+}
+
+.hero-caixa-contingut h2,
+.hero-caixa-contingut p {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 .hero-contenedor-flex {
@@ -131,15 +145,6 @@ h1 {
     padding: 0 1.5rem;
     width: 100%;
     box-sizing: border-box;
-}
-
-.hero-caixa-contingut {
-    display: block;
-    width: 100%;
-    min-width: 280px;
-    box-sizing: border-box;
-    white-space: normal;
-    word-break: normal;
 }
 
 .destacat-hero {
