@@ -4,19 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mínim Món | Recreacions Simbòliques i Fusta Làser</title>
-    <!-- CSS Extern -->
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
+    <!-- BARRA DE NAVEGACIÓ GENERADA DINÀMICAMENT -->
+    <header class="nav-principal">
+        <div class="nav-contenidor">
+            <a href="#" class="logo-text" onclick="activarSeccioInicial(); return false;">MÍNIM MÓN</a>
+            <ul id="menu-navegacio" class="menu-links">
+                <!-- Els botons es construeixen des de la pestanya Estructura -->
+            </ul>
+        </div>
+    </header>
 
     <main id="seccions-contenidor">
         <!-- El contingut es genera dinàmicament des de Google Sheets CSV -->
     </main>
 
     <script>
-        // ═══════════════════════════════════════════════════════════════════
-        // ⚠️ CONFIGURACIÓ: Les teves 3 URLs del full publicat com a CSV
-        // ═══════════════════════════════════════════════════════════════════
         const URL_CSV_CONFIG      = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=0&single=true&output=csv";
         const URL_CSV_ESTRUCTURA  = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=888628017&single=true&output=csv";
         const URL_CSV_CONTINGUTS  = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=819396845&single=true&output=csv";
@@ -27,7 +33,6 @@
             continguts: []
         };
 
-        // Carregar dades inicials des dels 3 CSVs
         document.addEventListener('DOMContentLoaded', () => {
             carregarDadesPàgina();
         });
@@ -43,15 +48,14 @@
                 dadesWeb.estructura = parsejarCSVEstructura(csvEstructura);
                 dadesWeb.continguts = parsejarCSVContinguts(csvContinguts);
 
+                construirMenuNavegacio();
                 construirPantallesWeb();
                 activarSeccioInicial();
             })
             .catch(error => console.error("Error carregant les dades de Mínim Món des dels CSVs:", error));
         }
 
-        // --- PARSEJADORS DE CSV ROBUSTS ---
-        
-        // Funció genèrica per dividir matrius de text CSV respectant cometes i salts de línia
+        // Parsejador de CSV
         function parseCSV(text) {
             let p = '', c = '', r = [];
             let q = false;
@@ -76,7 +80,6 @@
             return r;
         }
 
-        // Parsejar la pestanya Config (Clau, Valor)
         function parsejarCSVConfig(csvText) {
             const files = parseCSV(csvText);
             const config = {};
@@ -88,7 +91,6 @@
             return config;
         }
 
-        // Parsejar la pestanya Estructura fins a les noves columnes (HeroAmple, HeroAlign, HeroFontColor, HeroLeftSpan)
         function parsejarCSVEstructura(csvText) {
             const files = parseCSV(csvText);
             return files.slice(1).map(fila => {
@@ -102,15 +104,14 @@
                     heroText: (fila[6] || '').replace(/\n/g, '<br>'),
                     heroDestacat: (fila[7] || '').replace(/\n/g, '<br>'),
                     heroImatge: (fila[8] || '').trim(), 
-                    heroAmple: fila[10] && fila[10].trim() !== '' ? `${parseInt(fila[10])}px` : '100%', // Columna K
-                    heroAlign: fila[11] ? fila[11].toLowerCase().trim() : 'center',                      // Columna L
-                    heroFontColor: (fila[12] || '#FFFFFF').trim(),                                       // Columna M
-                    heroLeftSpan: fila[13] && fila[13].trim() !== '' ? `${parseInt(fila[13])}%` : '0%'   // Columna N
+                    heroAmple: fila[10] && fila[10].trim() !== '' ? `${parseInt(fila[10])}px` : '100%',
+                    heroAlign: fila[11] ? fila[11].toLowerCase().trim() : 'center',
+                    heroFontColor: (fila[12] || '#FFFFFF').trim(),
+                    heroLeftSpan: fila[13] && fila[13].trim() !== '' ? `${parseInt(fila[13])}%` : '0%'
                 };
             }).sort((a, b) => a.ordre - b.ordre);
         }
 
-        // Parsejar la pestanya Continguts
         function parsejarCSVContinguts(csvText) {
             const files = parseCSV(csvText);
             return files.slice(1).map(fila => {
@@ -126,13 +127,23 @@
             });
         }
 
-        // --- RENDERITZACIÓ DE LA INTERFÍCIE ---
+        // Construir el menú de navegació superior
+        function construirMenuNavegacio() {
+            const menuUL = document.getElementById('menu-navegacio');
+            menuUL.innerHTML = '';
+            
+            dadesWeb.estructura.forEach(pagina => {
+                if (!pagina.visible) return;
+                const li = document.createElement('li');
+                li.innerHTML = `<a href="#${pagina.id}" onclick="canviarSeccio('${pagina.id}'); return false;">${pagina.titol}</a>`;
+                menuUL.appendChild(li);
+            });
+        }
 
         function construirPantallesWeb() {
             const contenidorPrincipal = document.getElementById('seccions-contenidor');
             contenidorPrincipal.innerHTML = '';
             
-            // Mides i gruixos de font des de la pestanya Config
             const titolMida = dadesWeb.config['font_hero_titol_mida'] ? `${dadesWeb.config['font_hero_titol_mida']}px` : '36px';
             const titolWeight = obtenirFontWeight(dadesWeb.config['font_hero_titol_gruix']);
             
@@ -149,7 +160,6 @@
                 seccioHTML.id = `pantalla-${pagina.id}`;
                 seccioHTML.className = 'seccio-web';
                 
-                // 1. BANNER HERO AMB PARÀMETRES PERSONALITZATS
                 if (pagina.heroImatge) {
                     const urlHeroImatge = `https://drive.google.com/thumbnail?sz=w1600&id=${pagina.heroImatge}`;
 
@@ -174,7 +184,6 @@
                     seccioHTML.innerHTML = `<h1>${pagina.titol}</h1>`;
                 }
                 
-                // 2. CONTINGUTS DE LA SECCIÓ
                 const elementsSeccio = dadesWeb.continguts.filter(item => item.seccio === pagina.id);
 
                 if (pagina.tipus === 'galeria_filtrada' || pagina.tipus === 'home') {
