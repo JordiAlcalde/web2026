@@ -8,21 +8,21 @@
 </head>
 <body>
 
-    <!-- BARRA DE NAVEGACIÓ SUPERIOR AMB LOGO INTEGRAT -->
+    <!-- BARRA DE NAVEGACIÓ SUPERIOR (LOGO + NOM + MENÚ) -->
     <header class="nav-principal">
         <div class="nav-contenidor">
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
-                <img id="logo-img" src="logo_mm_600.jpg" alt="Mínim Món Logo" class="logo-imatge">
+                <img id="logo-img" src="logo_mm_600.jpg" alt="Logo Mínim Món" class="logo-imatge">
                 <span class="nom-marca">Mínim Món</span>
             </a>
             <ul id="menu-navegacio" class="menu-links">
-                <!-- Es construeix dinàmicament des de Google Sheets -->
+                <!-- Es construeix des de Google Sheets -->
             </ul>
         </div>
     </header>
 
     <main id="seccions-contenidor">
-        <!-- El contingut es genera dinàmicament des de Google Sheets CSV -->
+        <!-- Contingut dinàmic -->
     </main>
 
     <script>
@@ -30,11 +30,7 @@
         const URL_CSV_ESTRUCTURA  = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=888628017&single=true&output=csv";
         const URL_CSV_CONTINGUTS  = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=819396845&single=true&output=csv";
 
-        let dadesWeb = {
-            config: {},
-            estructura: [],
-            continguts: []
-        };
+        let dadesWeb = { config: {}, estructura: [], continguts: [] };
 
         document.addEventListener('DOMContentLoaded', () => {
             carregarDadesPàgina();
@@ -56,10 +52,9 @@
                 construirPantallesWeb();
                 activarSeccioInicial();
             })
-            .catch(error => console.error("Error carregant les dades de Mínim Món des dels CSVs:", error));
+            .catch(error => console.error("Error carregant les dades CSV:", error));
         }
 
-        // Enllaçar el logo llegint la clau "logo" de la pestanya CONFIG
         function actualitzarLogo() {
             const logoId = dadesWeb.config['logo'] || dadesWeb.config['logo_id'];
             const imgElement = document.getElementById('logo-img');
@@ -71,7 +66,6 @@
             }
         }
 
-        // Parsejador robust de CSV per gestionar cometes i salts de línia
         function parseCSV(text) {
             let p = '', c = '', r = [];
             let q = false;
@@ -100,9 +94,7 @@
             const files = parseCSV(csvText);
             const config = {};
             files.slice(1).forEach(fila => {
-                if (fila[0] && fila[1]) {
-                    config[fila[0].trim()] = fila[1].trim();
-                }
+                if (fila[0] && fila[1]) config[fila[0].trim()] = fila[1].trim();
             });
             return config;
         }
@@ -110,40 +102,50 @@
         function parsejarCSVEstructura(csvText) {
             const files = parseCSV(csvText);
             return files.slice(1).map(fila => {
-                const titolPàgina = (fila[1] || '').trim();
-                const heroTitolCSV = (fila[5] || '').trim();
+                const titolPagina = (fila[1] || '').trim();
+                const rawHeroTitol = (fila[5] || '').trim();
+                const rawHeroText = (fila[6] || '').trim();
+                const rawHeroDestacat = (fila[7] || '').trim();
+
+                // Gestió segura del desplaçament esquerra (HeroLeftSpan)
+                let valSpan = (fila[13] || '').trim();
+                let leftSpanCss = '0px';
+                if (valSpan !== '') {
+                    let numSpan = parseInt(valSpan);
+                    if (!isNaN(numSpan)) {
+                        leftSpanCss = numSpan > 100 ? `${numSpan}px` : `${numSpan}%`;
+                    }
+                }
 
                 return {
                     id: (fila[0] || '').trim(),
-                    titol: titolPàgina,
+                    titol: titolPagina,
                     ordre: parseInt(fila[2]) || 99,
                     visible: fila[3] ? fila[3].toUpperCase().trim() === 'TRUE' : true,
                     tipus: (fila[4] || 'galeria_filtrada').trim(),
-                    heroTitol: heroTitolCSV !== '' ? heroTitolCSV.replace(/\n/g, '<br>') : titolPàgina,
-                    heroText: (fila[6] || '').trim().replace(/\n/g, '<br>'),
-                    heroDestacat: (fila[7] || '').trim().replace(/\n/g, '<br>'),
+                    heroTitol: rawHeroTitol !== '' ? rawHeroTitol.replace(/\n/g, '<br>') : titolPagina,
+                    heroText: rawHeroText.replace(/\n/g, '<br><br>'),
+                    heroDestacat: rawHeroDestacat.replace(/\n/g, '<br>'),
                     heroImatge: (fila[8] || '').trim(), 
-                    heroAmple: fila[10] && fila[10].trim() !== '' ? `${parseInt(fila[10])}px` : '450px',
+                    heroAmple: fila[10] && fila[10].trim() !== '' ? `${parseInt(fila[10])}px` : '550px',
                     heroAlign: fila[11] ? fila[11].toLowerCase().trim() : 'left',
                     heroFontColor: (fila[12] || '#E3D4FF').trim(),
-                    heroLeftSpan: fila[13] && fila[13].trim() !== '' ? `${parseInt(fila[13])}%` : '0%'
+                    heroLeftSpan: leftSpanCss
                 };
             }).sort((a, b) => a.ordre - b.ordre);
         }
 
         function parsejarCSVContinguts(csvText) {
             const files = parseCSV(csvText);
-            return files.slice(1).map(fila => {
-                return {
-                    id: (fila[0] || '').trim(),
-                    seccio: (fila[1] || '').trim(),
-                    titol: (fila[2] || '').trim(),
-                    descripcio: (fila[3] || '').trim(),
-                    imatgeId: (fila[4] || '').trim(),
-                    destacat: fila[5] ? fila[5].toUpperCase().trim() === 'TRUE' : false,
-                    tipusComponent: (fila[6] || '').trim()
-                };
-            });
+            return files.slice(1).map(fila => ({
+                id: (fila[0] || '').trim(),
+                seccio: (fila[1] || '').trim(),
+                titol: (fila[2] || '').trim(),
+                descripcio: (fila[3] || '').trim(),
+                imatgeId: (fila[4] || '').trim(),
+                destacat: fila[5] ? fila[5].toUpperCase().trim() === 'TRUE' : false,
+                tipusComponent: (fila[6] || '').trim()
+            }));
         }
 
         function construirMenuNavegacio() {
@@ -165,23 +167,22 @@
             const titolMida = dadesWeb.config['font_hero_titol_mida'] ? `${dadesWeb.config['font_hero_titol_mida']}px` : '32px';
             const titolWeight = obtenirFontWeight(dadesWeb.config['font_hero_titol_gruix']);
             
-            const textMida = dadesWeb.config['font_hero_text_mida'] ? `${dadesWeb.config['font_hero_text_mida']}px` : '16px';
+            const textMida = dadesWeb.config['font_hero_text_mida'] ? `${dadesWeb.config['font_hero_text_mida']}px` : '15px';
             const textWeight = obtenirFontWeight(dadesWeb.config['font_hero_text_gruix']);
             
-            const destacatMida = dadesWeb.config['font_hero_destacat_mida'] ? `${dadesWeb.config['font_hero_destacat_mida']}px` : '15px';
+            const destacatMida = dadesWeb.config['font_hero_destacat_mida'] ? `${dadesWeb.config['font_hero_destacat_mida']}px` : '14px';
             const destacatWeight = obtenirFontWeight(dadesWeb.config['font_hero_destacat_gruix']);
-        
+
             dadesWeb.estructura.forEach(pagina => {
                 if (!pagina.visible) return;
-        
+
                 const seccioHTML = document.createElement('section');
                 seccioHTML.id = `pantalla-${pagina.id}`;
                 seccioHTML.className = 'seccio-web';
                 
                 if (pagina.heroImatge) {
                     const urlHeroImatge = `https://drive.google.com/thumbnail?sz=w1600&id=${pagina.heroImatge}`;
-        
-                    // Renderitzat del bloc Hero
+
                     seccioHTML.innerHTML = `
                         <div class="hero-pagina" style="background-image: url('${urlHeroImatge}');">
                             <div class="hero-contenedor-flex">
@@ -190,19 +191,19 @@
                                     margin-left: ${pagina.heroLeftSpan}; 
                                     text-align: ${pagina.heroAlign};">
                                     
-                                    <h2 style="font-size: ${titolMida}; font-weight: ${titolWeight}; color: ${pagina.heroFontColor}; line-height: 1.2;">
-                                        ${pagina.heroTitol || pagina.titol}
+                                    <h2 style="font-size: ${titolMida}; font-weight: ${titolWeight}; color: ${pagina.heroFontColor}; line-height: 1.25;">
+                                        ${pagina.heroTitol}
                                     </h2>
                                     
                                     ${pagina.heroText ? `
-                                        <p style="font-size: ${textMida}; font-weight: ${textWeight}; color: ${pagina.heroFontColor}; margin-top: 1rem;">
+                                        <div class="hero-cos-text" style="font-size: ${textMida}; font-weight: ${textWeight}; color: ${pagina.heroFontColor}; margin-top: 1.2rem;">
                                             ${pagina.heroText}
-                                        </p>` : ''}
+                                        </div>` : ''}
                                     
                                     ${pagina.heroDestacat ? `
-                                        <p class="destacat-hero" style="font-size: ${destacatMida}; font-weight: ${destacatWeight}; color: var(--color-accent); margin-top: 1.2rem;">
+                                        <div class="destacat-hero" style="font-size: ${destacatMida}; font-weight: ${destacatWeight}; color: var(--color-accent); margin-top: 1.5rem;">
                                             ${pagina.heroDestacat}
-                                        </p>` : ''}
+                                        </div>` : ''}
                                 
                                 </div>
                             </div>
@@ -212,9 +213,8 @@
                     seccioHTML.innerHTML = `<h1>${pagina.titol}</h1>`;
                 }
                 
-                // Càrrega de targetes i continguts inferiors
                 const elementsSeccio = dadesWeb.continguts.filter(item => item.seccio === pagina.id);
-        
+
                 if (pagina.tipus === 'galeria_filtrada' || pagina.tipus === 'home') {
                     if (elementsSeccio.length > 0) {
                         const graella = document.createElement('div');
