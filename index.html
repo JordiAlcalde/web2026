@@ -37,25 +37,30 @@
     <script>
         const URL_CSV_CONFIG      = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=0&single=true&output=csv";
         const URL_CSV_ESTRUCTURA  = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=888628017&single=true&output=csv";
+        const URL_CSV_COMPONENTS  = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=606337148&single=true&output=csv"
         const URL_CSV_CONTINGUTS  = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=819396845&single=true&output=csv";
 
-        let dadesWeb = { config: {}, estructura: [], continguts: [] };
+        let dadesWeb = { config: {}, estructura: [], components: [], continguts: [] };
 
         document.addEventListener('DOMContentLoaded', () => {
             carregarDadesPàgina();
         });
 
+        let dadesWeb = { config: {}, estructura: [], components: {}, continguts: [] };
+        
         function carregarDadesPàgina() {
             Promise.all([
                 fetch(URL_CSV_CONFIG).then(r => r.text()),
                 fetch(URL_CSV_ESTRUCTURA).then(r => r.text()),
+                fetch(URL_CSV_COMPONENTS).then(r => r.text()), // <-- Carreguem Components
                 fetch(URL_CSV_CONTINGUTS).then(r => r.text())
             ])
-            .then(([csvConfig, csvEstructura, csvContinguts]) => {
+            .then(([csvConfig, csvEstructura, csvComponents, csvContinguts]) => {
                 dadesWeb.config = parsejarCSVConfig(csvConfig);
                 dadesWeb.estructura = parsejarCSVEstructura(csvEstructura);
+                dadesWeb.components = parsejarCSVComponents(csvComponents);
                 dadesWeb.continguts = parsejarCSVContinguts(csvContinguts);
-
+        
                 actualitzarLogo();
                 construirMenuNavegacio();
                 construirPantallesWeb();
@@ -107,6 +112,22 @@
             });
             return config;
         }
+
+        function parsejarCSVComponents(csvText) {
+            const files = parseCSV(csvText);
+            const components = {};
+            files.slice(1).forEach(fila => {
+                const nomComponent = (fila[0] || '').trim().toLowerCase();
+                if (nomComponent) {
+                    components[nomComponent] = {
+                        layoutDefecte: (fila[1] || '').trim(),
+                        colorFonsDefecte: (fila[2] || '#FFFFFF').trim(),
+                        colorTextDefecte: (fila[3] || '#24153F').trim()
+                    };
+                }
+            });
+            return components;
+        }        
 
         function parsejarCSVEstructura(csvText) {
             const files = parseCSV(csvText);
@@ -310,14 +331,28 @@
             const bloc = document.createElement('div');
             bloc.className = 'bloc-imatge-text';
             
-            // Si la imatge ha d'anar a la dreta
-            if (item.situacioImatge.toLowerCase() === 'dreta') {
+            // Si la imatge se situa a la dreta
+            if (item.situacioImatge && item.situacioImatge.toLowerCase() === 'dreta') {
                 bloc.classList.add('orientacio-dreta');
             }
         
-            // Afegim classe de mida (petita, mitjana, gran)
-            const midaClass = 'mida-' + item.midaImatge.toLowerCase();
+            // Mida de la imatge (petita, mitjana, gran)
+            const midaClass = 'mida-' + (item.midaImatge ? item.midaImatge.toLowerCase() : 'mitjana');
             
+            // 1. Cercem la configuració per defecte del component 'bloc_imatge_text'
+            const configDefecte = dadesWeb.components['bloc_imatge_text'] || {
+                colorFonsDefecte: '#FFFFFF',
+                colorTextDefecte: '#24153F'
+            };
+        
+            // 2. Si l'item té color propi l'apliquem, si no, agafem el de la pestanya Components
+            const fons = (item.colorFons && item.colorFons.trim() !== '') ? item.colorFons : configDefecte.colorFonsDefecte;
+            const text = (item.colorText && item.colorText.trim() !== '') ? item.colorText : configDefecte.colorTextDefecte;
+        
+            // Apleguem els estils directament al bloc
+            bloc.style.backgroundColor = fons;
+            bloc.style.borderColor = (fons.toUpperCase() === '#FFFFFF') ? 'var(--color-accent)' : 'var(--color-vivid)';
+        
             const urlImatge = item.imatgeId && item.imatgeId !== '#N/A' && item.imatgeId.trim() !== ''
                 ? `https://drive.google.com/thumbnail?sz=w800&id=${item.imatgeId.trim()}` 
                 : 'logo_mm_600.jpg';
@@ -327,8 +362,8 @@
                     <img src="${urlImatge}" alt="${item.titol || 'Mínim Món'}">
                 </div>
                 <div class="caixa-text">
-                    ${item.titol ? `<h2>${item.titol}</h2>` : ''}
-                    ${item.descripcio ? `<p>${item.descripcio.replace(/\n/g, '<br>')}</p>` : ''}
+                    ${item.titol ? `<h2 style="color: ${text};">${item.titol}</h2>` : ''}
+                    ${item.descripcio ? `<p style="color: ${text};">${item.descripcio.replace(/\n/g, '<br>')}</p>` : ''}
                 </div>
             `;
             return bloc;
