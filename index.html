@@ -186,17 +186,17 @@
             
             const destacatMida = dadesWeb.config['font_hero_destacat_mida'] ? `${dadesWeb.config['font_hero_destacat_mida']}px` : '14px';
             const destacatWeight = obtenirFontWeight(dadesWeb.config['font_hero_destacat_gruix']);
-
+        
             dadesWeb.estructura.forEach(pagina => {
                 if (!pagina.visible) return;
-
+        
                 const seccioHTML = document.createElement('section');
                 seccioHTML.id = `pantalla-${pagina.id}`;
                 seccioHTML.className = 'seccio-web';
                 
                 if (pagina.heroImatge) {
                     const urlHeroImatge = `https://drive.google.com/thumbnail?sz=w1600&id=${pagina.heroImatge}`;
-
+        
                     seccioHTML.innerHTML = `
                         <div class="hero-pagina" style="background-image: url('${urlHeroImatge}');">
                             <div class="hero-contenedor-flex">
@@ -229,20 +229,29 @@
                 }
                 
                 const elementsSeccio = dadesWeb.continguts.filter(item => item.seccio === pagina.id);
-
-                if (pagina.tipus === 'galeria_filtrada' || pagina.tipus === 'home') {
-                    if (elementsSeccio.length > 0) {
-                        const graella = document.createElement('div');
-                        graella.className = 'galeria-graella';
-                        elementsSeccio.forEach(item => graella.appendChild(crearTargetaElement(item)));
-                        seccioHTML.appendChild(graella);
-                    }
-                }
                 
-                contenidorPrincipal.appendChild(seccioHTML);
-            });
-        }
-
+                if (elementsSeccio.length > 0) {
+                    const contenidorContinguts = document.createElement('div');
+                    contenidorContinguts.className = 'contenidor-continguts-seccio';
+                
+                    elementsSeccio.forEach(item => {
+                        const tipus = item.tipusComponent ? item.tipusComponent.toLowerCase().trim() : '';
+                        
+                        if (tipus === 'bloc_imatge_text') {
+                            contenidorContinguts.appendChild(crearBlocImatgeText(item));
+                        } else {
+                            // Per defecte o si és targeta
+                            contenidorContinguts.appendChild(crearTargetaElement(item));
+                        }
+                    });
+                
+                    seccioHTML.appendChild(contenidorContinguts);
+                }
+        
+                contenidorPrincipal.appendChild(seccioHTML); // Afegim la secció al contenidor principal
+            }); // <-- Tanca el dadesWeb.estructura.forEach(...)
+        } // <-- Tanca la funció construirPantallesWeb()
+        
         function crearTargetaElement(item) {
             const card = document.createElement('div');
             card.className = 'targeta-element';
