@@ -149,15 +149,16 @@
         function parsejarCSVContinguts(csvText) {
             const files = parseCSV(csvText);
             return files.slice(1).map(fila => ({
-                id: (fila[0] || '').trim(),               // Columna A (ID)
-                seccio: (fila[1] || '').trim(),           // Columna B (Seccio)
-                titol: (fila[2] || '').trim(),            // Columna C (Titol)
-                descripcio: (fila[3] || '').trim(),       // Columna D (Descripcio)
-                imatgeId: (fila[4] || '').trim(),         // Columna E (IDImatge)
-                // La columna F (fila[5]) correspon a "Link sencer" i s'omet intencionadament
-                destacat: fila[6] ? fila[6].toUpperCase().trim() === 'TRUE' : false, // Columna G
-                tipusComponent: (fila[7] || '').trim(),   // Columna H (TipusComponent)
-                situacioImatge: (fila[8] || 'Esquerra').trim() // Columna I (SituacioImatge)
+                id: (fila[0] || '').trim(),
+                seccio: (fila[1] || '').trim(),
+                titol: (fila[2] || '').trim(),
+                descripcio: (fila[3] || '').trim(),
+                imatgeId: (fila[4] || '').trim(),
+                // Columna F (fila[5]) "Link sencer" s'omet
+                destacat: fila[6] ? fila[6].toUpperCase().trim() === 'TRUE' : false,
+                tipusComponent: (fila[7] || '').trim(),
+                situacioImatge: (fila[8] || 'Esquerra').trim(),
+                midaImatge: (fila[9] || 'Mitjana').trim() // Nova columna J (MidaImatge)
             })).filter(item => item.id !== '');
         }
 
@@ -293,23 +294,27 @@
             canviarSeccioOriginal(idSeccio);
         };
 
-
+        /* *************************************************************
+        /* C O M P O N E N T S 
+        /* ********************************************************** */
         function crearBlocImatgeText(item) {
             const bloc = document.createElement('div');
             bloc.className = 'bloc-imatge-text';
             
-            // Si a la columna I posa 'Dreta', invertim l'ordre visual
-            if (item.situacioImatge && item.situacioImatge.toLowerCase() === 'dreta') {
+            // Si la imatge ha d'anar a la dreta
+            if (item.situacioImatge.toLowerCase() === 'dreta') {
                 bloc.classList.add('orientacio-dreta');
             }
         
-            // Agafem directament IDImatge (Columna E)
+            // Afegim classe de mida (petita, mitjana, gran)
+            const midaClass = 'mida-' + item.midaImatge.toLowerCase();
+            
             const urlImatge = item.imatgeId && item.imatgeId !== '#N/A' && item.imatgeId.trim() !== ''
                 ? `https://drive.google.com/thumbnail?sz=w800&id=${item.imatgeId.trim()}` 
                 : 'logo_mm_600.jpg';
         
             bloc.innerHTML = `
-                <div class="caixa-imatge">
+                <div class="caixa-imatge ${midaClass}">
                     <img src="${urlImatge}" alt="${item.titol || 'Mínim Món'}">
                 </div>
                 <div class="caixa-text">
