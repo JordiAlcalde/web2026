@@ -1,0 +1,91 @@
+/* ==========================================================================
+   COMPONENT: BLOC IMATGE TEXT
+   ========================================================================== */
+
+.bloc-imatge-text {
+    display: flex !important;
+    flex-direction: row !important; /* Força la posició horitzontal en PC */
+    align-items: center;
+    gap: 2.5rem;
+    width: 100%; /* Ocupa tot l'ample disponible del contenidor pare */
+    box-sizing: border-box;
+    background-color: var(--color-fons-fosc); /* O #FFFFFF si prefereixes fons blanc */
+    border: 1px solid var(--color-accent-clar);
+    border-radius: 12px;
+    padding: 2rem;
+    margin: 2rem 0;
+}
+
+/* Invertir la posició quan SituacioImatge és 'Dreta' */
+.bloc-imatge-text.orientacio-dreta {
+    flex-direction: row-reverse !important;
+}
+
+/* CONTROLS DE MIDA PER A LA IMATGE */
+.bloc-imatge-text .caixa-imatge {
+    flex-shrink: 0; /* Impedeix que la imatge es deforma o es xafi */
+}
+
+.bloc-imatge-text .caixa-imatge.mida-petita {
+    flex-basis: 25%;
+    max-width: 25%;
+}
+
+.bloc-imatge-text .caixa-imatge.mida-mitjana {
+    flex-basis: 40%;
+    max-width: 40%;
+}
+
+.bloc-imatge-text .caixa-imatge.mida-gran {
+    flex-basis: 55%;
+    max-width: 55%;
+}
+
+.bloc-imatge-text .caixa-imatge img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    display: block;
+    object-fit: cover;
+}
+
+/* CONTENIDOR DE TEXT */
+.bloc-imatge-text .caixa-text {
+    flex: 1; /* Ocupa tot l'espai restant al costat de la imatge */
+}
+
+.bloc-imatge-text .caixa-text h2 {
+    color: var(--color-clar);
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-top: 0;
+    margin-bottom: 0.8rem;
+}
+
+.bloc-imatge-text .caixa-text p {
+    color: var(--color-text-suau);
+    font-size: 1rem;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* ADAPTACIÓ MÒBIL (Menys de 768px) */
+@media (max-width: 768px) {
+    .bloc-imatge-text,
+    .bloc-imatge-text.orientacio-dreta {
+        flex-direction: column !important; /* En mòbil sí que va un sota l'altre */
+        padding: 1.25rem;
+        gap: 1.25rem;
+    }
+
+    .bloc-imatge-text .caixa-imatge.mida-petita,
+    .bloc-imatge-text .caixa-imatge.mida-mitjana,
+    .bloc-imatge-text .caixa-imatge.mida-gran {
+        flex-basis: 100%;
+        max-width: 100%;
+    }
+}
+
+
+
+
