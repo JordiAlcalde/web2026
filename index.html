@@ -331,27 +331,28 @@
 
         function navegarA(desti, event) {
             if (event) event.preventDefault();
-            
-            // Si és una àncora interna (comença per #)
+        
+            if (!desti || desti === '#') return;
+        
+            // Si és una àncora interna (comença per #, ex: #mons_minims)
             if (desti.startsWith('#')) {
-                const idNetejat = desti.replace('#', '');
-                
-                // Busquem si existeix l'element directament o amb el prefix 'pantalla-'
-                const element = document.getElementById(idNetejat) || document.getElementById(`pantalla-${idNetejat}`);
-                
-                if (element) {
-                    // Si fem servir navegació per seccions visibles/ocultes:
-                    if (typeof mostrarPantalla === 'function') {
-                        mostrarPantalla(idNetejat);
-                    } 
-                    // Si la pàgina és en format 'scroll' continu, desplacem de forma suau:
-                    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                const idSeccio = desti.replace('#', '').trim();
+        
+                // 1. Si la web utilitza una funció per canviar la seccio visible (SPA)
+                if (typeof mostrarPantalla === 'function') {
+                    mostrarPantalla(idSeccio);
+                } else {
+                    // 2. Si totes les seccions estan al mateix document i es fa scroll
+                    const target = document.getElementById(`pantalla-${idSeccio}`) || document.getElementById(idSeccio);
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
                 }
             } else {
-                // Si és un enllaç extern (WhatsApp, mailto, etc.)
+                // Si és un enllaç extern (ex: WhatsApp, email, altra URL)
                 window.open(desti, '_blank');
             }
-        }        
+        }      
 
         /* *************************************************************
         /* C O M P O N E N T S 
@@ -397,14 +398,11 @@
                 `;
             }
         
-            bloc.innerHTML = `
-                <div class="caixa-imatge ${midaClass}">
-                    <img src="${urlImatge}" alt="${item.titol || 'Mínim Món'}">
-                </div>
-                <div class="caixa-text">
-                    ${item.titol ? `<h2 style="color: ${text};">${item.titol}</h2>` : ''}
-                    ${item.descripcio ? `<p style="color: ${text};">${item.descripcio.replace(/\n/g, '<br>')}</p>` : ''}
-                    ${htmlBoto}
+            htmlBoto = `
+                <div style="margin-top: 1.5rem; text-align: ${textAlign};">
+                    <a href="${item.linkBoto}" onclick="navegarA('${item.linkBoto}', event)" class="boto-cta estil-principal">
+                        ${item.textBoto}
+                    </a>
                 </div>
             `;
         
