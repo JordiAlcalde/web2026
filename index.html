@@ -361,12 +361,15 @@
             const bloc = document.createElement('div');
             bloc.className = 'bloc-imatge-text';
             
+            // Posició de la imatge
             if (item.situacioImatge && item.situacioImatge.toLowerCase().trim() === 'dreta') {
                 bloc.classList.add('orientacio-dreta');
             }
         
+            // Mida de la imatge
             const midaClass = 'mida-' + (item.midaImatge ? item.midaImatge.toLowerCase().trim() : 'mitjana');
             
+            // Config de colors per defecte des del full Components
             const configDefecte = dadesWeb.components['bloc_imatge_text'] || {
                 colorFonsDefecte: '#FFFFFF',
                 colorTextDefecte: '#24153F'
@@ -382,6 +385,7 @@
                 ? `https://drive.google.com/thumbnail?sz=w800&id=${item.imatgeId.trim()}` 
                 : 'logo_mm_600.jpg';
         
+            // Construcció CONDICIONAL del botó
             let htmlBoto = '';
             if (item.textBoto && item.linkBoto) {
                 const alineacio = (item.alineacioBoto || 'Esquerra').toLowerCase().trim();
@@ -398,16 +402,20 @@
                 `;
             }
         
-            htmlBoto = `
-                <div style="margin-top: 1.5rem; text-align: ${textAlign};">
-                    <a href="${item.linkBoto}" onclick="navegarA('${item.linkBoto}', event)" class="boto-cta estil-principal">
-                        ${item.textBoto}
-                    </a>
+            bloc.innerHTML = `
+                <div class="caixa-imatge ${midaClass}">
+                    <img src="${urlImatge}" alt="${item.titol || 'Mínim Món'}">
+                </div>
+                <div class="caixa-text">
+                    ${item.titol ? `<h2 style="color: ${text};">${item.titol}</h2>` : ''}
+                    ${item.descripcio ? `<p style="color: ${text};">${item.descripcio.replace(/\n/g, '<br>')}</p>` : ''}
+                    ${htmlBoto}
                 </div>
             `;
         
             return bloc;
         }
+
         
         function crearBotoCTA(item) {
             const contenidor = document.createElement('div');
