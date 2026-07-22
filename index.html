@@ -194,7 +194,7 @@
             dadesWeb.estructura.forEach(pagina => {
                 if (!pagina.visible) return;
                 const li = document.createElement('li');
-                li.innerHTML = `<a href="#${pagina.id}" onclick="canviarSeccio('${pagina.id}'); return false;">${pagina.titol}</a>`;
+                li.innerHTML = `<a href="#${pagina.id}" onclick="navegarA('${pagina.id}', event); return false;">${pagina.titol}</a>`;
                 menuUL.appendChild(li);
             });
         }
@@ -334,25 +334,19 @@
         
             if (!desti || desti === '#') return;
         
-            // Si és una àncora interna (comença per #, ex: #mons_minims)
-            if (desti.startsWith('#')) {
-                const idSeccio = desti.replace('#', '').trim();
+            // Si és una àncora interna (#mons_minims o mons_minims)
+            if (desti.startsWith('#') || !desti.includes('://')) {
+                const idNetejat = desti.replace('#', '').trim();
         
-                // 1. Si la web utilitza una funció per canviar la seccio visible (SPA)
-                if (typeof mostrarPantalla === 'function') {
-                    mostrarPantalla(idSeccio);
-                } else {
-                    // 2. Si totes les seccions estan al mateix document i es fa scroll
-                    const target = document.getElementById(`pantalla-${idSeccio}`) || document.getElementById(idSeccio);
-                    if (target) {
-                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
+                // Cridem la teva funció existent per canviar de secció
+                if (typeof canviarSeccio === 'function') {
+                    canviarSeccio(idNetejat);
                 }
             } else {
-                // Si és un enllaç extern (ex: WhatsApp, email, altra URL)
+                // Enllaç extern (WhatsApp, xarxes, etc.)
                 window.open(desti, '_blank');
             }
-        }      
+        }    
 
         /* *************************************************************
         /* C O M P O N E N T S 
