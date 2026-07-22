@@ -173,11 +173,17 @@
                 titol: (fila[2] || '').trim(),
                 descripcio: (fila[3] || '').trim(),
                 imatgeId: (fila[4] || '').trim(),
-                // Columna F (fila[5]) "Link sencer" s'omet
                 destacat: fila[6] ? fila[6].toUpperCase().trim() === 'TRUE' : false,
                 tipusComponent: (fila[7] || '').trim(),
                 situacioImatge: (fila[8] || 'Esquerra').trim(),
-                midaImatge: (fila[9] || 'Mitjana').trim() // Nova columna J (MidaImatge)
+                midaImatge: (fila[9] || 'Mitjana').trim(),
+                // Columnes K, L, M (índexs 10, 11 i 12 al CSV)
+                textBoto: (fila[10] || '').trim(),
+                linkBoto: (fila[11] || '').trim(),
+                alineacioBoto: (fila[12] || 'Centre').trim(),
+                // Colors opcionals si n'hi hagués
+                colorFons: (fila[13] || '').trim(),
+                colorText: (fila[14] || '').trim()
             })).filter(item => item.id !== '');
         }
 
@@ -258,8 +264,9 @@
                         
                         if (tipus === 'bloc_imatge_text') {
                             contenidorContinguts.appendChild(crearBlocImatgeText(item));
+                        } else if (tipus === 'boto_cta') {
+                            contenidorContinguts.appendChild(crearBotoCTA(item));
                         } else {
-                            // Per defecte o si és targeta
                             contenidorContinguts.appendChild(crearTargetaElement(item));
                         }
                     });
@@ -267,9 +274,9 @@
                     seccioHTML.appendChild(contenidorContinguts);
                 }
         
-                contenidorPrincipal.appendChild(seccioHTML); // Afegim la secció al contenidor principal
-            }); // <-- Tanca el dadesWeb.estructura.forEach(...)
-        } // <-- Tanca la funció construirPantallesWeb()
+                contenidorPrincipal.appendChild(seccioHTML);
+            });
+        }
         
         function crearTargetaElement(item) {
             const card = document.createElement('div');
@@ -329,31 +336,46 @@
             const bloc = document.createElement('div');
             bloc.className = 'bloc-imatge-text';
             
-            // Si la imatge se situa a la dreta
-            if (item.situacioImatge && item.situacioImatge.toLowerCase() === 'dreta') {
+            // Posició de la imatge (Esquerra o Dreta)
+            if (item.situacioImatge && item.situacioImatge.toLowerCase().trim() === 'dreta') {
                 bloc.classList.add('orientacio-dreta');
             }
         
-            // Mida de la imatge (petita, mitjana, gran)
-            const midaClass = 'mida-' + (item.midaImatge ? item.midaImatge.toLowerCase() : 'mitjana');
+            // Mida de la imatge
+            const midaClass = 'mida-' + (item.midaImatge ? item.midaImatge.toLowerCase().trim() : 'mitjana');
             
-            // 1. Cercem la configuració per defecte del component 'bloc_imatge_text'
+            // Configuració de colors
             const configDefecte = dadesWeb.components['bloc_imatge_text'] || {
                 colorFonsDefecte: '#FFFFFF',
                 colorTextDefecte: '#24153F'
             };
         
-            // 2. Si l'item té color propi l'apliquem, si no, agafem el de la pestanya Components
-            const fons = (item.colorFons && item.colorFons.trim() !== '') ? item.colorFons : configDefecte.colorFonsDefecte;
-            const text = (item.colorText && item.colorText.trim() !== '') ? item.colorText : configDefecte.colorTextDefecte;
+            const fons = item.colorFons || configDefecte.colorFonsDefecte;
+            const text = item.colorText || configDefecte.colorTextDefecte;
         
-            // Apleguem els estils directament al bloc
             bloc.style.backgroundColor = fons;
             bloc.style.borderColor = (fons.toUpperCase() === '#FFFFFF') ? 'var(--color-accent)' : 'var(--color-vivid)';
         
             const urlImatge = item.imatgeId && item.imatgeId !== '#N/A' && item.imatgeId.trim() !== ''
                 ? `https://drive.google.com/thumbnail?sz=w800&id=${item.imatgeId.trim()}` 
                 : 'logo_mm_600.jpg';
+        
+            // Generació del botó si s'han emplenat les columnes K i L
+            let htmlBoto = '';
+            if (item.textBoto && item.linkBoto) {
+                const alineacio = (item.alineacioBoto || 'Esquerra').toLowerCase().trim();
+                let textAlign = 'left';
+                if (alineacio === 'centre') textAlign = 'center';
+                if (alineacio === 'dreta') textAlign = 'right';
+        
+                htmlBoto = `
+                    <div style="margin-top: 1.5rem; text-align: ${textAlign};">
+                        <a href="${item.linkBoto}" class="boto-cta estil-principal">
+                            ${item.textBoto}
+                        </a>
+                    </div>
+                `;
+            }
         
             bloc.innerHTML = `
                 <div class="caixa-imatge ${midaClass}">
@@ -362,10 +384,49 @@
                 <div class="caixa-text">
                     ${item.titol ? `<h2 style="color: ${text};">${item.titol}</h2>` : ''}
                     ${item.descripcio ? `<p style="color: ${text};">${item.descripcio.replace(/\n/g, '<br>')}</p>` : ''}
+                    ${htmlBoto}
                 </div>
             `;
+        
             return bloc;
         }
+
+        function crearBotoCTA(item) {
+            const contenidor = document.createElement('div');
+            const alineacio = (item.alineacioBoto || 'Centre').toLowerCase().trim();
+            
+            // Mapegem l'alineació als flexbox d'un contenidor
+            let flexAlign = 'center';
+            if (alineacio === 'esquerra') flexAlign = 'flex-start';
+            if (alineacio === 'dreta') flexAlign = 'flex-end';
+        
+            contenidor.className = 'contenidor-boto-cta';
+            contenidor.style.cssText = `
+                display: flex;
+                justify-content: ${flexAlign};
+                width: 100%;
+                margin: 1.5rem 0;
+            `;
+        
+            const configDefecte = dadesWeb.components['boto_cta'] || {
+                colorFonsDefecte: '#340094',
+                colorTextDefecte: '#FFFFFF'
+            };
+        
+            const fons = item.colorFons || configDefecte.colorFonsDefecte;
+            const text = item.colorText || configDefecte.colorTextDefecte;
+        
+            const enllac = item.linkBoto || '#';
+            const textEtiqueta = item.textBoto || 'Descobreix més';
+        
+            contenidor.innerHTML = `
+                <a href="${enllac}" class="boto-cta estil-principal" style="background-color: ${fons}; color: ${text};">
+                    ${textEtiqueta}
+                </a>
+            `;
+        
+            return contenidor;
+        }      
         
     </script>
 </body>
