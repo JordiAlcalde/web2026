@@ -329,6 +329,30 @@
             canviarSeccioOriginal(idSeccio);
         };
 
+        function navegarA(desti, event) {
+            if (event) event.preventDefault();
+            
+            // Si és una àncora interna (comença per #)
+            if (desti.startsWith('#')) {
+                const idNetejat = desti.replace('#', '');
+                
+                // Busquem si existeix l'element directament o amb el prefix 'pantalla-'
+                const element = document.getElementById(idNetejat) || document.getElementById(`pantalla-${idNetejat}`);
+                
+                if (element) {
+                    // Si fem servir navegació per seccions visibles/ocultes:
+                    if (typeof mostrarPantalla === 'function') {
+                        mostrarPantalla(idNetejat);
+                    } 
+                    // Si la pàgina és en format 'scroll' continu, desplacem de forma suau:
+                    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            } else {
+                // Si és un enllaç extern (WhatsApp, mailto, etc.)
+                window.open(desti, '_blank');
+            }
+        }        
+
         /* *************************************************************
         /* C O M P O N E N T S 
         /* ********************************************************** */
@@ -336,15 +360,12 @@
             const bloc = document.createElement('div');
             bloc.className = 'bloc-imatge-text';
             
-            // Posició de la imatge (Esquerra o Dreta)
             if (item.situacioImatge && item.situacioImatge.toLowerCase().trim() === 'dreta') {
                 bloc.classList.add('orientacio-dreta');
             }
         
-            // Mida de la imatge
             const midaClass = 'mida-' + (item.midaImatge ? item.midaImatge.toLowerCase().trim() : 'mitjana');
             
-            // Configuració de colors
             const configDefecte = dadesWeb.components['bloc_imatge_text'] || {
                 colorFonsDefecte: '#FFFFFF',
                 colorTextDefecte: '#24153F'
@@ -360,7 +381,6 @@
                 ? `https://drive.google.com/thumbnail?sz=w800&id=${item.imatgeId.trim()}` 
                 : 'logo_mm_600.jpg';
         
-            // Generació del botó si s'han emplenat les columnes K i L
             let htmlBoto = '';
             if (item.textBoto && item.linkBoto) {
                 const alineacio = (item.alineacioBoto || 'Esquerra').toLowerCase().trim();
@@ -370,7 +390,7 @@
         
                 htmlBoto = `
                     <div style="margin-top: 1.5rem; text-align: ${textAlign};">
-                        <a href="${item.linkBoto}" class="boto-cta estil-principal">
+                        <a href="${item.linkBoto}" onclick="navegarA('${item.linkBoto}', event)" class="boto-cta estil-principal">
                             ${item.textBoto}
                         </a>
                     </div>
@@ -390,12 +410,11 @@
         
             return bloc;
         }
-
+        
         function crearBotoCTA(item) {
             const contenidor = document.createElement('div');
             const alineacio = (item.alineacioBoto || 'Centre').toLowerCase().trim();
             
-            // Mapegem l'alineació als flexbox d'un contenidor
             let flexAlign = 'center';
             if (alineacio === 'esquerra') flexAlign = 'flex-start';
             if (alineacio === 'dreta') flexAlign = 'flex-end';
@@ -420,13 +439,13 @@
             const textEtiqueta = item.textBoto || 'Descobreix més';
         
             contenidor.innerHTML = `
-                <a href="${enllac}" class="boto-cta estil-principal" style="background-color: ${fons}; color: ${text};">
+                <a href="${enllac}" onclick="navegarA('${enllac}', event)" class="boto-cta estil-principal" style="background-color: ${fons}; color: ${text};">
                     ${textEtiqueta}
                 </a>
             `;
         
             return contenidor;
-        }      
+        }
         
     </script>
 </body>
