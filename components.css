@@ -89,5 +89,54 @@
 }
 
 
+/* ==========================================================================
+   COMPONENT: BOTÓ CTA (CALL TO ACTION)
+   ========================================================================== */
+
+/* Contenidor quan el botó va sol (per controlar alineació) */
+.contenidor-boto-cta {
+    display: flex;
+    width: 100%;
+    margin: 1.5rem 0;
+}
+
+.contenidor-boto-cta.alineacio-esquerra { justify-content: flex-start; }
+.contenidor-boto-cta.alineacio-centre   { justify-content: center; }
+.contenidor-boto-cta.alineacio-dreta    { justify-content: flex-end; }
+
+/* Estil del botó base */
+.boto-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.8rem 1.8rem;
+    font-family: var(--font-principal);
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.25s ease;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* Estils de color (Per defecte: Fons accent lívid, text clar) */
+.boto-cta.estil-principal {
+    background-color: var(--color-vivid); /* #340094 */
+    color: #FFFFFF;
+    border: 1px solid var(--color-accent); /* #AC80FF */
+}
+
+.boto-cta.estil-principal:hover {
+    background-color: var(--color-accent); /* #AC80FF */
+    color: var(--color-primari); /* #301269 */
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(172, 128, 255, 0.35);
+}
+
+/* Si va integrat dins d'un bloc de fons blanc (#FFFFFF) */
+.bloc-imatge-text .boto-cta {
+    margin-top: 1.2rem;
+}
 
 
