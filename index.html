@@ -6,13 +6,17 @@
     <title>Mínim Món | Recreacions Simbòliques i Fusta Làser</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="components.css">
+    <!-- Font Montserrat -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
     <!-- BARRA DE NAVEGACIÓ SUPERIOR -->
     <header class="nav-principal">
         <div class="nav-contenidor">
-            <!-- Botó Hamburguesa (S'activa només en mòbil) -->
+            <!-- Botó Hamburguesa (Mòbil) -->
             <button class="btn-hamburguesa" id="btn-hamburguesa" aria-label="Obrir menú" onclick="toggleMenuMobil()">
                 <span></span>
                 <span></span>
@@ -47,11 +51,12 @@
         });
         
         function carregarDadesPàgina() {
+            const t = Date.now(); // Evitem memòria cau de Google Sheets
             Promise.all([
-                fetch(URL_CSV_CONFIG).then(r => r.text()),
-                fetch(URL_CSV_ESTRUCTURA).then(r => r.text()),
-                fetch(URL_CSV_COMPONENTS).then(r => r.text()), // <-- Carreguem Components
-                fetch(URL_CSV_CONTINGUTS).then(r => r.text())
+                fetch(`${URL_CSV_CONFIG}&_t=${t}`).then(r => r.text()),
+                fetch(`${URL_CSV_ESTRUCTURA}&_t=${t}`).then(r => r.text()),
+                fetch(`${URL_CSV_COMPONENTS}&_t=${t}`).then(r => r.text()),
+                fetch(`${URL_CSV_CONTINGUTS}&_t=${t}`).then(r => r.text())
             ])
             .then(([csvConfig, csvEstructura, csvComponents, csvContinguts]) => {
                 dadesWeb.config = parsejarCSVConfig(csvConfig);
@@ -130,14 +135,13 @@
         function parsejarCSVEstructura(csvText) {
             const files = parseCSV(csvText);
             return files.slice(1)
-                .filter(fila => fila[0] && fila[0].trim() !== '') // Filtra files buides
+                .filter(fila => fila[0] && fila[0].trim() !== '')
                 .map(fila => {
                     const titolPagina = (fila[1] || '').trim();
                     const rawHeroTitol = (fila[5] || '').trim();
                     const rawHeroText = (fila[6] || '').trim();
                     const rawHeroDestacat = (fila[7] || '').trim();
 
-                    // Control de desplaçament en px sense desbordar
                     let valSpan = (fila[13] || '').trim();
                     let leftSpanCss = '0px';
                     if (valSpan !== '') {
@@ -180,7 +184,6 @@
                 textBoto: (fila[10] || '').trim(),
                 linkBoto: (fila[11] || '').trim(),
                 alineacioBoto: (fila[12] || 'Centre').trim(),
-                // Nova columna de control de fila (Columna N al Sheets / Índex 13)
                 novaFila: fila[13] ? (fila[13].toUpperCase().trim() === 'TRUE' || fila[13].toUpperCase().trim() === 'SI') : false,
                 colorFons: (fila[14] || '').trim(),
                 colorText: (fila[15] || '').trim()
@@ -250,43 +253,42 @@
                         </div>
                     `;
                 } else {
-                    seccioHTML.innerHTML = `<h1 style="color: var(--color-clar); padding: 2rem 0;">${pagina.titol}</h1>`;
+                    seccioHTML.innerHTML = `<h1 style="color: var(--color-clar, #E3D4FF); padding: 2rem 0;">${pagina.titol}</h1>`;
                 }
                 
-                    const elementsSeccio = dadesWeb.continguts.filter(item => item.seccio === pagina.id);
-                    
-                    if (elementsSeccio.length > 0) {
-                        const contenidorContinguts = document.createElement('div');
-                        contenidorContinguts.className = 'contenidor-continguts-seccio';
-                    
-                        let contenidorFilaTargetes = null;
-                    
-                        elementsSeccio.forEach(item => {
-                            const tipus = item.tipusComponent ? item.tipusComponent.toLowerCase().trim() : '';
-                    
-                            if (tipus === 'targeta_imatge_text') {
-                                // Si és la primera targeta O si 'novaFila' és true, creem un nou contenidor de fila
-                                if (!contenidorFilaTargetes || item.novaFila) {
-                                    contenidorFilaTargetes = document.createElement('div');
-                                    contenidorFilaTargetes.className = 'contenidor-targetes-fira';
-                                    contenidorContinguts.appendChild(contenidorFilaTargetes);
-                                }
-                                contenidorFilaTargetes.appendChild(crearTargetaImatgeText(item));
-                            } else {
-                                contenidorFilaTargetes = null; // Reset per a altres components
-                    
-                                if (tipus === 'bloc_imatge_text') {
-                                    contenidorContinguts.appendChild(crearBlocImatgeText(item));
-                                } else if (tipus === 'boto_cta') {
-                                    contenidorContinguts.appendChild(crearBotoCTA(item));
-                                } else {
-                                    contenidorContinguts.appendChild(crearTargetaElement(item));
-                                }
+                const elementsSeccio = dadesWeb.continguts.filter(item => item.seccio === pagina.id);
+                
+                if (elementsSeccio.length > 0) {
+                    const contenidorContinguts = document.createElement('div');
+                    contenidorContinguts.className = 'contenidor-continguts-seccio';
+                
+                    let contenidorFilaTargetes = null;
+                
+                    elementsSeccio.forEach(item => {
+                        const tipus = item.tipusComponent ? item.tipusComponent.toLowerCase().trim() : '';
+                
+                        if (tipus === 'targeta_imatge_text') {
+                            if (!contenidorFilaTargetes || item.novaFila) {
+                                contenidorFilaTargetes = document.createElement('div');
+                                contenidorFilaTargetes.className = 'contenidor-targetes-fira';
+                                contenidorContinguts.appendChild(contenidorFilaTargetes);
                             }
-                        });
-                    
-                        seccioHTML.appendChild(contenidorContinguts);
-                    }
+                            contenidorFilaTargetes.appendChild(crearTargetaImatgeText(item));
+                        } else {
+                            contenidorFilaTargetes = null;
+                
+                            if (tipus === 'bloc_imatge_text') {
+                                contenidorContinguts.appendChild(crearBlocImatgeText(item));
+                            } else if (tipus === 'boto_cta') {
+                                contenidorContinguts.appendChild(crearBotoCTA(item));
+                            } else {
+                                contenidorContinguts.appendChild(crearTargetaElement(item));
+                            }
+                        }
+                    });
+                
+                    seccioHTML.appendChild(contenidorContinguts);
+                }
         
                 contenidorPrincipal.appendChild(seccioHTML);
             });
@@ -296,12 +298,12 @@
             const card = document.createElement('div');
             card.className = 'targeta-element';
             
-            const urlImatge = item.imatgeId ? `https://drive.google.com/thumbnail?sz=w800&id=${item.imatgeId}` : 'https://via.placeholder.com/300x200';
+            const urlImatge = item.imatgeId ? `https://drive.google.com/thumbnail?sz=w800&id=${item.imatgeId}` : 'logo_mm_600.jpg';
 
             card.innerHTML = `
                 <img src="${urlImatge}" alt="${item.titol}">
-                <h3 style="color: var(--color-clar); font-size: 1.1rem; margin-bottom: 0.5rem;">${item.titol}</h3>
-                <p style="color: var(--color-suau); font-size: 0.85rem;">${item.descripcio || ''}</p>
+                <h3 style="color: var(--color-clar, #E3D4FF); font-size: 1.1rem; margin-bottom: 0.5rem;">${item.titol}</h3>
+                <p style="color: var(--color-suau, #C8AAFF); font-size: 0.85rem;">${item.descripcio || ''}</p>
             `;
             return card;
         }
@@ -316,8 +318,15 @@
         }
 
         function canviarSeccio(idSeccio) {
-            document.querySelectorAll('.seccio-web').forEach(s => s.classList.remove('activa'));
-            const seccioDesti = document.getElementById(`pantalla-${idSeccio}`);
+            const menu = document.getElementById('menu-navegacio');
+            if (menu) menu.classList.remove('obert');
+
+            const idNetejat = idSeccio.replace('#', '').replace('pantalla-', '').trim();
+            const seccions = document.querySelectorAll('.seccio-web');
+            
+            seccions.forEach(s => s.classList.remove('activa'));
+            
+            const seccioDesti = document.getElementById(`pantalla-${idNetejat}`) || document.getElementById(idNetejat);
             if (seccioDesti) {
                 seccioDesti.classList.add('activa');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -325,39 +334,23 @@
         }
 
         function activarSeccioInicial() {
-            if (dadesWeb.estructura.length > 0) {
+            if (dadesWeb.estructura && dadesWeb.estructura.length > 0) {
                 canviarSeccio(dadesWeb.estructura[0].id);
             }
         }
 
         function toggleMenuMobil() {
             const menu = document.getElementById('menu-navegacio');
-            menu.classList.toggle('obert');
+            if (menu) menu.classList.toggle('obert');
         }
-        
-        // Modifiquem la funció de canviar secció per tancar el menú mòbil automàticament al fer clic
-        const canviarSeccioOriginal = canviarSeccio;
-        canviarSeccio = function(idSeccio) {
-            const menu = document.getElementById('menu-navegacio');
-            if (menu) menu.classList.remove('obert'); // Tanca el menú mòbil
-            canviarSeccioOriginal(idSeccio);
-        };
 
         function navegarA(desti, event) {
             if (event) event.preventDefault();
-        
             if (!desti || desti === '#') return;
         
-            // Si és una àncora interna (#mons_minims o mons_minims)
             if (desti.startsWith('#') || !desti.includes('://')) {
-                const idNetejat = desti.replace('#', '').trim();
-        
-                // Cridem la teva funció existent per canviar de secció
-                if (typeof canviarSeccio === 'function') {
-                    canviarSeccio(idNetejat);
-                }
+                canviarSeccio(desti);
             } else {
-                // Enllaç extern (WhatsApp, xarxes, etc.)
                 window.open(desti, '_blank');
             }
         }    
@@ -369,15 +362,12 @@
             const bloc = document.createElement('div');
             bloc.className = 'bloc-imatge-text';
             
-            // Posició de la imatge
             if (item.situacioImatge && item.situacioImatge.toLowerCase().trim() === 'dreta') {
                 bloc.classList.add('orientacio-dreta');
             }
         
-            // Mida de la imatge
             const midaClass = 'mida-' + (item.midaImatge ? item.midaImatge.toLowerCase().trim() : 'mitjana');
             
-            // Config de colors per defecte des del full Components
             const configDefecte = dadesWeb.components['bloc_imatge_text'] || {
                 colorFonsDefecte: '#FFFFFF',
                 colorTextDefecte: '#24153F'
@@ -387,13 +377,12 @@
             const text = item.colorText || configDefecte.colorTextDefecte;
         
             bloc.style.backgroundColor = fons;
-            bloc.style.borderColor = (fons.toUpperCase() === '#FFFFFF') ? 'var(--color-accent)' : 'var(--color-vivid)';
+            bloc.style.borderColor = (fons.toUpperCase() === '#FFFFFF') ? 'var(--color-accent, #AC80FF)' : 'var(--color-vivid, #340094)';
         
             const urlImatge = item.imatgeId && item.imatgeId !== '#N/A' && item.imatgeId.trim() !== ''
                 ? `https://drive.google.com/thumbnail?sz=w800&id=${item.imatgeId.trim()}` 
                 : 'logo_mm_600.jpg';
         
-            // Construcció CONDICIONAL del botó
             let htmlBoto = '';
             if (item.textBoto && item.linkBoto) {
                 const alineacio = (item.alineacioBoto || 'Esquerra').toLowerCase().trim();
@@ -424,7 +413,6 @@
             return bloc;
         }
 
-        
         function crearBotoCTA(item) {
             const contenidor = document.createElement('div');
             const alineacio = (item.alineacioBoto || 'Centre').toLowerCase().trim();
@@ -465,7 +453,6 @@
             const card = document.createElement('div');
             card.className = 'targeta-imatge-text';
         
-            // 1. Lectura de colors (prioritat a l'item, si no al diccionari de Components)
             const configDefecte = dadesWeb.components['targeta_imatge_text'] || {
                 colorFonsDefecte: '#24153F',
                 colorTextDefecte: '#E3D4FF'
@@ -474,23 +461,19 @@
             const fons = item.colorFons || configDefecte.colorFonsDefecte;
             const text = item.colorText || configDefecte.colorTextDefecte;
         
-            // 2. Configuració d'amplada i alçada configurables des del Sheets
-            // Si no s'especifica ample, per defecte és ~280px per cabre 3-4 en una fila
             const ample = item.ample ? item.ample : '280px';
             const altImatge = item.altImatge ? item.altImatge : '200px';
         
             card.style.backgroundColor = fons;
             card.style.width = ample;
-            card.style.flex = `0 1 ${ample}`; // Permet adaptabilitat fluïda
+            card.style.flex = `0 1 ${ample}`;
         
-            // 3. Imatge
             const urlImatge = item.imatgeId && item.imatgeId !== '#N/A' && item.imatgeId.trim() !== ''
                 ? `https://drive.google.com/thumbnail?sz=w800&id=${item.imatgeId.trim()}`
                 : 'logo_mm_600.jpg';
         
             const enllac = item.linkBoto || item.link || '#';
         
-            // Esdeveniment de navegació si hi ha un link definit
             if (enllac !== '#') {
                 card.onclick = (e) => navegarA(enllac, e);
             }
@@ -507,7 +490,6 @@
         
             return card;
         }        
-        
     </script>
 </body>
 </html>
