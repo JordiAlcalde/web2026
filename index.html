@@ -177,13 +177,13 @@
                 tipusComponent: (fila[7] || '').trim(),
                 situacioImatge: (fila[8] || 'Esquerra').trim(),
                 midaImatge: (fila[9] || 'Mitjana').trim(),
-                // Columnes K, L, M (índexs 10, 11 i 12 al CSV)
                 textBoto: (fila[10] || '').trim(),
                 linkBoto: (fila[11] || '').trim(),
                 alineacioBoto: (fila[12] || 'Centre').trim(),
-                // Colors opcionals si n'hi hagués
-                colorFons: (fila[13] || '').trim(),
-                colorText: (fila[14] || '').trim()
+                // Nova columna de control de fila (Columna N al Sheets / Índex 13)
+                novaFila: fila[13] ? (fila[13].toUpperCase().trim() === 'TRUE' || fila[13].toUpperCase().trim() === 'SI') : false,
+                colorFons: (fila[14] || '').trim(),
+                colorText: (fila[15] || '').trim()
             })).filter(item => item.id !== '');
         }
 
@@ -253,26 +253,40 @@
                     seccioHTML.innerHTML = `<h1 style="color: var(--color-clar); padding: 2rem 0;">${pagina.titol}</h1>`;
                 }
                 
-                const elementsSeccio = dadesWeb.continguts.filter(item => item.seccio === pagina.id);
-                
-                if (elementsSeccio.length > 0) {
-                    const contenidorContinguts = document.createElement('div');
-                    contenidorContinguts.className = 'contenidor-continguts-seccio';
-                
-                    elementsSeccio.forEach(item => {
-                        const tipus = item.tipusComponent ? item.tipusComponent.toLowerCase().trim() : '';
-                        
-                        if (tipus === 'bloc_imatge_text') {
-                            contenidorContinguts.appendChild(crearBlocImatgeText(item));
-                        } else if (tipus === 'boto_cta') {
-                            contenidorContinguts.appendChild(crearBotoCTA(item));
-                        } else {
-                            contenidorContinguts.appendChild(crearTargetaElement(item));
-                        }
-                    });
-                
-                    seccioHTML.appendChild(contenidorContinguts);
-                }
+                    const elementsSeccio = dadesWeb.continguts.filter(item => item.seccio === pagina.id);
+                    
+                    if (elementsSeccio.length > 0) {
+                        const contenidorContinguts = document.createElement('div');
+                        contenidorContinguts.className = 'contenidor-continguts-seccio';
+                    
+                        let contenidorFilaTargetes = null;
+                    
+                        elementsSeccio.forEach(item => {
+                            const tipus = item.tipusComponent ? item.tipusComponent.toLowerCase().trim() : '';
+                    
+                            if (tipus === 'targeta_imatge_text') {
+                                // Si és la primera targeta O si 'novaFila' és true, creem un nou contenidor de fila
+                                if (!contenidorFilaTargetes || item.novaFila) {
+                                    contenidorFilaTargetes = document.createElement('div');
+                                    contenidorFilaTargetes.className = 'contenidor-targetes-fira';
+                                    contenidorContinguts.appendChild(contenidorFilaTargetes);
+                                }
+                                contenidorFilaTargetes.appendChild(crearTargetaImatgeText(item));
+                            } else {
+                                contenidorFilaTargetes = null; // Reset per a altres components
+                    
+                                if (tipus === 'bloc_imatge_text') {
+                                    contenidorContinguts.appendChild(crearBlocImatgeText(item));
+                                } else if (tipus === 'boto_cta') {
+                                    contenidorContinguts.appendChild(crearBotoCTA(item));
+                                } else {
+                                    contenidorContinguts.appendChild(crearTargetaElement(item));
+                                }
+                            }
+                        });
+                    
+                        seccioHTML.appendChild(contenidorContinguts);
+                    }
         
                 contenidorPrincipal.appendChild(seccioHTML);
             });
