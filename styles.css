@@ -29,14 +29,18 @@ body {
     overflow-x: hidden;
 }
 
-/* --- BARRA DE NAVEGACIÓ --- */
+
+/* ==========================================================================
+   BARRA DE NAVEGACIÓ (FONS BLANC & INDICADOR ACTIU)
+   ========================================================================== */
 .nav-principal {
-    background-color: var(--color-primari);
-    border-bottom: 2px solid var(--color-vivid);
+    background-color: #FFFFFF; /* Fons blanc per a millor integració del logo */
+    border-bottom: 2px solid var(--color-accent, #AC80FF);
     position: sticky;
     top: 0;
     z-index: 1000;
     padding: 0.6rem 1.5rem;
+    box-shadow: 0 2px 10px rgba(36, 21, 63, 0.08); /* Ombra suau per separar del cos */
 }
 
 .nav-contenidor {
@@ -55,7 +59,7 @@ body {
 }
 
 .logo-imatge {
-    height: 40px;
+    height: 42px;
     width: auto;
     display: block;
     object-fit: contain;
@@ -63,29 +67,46 @@ body {
 
 .nom-marca {
     font-size: 1.25rem;
-    font-weight: 600;
-    color: var(--color-clar);
+    font-weight: 700;
+    color: var(--color-fons-fosc, #24153F); /* Text fosc per ressaltar sobre blanc */
     letter-spacing: 0.5px;
     white-space: nowrap;
 }
 
+/* --- ENLLAÇOS DEL MENÚ --- */
 .menu-links {
     display: flex;
-    gap: 1.5rem;
+    gap: 1rem;
     list-style: none;
+    align-items: center;
 }
 
-.menu-links a {
-    color: var(--color-suau);
+.menu-links li a {
+    color: var(--color-fons-fosc, #24153F); /* Text principal fosc */
     text-decoration: none;
-    font-weight: 500;
+    font-weight: 600;
     font-size: 0.95rem;
-    transition: color 0.2s ease;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    border: 1.5px solid transparent; /* Reserva espai pel marc */
+    transition: all 0.25s ease;
 }
 
-.menu-links a:hover {
-    color: var(--color-accent);
+/* Efecte en passar-hi el ratolí (Hover) */
+.menu-links li a:hover {
+    color: var(--color-vivid, #340094);
+    background-color: rgba(227, 212, 255, 0.3); /* fons lila molt suau */
 }
+
+/* OPCIÓ ACTIVA / TRIADA: Ressaltada amb fons fosc de la paleta i text clar */
+.menu-links li.actiu a,
+.menu-links li a.actiu {
+    background-color: var(--color-vivid, #340094);
+    color: #FFFFFF !important;
+    border-color: var(--color-accent, #AC80FF);
+    font-weight: 600;
+}
+
 
 /* --- CONTENIDOR PRINCIPAL --- */
 #seccions-contenidor {
