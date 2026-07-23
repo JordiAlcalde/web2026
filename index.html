@@ -214,8 +214,44 @@
                 seccioHTML.id = `pantalla-${pagina.id}`;
                 seccioHTML.className = 'seccio-web';
                 
-                // ... Lògica del Hero ...
-                
+                // --- 1. RENDERITZACIÓ DEL HERO ---
+                const teImatge = pagina.heroImatge && pagina.heroImatge.trim() !== '' && pagina.heroImatge.trim() !== '#N/A';
+                const urlHeroImatge = teImatge ? `https://drive.google.com/thumbnail?sz=w1600&id=${pagina.heroImatge.trim()}` : '';
+        
+                const estilFons = teImatge 
+                    ? `background-image: linear-gradient(rgba(36, 21, 63, 0.65), rgba(36, 21, 63, 0.85)), url('${urlHeroImatge}');` 
+                    : `background-color: var(--color-fons-fosc, #24153F);`;
+        
+                const htmlHero = `
+                    <div class="hero-pagina" style="${estilFons}">
+                        <div class="hero-contenedor-flex">
+                            <div class="hero-caixa-contingut" style="
+                                max-width: ${pagina.heroAmple}; 
+                                transform: translateX(${pagina.heroLeftSpan}); 
+                                text-align: ${pagina.heroAlign};
+                                color: ${pagina.heroFontColor};">
+                                
+                                <h1 style="font-size: 2.2rem; font-weight: 700; color: ${pagina.heroFontColor}; line-height: 1.25; margin-bottom: 0.8rem;">
+                                    ${pagina.heroTitol}
+                                </h1>
+                                
+                                ${pagina.heroText ? `
+                                    <div class="hero-cos-text" style="font-size: 1.1rem; font-weight: 400; color: ${pagina.heroFontColor}; margin-top: 0.8rem;">
+                                        ${pagina.heroText}
+                                    </div>` : ''}
+                                
+                                ${pagina.heroDestacat ? `
+                                    <div class="destacat-hero" style="font-size: 1.2rem; font-weight: 600; color: ${pagina.heroFontColor}; margin-top: 1rem;">
+                                        ${pagina.heroDestacat}
+                                    </div>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+        
+                seccioHTML.innerHTML = htmlHero;
+        
+                // --- 2. RENDERITZACIÓ DELS CONTINGUTS DE LA SECCIÓ ---
                 const elementsSeccio = dadesWeb.continguts.filter(item => item.seccio === pagina.id);
                 
                 if (elementsSeccio.length > 0) {
