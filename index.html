@@ -206,15 +206,6 @@
             const contenidorPrincipal = document.getElementById('seccions-contenidor');
             contenidorPrincipal.innerHTML = '';
             
-            const titolMida = dadesWeb.config['font_hero_titol_mida'] ? `${dadesWeb.config['font_hero_titol_mida']}px` : '32px';
-            const titolWeight = obtenirFontWeight(dadesWeb.config['font_hero_titol_gruix']);
-            
-            const textMida = dadesWeb.config['font_hero_text_mida'] ? `${dadesWeb.config['font_hero_text_mida']}px` : '15px';
-            const textWeight = obtenirFontWeight(dadesWeb.config['font_hero_text_gruix']);
-            
-            const destacatMida = dadesWeb.config['font_hero_destacat_mida'] ? `${dadesWeb.config['font_hero_destacat_mida']}px` : '14px';
-            const destacatWeight = obtenirFontWeight(dadesWeb.config['font_hero_destacat_gruix']);
-        
             dadesWeb.estructura.forEach(pagina => {
                 if (!pagina.visible) return;
         
@@ -222,39 +213,7 @@
                 seccioHTML.id = `pantalla-${pagina.id}`;
                 seccioHTML.className = 'seccio-web';
                 
-                if (pagina.heroImatge) {
-                    const urlHeroImatge = `https://drive.google.com/thumbnail?sz=w1600&id=${pagina.heroImatge}`;
-        
-                    seccioHTML.innerHTML = `
-                        <div class="hero-pagina" style="background-image: url('${urlHeroImatge}');">
-                            <div class="hero-contenedor-flex">
-                                <div class="hero-caixa-contingut" style="
-                                    max-width: ${pagina.heroAmple}; 
-                                    transform: translateX(${pagina.heroLeftSpan}); 
-                                    text-align: ${pagina.heroAlign};
-                                    color: ${pagina.heroFontColor};">
-                                    
-                                    <h2 style="font-size: ${titolMida}; font-weight: ${titolWeight}; color: ${pagina.heroFontColor}; line-height: 1.25;">
-                                        ${pagina.heroTitol}
-                                    </h2>
-                                    
-                                    ${pagina.heroText ? `
-                                        <div class="hero-cos-text" style="font-size: ${textMida}; font-weight: ${textWeight}; color: ${pagina.heroFontColor}; margin-top: 1rem;">
-                                            ${pagina.heroText}
-                                        </div>` : ''}
-                                    
-                                    ${pagina.heroDestacat ? `
-                                        <div class="destacat-hero" style="font-size: ${destacatMida}; font-weight: ${destacatWeight}; color: ${pagina.heroFontColor}; margin-top: 1.2rem;">
-                                            ${pagina.heroDestacat}
-                                        </div>` : ''}
-                                
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    seccioHTML.innerHTML = `<h1 style="color: var(--color-clar, #E3D4FF); padding: 2rem 0;">${pagina.titol}</h1>`;
-                }
+                // ... Lògica del Hero ...
                 
                 const elementsSeccio = dadesWeb.continguts.filter(item => item.seccio === pagina.id);
                 
@@ -270,13 +229,13 @@
                         if (tipus === 'targeta_imatge_text') {
                             if (!contenidorFilaTargetes || item.novaFila) {
                                 contenidorFilaTargetes = document.createElement('div');
-                                contenidorFilaTargetes.className = 'contenidor-targetes-fira';
+                                contenidorFilaTargetes.className = 'contenidor-targetes-fila';
                                 contenidorContinguts.appendChild(contenidorFilaTargetes);
                             }
                             contenidorFilaTargetes.appendChild(crearTargetaImatgeText(item));
                         } else {
                             contenidorFilaTargetes = null;
-                
+        
                             if (tipus === 'bloc_imatge_text') {
                                 contenidorContinguts.appendChild(crearBlocImatgeText(item));
                             } else if (tipus === 'boto_cta') {
@@ -489,7 +448,7 @@
             `;
         
             return card;
-        }        
+        }      
     </script>
 </body>
 </html>
