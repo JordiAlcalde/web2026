@@ -460,6 +460,53 @@
         
             return contenidor;
         }
+
+        function crearTargetaImatgeText(item) {
+            const card = document.createElement('div');
+            card.className = 'targeta-imatge-text';
+        
+            // 1. Lectura de colors (prioritat a l'item, si no al diccionari de Components)
+            const configDefecte = dadesWeb.components['targeta_imatge_text'] || {
+                colorFonsDefecte: '#24153F',
+                colorTextDefecte: '#E3D4FF'
+            };
+        
+            const fons = item.colorFons || configDefecte.colorFonsDefecte;
+            const text = item.colorText || configDefecte.colorTextDefecte;
+        
+            // 2. Configuració d'amplada i alçada configurables des del Sheets
+            // Si no s'especifica ample, per defecte és ~280px per cabre 3-4 en una fila
+            const ample = item.ample ? item.ample : '280px';
+            const altImatge = item.altImatge ? item.altImatge : '200px';
+        
+            card.style.backgroundColor = fons;
+            card.style.width = ample;
+            card.style.flex = `0 1 ${ample}`; // Permet adaptabilitat fluïda
+        
+            // 3. Imatge
+            const urlImatge = item.imatgeId && item.imatgeId !== '#N/A' && item.imatgeId.trim() !== ''
+                ? `https://drive.google.com/thumbnail?sz=w800&id=${item.imatgeId.trim()}`
+                : 'logo_mm_600.jpg';
+        
+            const enllac = item.linkBoto || item.link || '#';
+        
+            // Esdeveniment de navegació si hi ha un link definit
+            if (enllac !== '#') {
+                card.onclick = (e) => navegarA(enllac, e);
+            }
+        
+            card.innerHTML = `
+                <div class="caixa-img-targeta" style="height: ${altImatge};">
+                    <img src="${urlImatge}" alt="${item.titol || 'Mínim Món'}">
+                </div>
+                <div class="caixa-text-targeta">
+                    ${item.titol ? `<h3 style="color: ${text};">${item.titol}</h3>` : ''}
+                    ${item.descripcio ? `<p style="color: ${text}; opacity: 0.9;">${item.descripcio.replace(/\n/g, '<br>')}</p>` : ''}
+                </div>
+            `;
+        
+            return card;
+        }        
         
     </script>
 </body>
