@@ -316,17 +316,30 @@
         function canviarSeccio(idSeccio) {
             const menu = document.getElementById('menu-navegacio');
             if (menu) menu.classList.remove('obert');
-
+        
             const idNetejat = idSeccio.replace('#', '').replace('pantalla-', '').trim();
             const seccions = document.querySelectorAll('.seccio-web');
             
+            // Treiem la classe activa de totes les seccions
             seccions.forEach(s => s.classList.remove('activa'));
             
+            // Activem la secció destí
             const seccioDesti = document.getElementById(`pantalla-${idNetejat}`) || document.getElementById(idNetejat);
             if (seccioDesti) {
                 seccioDesti.classList.add('activa');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
+        
+            // --- RESSALTAR L'OPCIÓ ACTIVA A LA BARRA DE NAVEGACIÓ ---
+            const linksMenu = document.querySelectorAll('#menu-navegacio a');
+            linksMenu.forEach(a => {
+                const href = a.getAttribute('href') || '';
+                if (href.replace('#', '') === idNetejat) {
+                    a.classList.add('actiu');
+                } else {
+                    a.classList.remove('actiu');
+                }
+            });
         }
 
         function activarSeccioInicial() {
