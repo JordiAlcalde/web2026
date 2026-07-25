@@ -221,6 +221,11 @@
                 const estilFons = teImatge 
                     ? `background-image: linear-gradient(rgba(36, 21, 63, 0.65), rgba(36, 21, 63, 0.85)), url('${urlHeroImatge}');` 
                     : `background-color: var(--color-fons-fosc, #24153F);`;
+
+                // Un degradat suau només a la part esquerra (on hi ha el text) i transparent a la dreta (per veure la fusta)
+                //const estilFons = teImatge 
+                    //? `background-image: linear-gradient(to right, rgba(36, 21, 63, 0.75) 0%, rgba(36, 21, 63, 0.25) 60%, rgba(36, 21, 63, 0) 100%), url('${urlHeroImatge}');` 
+                    //: `background-color: var(--color-fons-fosc, #24153F);`;
         
                 const htmlHero = `
                     <div class="hero-pagina" style="${estilFons}">
