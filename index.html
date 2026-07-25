@@ -356,10 +356,15 @@
         function toggleMenuMobil() {
             const menu = document.getElementById('menu-navegacio');
             if (menu) menu.classList.toggle('obert');
-        }
+        }   
 
         function navegarA(desti, event) {
             if (event) event.preventDefault();
+            
+            // Tancar el menú mòbil si està obert
+            const menu = document.getElementById('menu-navegacio');
+            if (menu) menu.classList.remove('obert');
+        
             if (!desti || desti === '#') return;
         
             if (desti.startsWith('#') || !desti.includes('://')) {
@@ -367,7 +372,7 @@
             } else {
                 window.open(desti, '_blank');
             }
-        }    
+        }
 
         /* *************************************************************
         /* C O M P O N E N T S 
