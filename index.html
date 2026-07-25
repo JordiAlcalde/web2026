@@ -496,12 +496,23 @@
             const fons = item.colorFons || configDefecte.colorFonsDefecte;
             const text = item.colorText || configDefecte.colorTextDefecte;
         
-            const ample = item.ample ? item.ample : '280px';
-            const altImatge = item.altImatge ? item.altImatge : '200px';
+            // --- PROCESSAMENT DE MIDES FLEXIBLES (% o PX) ---
+            // Si escrius "280" s'interpreta "280px" o "30%" si porta símbol. Per defecte 280px.
+            let ampleCard = '280px';
+            if (item.ample && item.ample.trim() !== '' && item.ample.trim() !== '#N/A') {
+                const v = item.ample.trim();
+                ampleCard = (!isNaN(v)) ? `${v}px` : v;
+            }
+        
+            let alçadaImg = '200px';
+            if (item.altImatge && item.altImatge.trim() !== '' && item.altImatge.trim() !== '#N/A') {
+                const v = item.altImatge.trim();
+                alçadaImg = (!isNaN(v)) ? `${v}px` : v;
+            }
         
             card.style.backgroundColor = fons;
-            card.style.width = ample;
-            card.style.flex = `0 1 ${ample}`;
+            card.style.width = ampleCard;
+            card.style.flex = `0 1 ${ampleCard}`;
         
             const urlImatge = item.imatgeId && item.imatgeId !== '#N/A' && item.imatgeId.trim() !== ''
                 ? `https://drive.google.com/thumbnail?sz=w800&id=${item.imatgeId.trim()}`
@@ -514,17 +525,18 @@
             }
         
             card.innerHTML = `
-                <div class="caixa-img-targeta" style="height: ${altImatge};">
-                    <img src="${urlImatge}" alt="${item.titol || 'Mínim Món'}">
+                <div class="caixa-img-targeta" style="height: ${alçadaImg}; overflow: hidden;">
+                    <img src="${urlImatge}" alt="${item.titol || 'Mínim Món'}" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
-                <div class="caixa-text-targeta">
-                    ${item.titol ? `<h3 style="color: ${text};">${item.titol}</h3>` : ''}
-                    ${item.descripcio ? `<p style="color: ${text}; opacity: 0.9;">${item.descripcio.replace(/\n/g, '<br>')}</p>` : ''}
+                <div class="caixa-text-targeta" style="padding: 1.2rem;">
+                    ${item.titol ? `<h3 style="color: ${text}; font-family: 'Montserrat', sans-serif; font-size: 1.15rem; font-weight: 700; margin-bottom: 0.5rem;">${item.titol}</h3>` : ''}
+                    ${item.descripcio ? `<p style="color: ${text}; opacity: 0.9; font-family: 'Montserrat', sans-serif; font-size: 0.95rem; line-height: 1.4;">${item.descripcio.replace(/\n/g, '<br>')}</p>` : ''}
                 </div>
             `;
         
             return card;
-        }      
+        }    
+        
     </script>
 </body>
 </html>
