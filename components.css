@@ -11,8 +11,8 @@
     gap: 2.5rem;
     width: 100%; /* Ocupa tot l'ample disponible del contenidor pare */
     box-sizing: border-box;
-    background-color: var(--color-fons-fosc); /* O #FFFFFF si prefereixes fons blanc */
-    border: 1px solid var(--color-accent-clar);
+    background-color: var(--color-fons-fosc, #24153F);
+    border: 1px solid var(--color-accent-clar, #AC80FF);
     border-radius: 12px;
     padding: 2rem;
     margin: 2rem 0;
@@ -23,24 +23,12 @@
     flex-direction: row-reverse !important;
 }
 
-/* CONTROLS DE MIDA PER A LA IMATGE */
+/* CONTROLS DE MIDA I ADAPTACIÓ PER A LA IMATGE */
 .bloc-imatge-text .caixa-imatge {
-    flex-shrink: 0; /* Impedeix que la imatge es deforma o es xafi */
-}
-
-.bloc-imatge-text .caixa-imatge.mida-petita {
-    flex-basis: 25%;
-    max-width: 25%;
-}
-
-.bloc-imatge-text .caixa-imatge.mida-mitjana {
-    flex-basis: 40%;
-    max-width: 40%;
-}
-
-.bloc-imatge-text .caixa-imatge.mida-gran {
-    flex-basis: 55%;
-    max-width: 55%;
+    flex-shrink: 0; /* Impedeix que la imatge es deformi o es xafi */
+    box-sizing: border-box;
+    overflow: hidden;
+    border-radius: 8px;
 }
 
 .bloc-imatge-text .caixa-imatge img {
@@ -54,10 +42,11 @@
 /* CONTENIDOR DE TEXT */
 .bloc-imatge-text .caixa-text {
     flex: 1; /* Ocupa tot l'espai restant al costat de la imatge */
+    min-width: 0;
 }
 
 .bloc-imatge-text .caixa-text h2 {
-    color: var(--color-clar);
+    color: var(--color-clar, #E3D4FF);
     font-size: 1.6rem;
     font-weight: 700;
     margin-top: 0;
@@ -65,7 +54,7 @@
 }
 
 .bloc-imatge-text .caixa-text p {
-    color: var(--color-text-suau);
+    color: var(--color-text-suau, #C8AAFF);
     font-size: 1rem;
     line-height: 1.6;
     margin: 0;
@@ -80,11 +69,10 @@
         gap: 1.25rem;
     }
 
-    .bloc-imatge-text .caixa-imatge.mida-petita,
-    .bloc-imatge-text .caixa-imatge.mida-mitjana,
-    .bloc-imatge-text .caixa-imatge.mida-gran {
-        flex-basis: 100%;
-        max-width: 100%;
+    .bloc-imatge-text .caixa-imatge {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+        width: 100% !important;
     }
 }
 
@@ -110,7 +98,7 @@
     align-items: center;
     justify-content: center;
     padding: 0.8rem 1.8rem;
-    font-family: var(--font-principal);
+    font-family: var(--font-principal, 'Montserrat', sans-serif);
     font-size: 1rem;
     font-weight: 600;
     text-decoration: none;
@@ -122,19 +110,18 @@
 
 /* Estils de color (Per defecte: Fons accent lívid, text clar) */
 .boto-cta.estil-principal {
-    background-color: var(--color-vivid); /* #340094 */
+    background-color: var(--color-vivid, #340094);
     color: #FFFFFF;
-    border: 1px solid var(--color-accent); /* #AC80FF */
+    border: 1px solid var(--color-accent, #AC80FF);
 }
 
 .boto-cta.estil-principal:hover {
-    background-color: var(--color-accent); /* #AC80FF */
-    color: var(--color-primari); /* #301269 */
+    background-color: var(--color-accent, #AC80FF);
+    color: var(--color-primari, #301269);
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(172, 128, 255, 0.35);
 }
 
-/* Si va integrat dins d'un bloc de fons blanc (#FFFFFF) */
 .bloc-imatge-text .boto-cta {
     margin-top: 1.2rem;
 }
@@ -165,6 +152,7 @@
     transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
     cursor: pointer;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+    box-sizing: border-box;
 }
 
 /* Efecte Hover al passar-hi el ratolí */
