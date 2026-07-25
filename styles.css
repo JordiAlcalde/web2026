@@ -268,11 +268,11 @@ body {
         transform: none !important;      /* Anul·la el transform/span de PC */
         text-align: left !important;     /* Assegura alineació a l'esquerra */
         max-width: 100% !important;      /* Aprofita tot l'ample de pantalla */
-        padding: 0 0.5rem;               /* Petita separació de seguretat */
+        padding: 0 0.5rem !important;    /* Petita separació de seguretat */
     }
 
     .hero-pagina {
-        padding: 2.5rem 0;               /* Redueix l'alçada del Hero en mòbil */
+        padding: 2.5rem 0 !important;    /* Redueix l'alçada del Hero en mòbil */
     }
    
 }
