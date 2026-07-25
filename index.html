@@ -374,9 +374,18 @@
             }
         }
 
+        
         /* *************************************************************
         /* C O M P O N E N T S 
         /* ********************************************************** */
+
+        function obtenirMidaCSS(valor, defecte = '100%') {
+            if (!valor || valor.trim() === '' || valor.trim() === '#N/A') return defecte;
+            const v = valor.trim();
+            // Si és només un número, hi afegim %
+            return !isNaN(v) ? `${v}%` : v;
+        }
+        
         function crearBlocImatgeText(item) {
             const bloc = document.createElement('div');
             bloc.className = 'bloc-imatge-text';
@@ -385,7 +394,13 @@
                 bloc.classList.add('orientacio-dreta');
             }
         
-            const midaClass = 'mida-' + (item.midaImatge ? item.midaImatge.toLowerCase().trim() : 'mitjana');
+            // --- NOVA LÒGICA PER A LA MIDA FLEXIBLE ---
+            // Si al CSV escrius "40", s'interpreta "40%". També accepta "350px", "30%", etc.
+            let amplaImatge = '50%'; // Valor per defecte si no s'especifica res
+            if (item.midaImatge && item.midaImatge.trim() !== '' && item.midaImatge.trim() !== '#N/A') {
+                const valor = item.midaImatge.trim();
+                amplaImatge = !isNaN(valor) ? `${valor}%` : valor;
+            }
             
             const configDefecte = dadesWeb.components['bloc_imatge_text'] || {
                 colorFonsDefecte: '#FFFFFF',
@@ -418,11 +433,12 @@
                 `;
             }
         
+            // S'aplica 'flex' i 'max-width' directament a la caixa de la imatge segons el valor del Sheet
             bloc.innerHTML = `
-                <div class="caixa-imatge ${midaClass}">
+                <div class="caixa-imatge" style="flex: 0 0 ${amplaImatge}; max-width: ${amplaImatge};">
                     <img src="${urlImatge}" alt="${item.titol || 'Mínim Món'}">
                 </div>
-                <div class="caixa-text">
+                <div class="caixa-text" style="flex: 1;">
                     ${item.titol ? `<h2 style="color: ${text};">${item.titol}</h2>` : ''}
                     ${item.descripcio ? `<p style="color: ${text};">${item.descripcio.replace(/\n/g, '<br>')}</p>` : ''}
                     ${htmlBoto}
