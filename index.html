@@ -181,13 +181,15 @@
                 destacat: fila[6] ? fila[6].toUpperCase().trim() === 'TRUE' : false,
                 tipusComponent: (fila[7] || '').trim(),
                 situacioImatge: (fila[8] || 'Esquerra').trim(),
-                midaImatge: (fila[9] || 'Mitjana').trim(),
+                midaImatge: (fila[9] || '').trim(),
                 textBoto: (fila[10] || '').trim(),
                 linkBoto: (fila[11] || '').trim(),
                 alineacioBoto: (fila[12] || 'Centre').trim(),
                 novaFila: fila[13] ? (fila[13].toUpperCase().trim() === 'TRUE' || fila[13].toUpperCase().trim() === 'SI') : false,
                 colorFons: (fila[14] || '').trim(),
-                colorText: (fila[15] || '').trim()
+                colorText: (fila[15] || '').trim(),
+                ample: (fila[16] || '').trim(),
+                altImatge: (fila[17] || '').trim()
             })).filter(item => item.id !== '');
         }
 
@@ -219,11 +221,6 @@
                 const urlHeroImatge = teImatge ? `https://drive.google.com/thumbnail?sz=w1600&id=${pagina.heroImatge.trim()}` : '';
         
                 const estilFons = teImatge 
-                    // Enfosquiment uniforme a tota la imatge
-                    //? `background-image: linear-gradient(rgba(36, 21, 63, 0.65), rgba(36, 21, 63, 0.85)), url('${urlHeroImatge}');` 
-                    //: `background-color: var(--color-fons-fosc, #24153F);`;
-
-                    // Un degradat suau només a la part esquerra (on hi ha el text) i transparent a la dreta (per veure la fusta)
                     ? `background-image: linear-gradient(to right, rgba(36, 21, 63, 0.75) 0%, rgba(36, 21, 63, 0.25) 60%, rgba(36, 21, 63, 0) 100%), url('${urlHeroImatge}');` 
                     : `background-color: var(--color-fons-fosc, #24153F);`;
         
@@ -325,17 +322,14 @@
             const idNetejat = idSeccio.replace('#', '').replace('pantalla-', '').trim();
             const seccions = document.querySelectorAll('.seccio-web');
             
-            // Treiem la classe activa de totes les seccions
             seccions.forEach(s => s.classList.remove('activa'));
             
-            // Activem la secció destí
             const seccioDesti = document.getElementById(`pantalla-${idNetejat}`) || document.getElementById(idNetejat);
             if (seccioDesti) {
                 seccioDesti.classList.add('activa');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         
-            // --- RESSALTAR L'OPCIÓ ACTIVA A LA BARRA DE NAVEGACIÓ ---
             const linksMenu = document.querySelectorAll('#menu-navegacio a');
             linksMenu.forEach(a => {
                 const href = a.getAttribute('href') || '';
@@ -361,7 +355,6 @@
         function navegarA(desti, event) {
             if (event) event.preventDefault();
             
-            // Tancar el menú mòbil si està obert
             const menu = document.getElementById('menu-navegacio');
             if (menu) menu.classList.remove('obert');
         
@@ -379,13 +372,6 @@
         /* C O M P O N E N T S 
         /* ********************************************************** */
 
-        function obtenirMidaCSS(valor, defecte = '100%') {
-            if (!valor || valor.trim() === '' || valor.trim() === '#N/A') return defecte;
-            const v = valor.trim();
-            // Si és només un número, hi afegim %
-            return !isNaN(v) ? `${v}%` : v;
-        }
-        
         function crearBlocImatgeText(item) {
             const bloc = document.createElement('div');
             bloc.className = 'bloc-imatge-text';
@@ -394,17 +380,19 @@
                 bloc.classList.add('orientacio-dreta');
             }
         
-            // --- NOVA LÒGICA PER A LA MIDA FLEXIBLE ---
-            // Si al CSV escrius "40", s'interpreta "40%". També accepta "350px", "30%", etc.
-            let amplaImatge = '50%'; // Valor per defecte si no s'especifica res
+            // --- CÀLCUL I ADAPTACIÓ DE LA MIDA DE LA IMATGE ---
+            let amplaImatge = '50%'; // Valor per defecte si no ve definit al Sheet
             if (item.midaImatge && item.midaImatge.trim() !== '' && item.midaImatge.trim() !== '#N/A') {
-                const valor = item.midaImatge.trim();
-                amplaImatge = !isNaN(valor) ? `${valor}%` : valor;
+                const valor = item.midaImatge.trim().toLowerCase();
+                if (valor === 'petita') amplaImatge = '25%';
+                else if (valor === 'mitjana') amplaImatge = '40%';
+                else if (valor === 'gran') amplaImatge = '55%';
+                else amplaImatge = !isNaN(valor) ? `${valor}%` : valor;
             }
             
             const configDefecte = dadesWeb.components['bloc_imatge_text'] || {
-                colorFonsDefecte: '#FFFFFF',
-                colorTextDefecte: '#24153F'
+                colorFonsDefecte: '#24153F',
+                colorTextDefecte: '#E3D4FF'
             };
         
             const fons = item.colorFons || configDefecte.colorFonsDefecte;
@@ -432,13 +420,12 @@
                     </div>
                 `;
             }
-        
-            // S'aplica 'flex' i 'max-width' directament a la caixa de la imatge segons el valor del Sheet
+
             bloc.innerHTML = `
                 <div class="caixa-imatge" style="flex: 0 0 ${amplaImatge}; max-width: ${amplaImatge};">
                     <img src="${urlImatge}" alt="${item.titol || 'Mínim Món'}">
                 </div>
-                <div class="caixa-text" style="flex: 1;">
+                <div class="caixa-text">
                     ${item.titol ? `<h2 style="color: ${text};">${item.titol}</h2>` : ''}
                     ${item.descripcio ? `<p style="color: ${text};">${item.descripcio.replace(/\n/g, '<br>')}</p>` : ''}
                     ${htmlBoto}
@@ -496,18 +483,17 @@
             const fons = item.colorFons || configDefecte.colorFonsDefecte;
             const text = item.colorText || configDefecte.colorTextDefecte;
         
-            // --- PROCESSAMENT DE MIDES FLEXIBLES (% o PX) ---
-            // Si escrius "280" s'interpreta "280px" o "30%" si porta símbol. Per defecte 280px.
+            // --- CÀLCUL I ADAPTACIÓ DE MIDES D'AMPLE I ALÇADA ---
             let ampleCard = '280px';
             if (item.ample && item.ample.trim() !== '' && item.ample.trim() !== '#N/A') {
                 const v = item.ample.trim();
                 ampleCard = (!isNaN(v)) ? `${v}px` : v;
             }
         
-            let alçadaImg = '200px';
+            let alcadaImg = '200px';
             if (item.altImatge && item.altImatge.trim() !== '' && item.altImatge.trim() !== '#N/A') {
                 const v = item.altImatge.trim();
-                alçadaImg = (!isNaN(v)) ? `${v}px` : v;
+                alcadaImg = (!isNaN(v)) ? `${v}px` : v;
             }
         
             card.style.backgroundColor = fons;
@@ -525,12 +511,12 @@
             }
         
             card.innerHTML = `
-                <div class="caixa-img-targeta" style="height: ${alçadaImg}; overflow: hidden;">
-                    <img src="${urlImatge}" alt="${item.titol || 'Mínim Món'}" style="width: 100%; height: 100%; object-fit: cover;">
+                <div class="caixa-img-targeta" style="height: ${alcadaImg};">
+                    <img src="${urlImatge}" alt="${item.titol || 'Mínim Món'}">
                 </div>
-                <div class="caixa-text-targeta" style="padding: 1.2rem;">
-                    ${item.titol ? `<h3 style="color: ${text}; font-family: 'Montserrat', sans-serif; font-size: 1.15rem; font-weight: 700; margin-bottom: 0.5rem;">${item.titol}</h3>` : ''}
-                    ${item.descripcio ? `<p style="color: ${text}; opacity: 0.9; font-family: 'Montserrat', sans-serif; font-size: 0.95rem; line-height: 1.4;">${item.descripcio.replace(/\n/g, '<br>')}</p>` : ''}
+                <div class="caixa-text-targeta">
+                    ${item.titol ? `<h3 style="color: ${text};">${item.titol}</h3>` : ''}
+                    ${item.descripcio ? `<p style="color: ${text};">${item.descripcio.replace(/\n/g, '<br>')}</p>` : ''}
                 </div>
             `;
         
