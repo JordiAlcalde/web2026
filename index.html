@@ -330,9 +330,12 @@
                         } else if (tipus === 'galeria_activa') {
                             contenidorFilaTargetes = null;
                             grupGaleria.push(item); // S'acumula l'element a la mateixa galeria
+                        } else if (tipus === 'carrusel_imatges') {
+                            contenidorFilaTargetes = null;
+                            grupCarrusel.push(item); // S'acumulen els elements per al carrusel d'imatges
                         } else {
                             contenidorFilaTargetes = null;
-        
+                        
                             if (tipus === 'bloc_imatge_text') {
                                 contenidorContinguts.appendChild(crearBlocImatgeText(item));
                             } else if (tipus === 'boto_cta') {
