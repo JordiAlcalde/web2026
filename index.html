@@ -721,13 +721,10 @@
         
             const primerItem = items[0] || {};
         
-            // 1. LECTURA DIRECTA DELS VALORS PARSEJATS DEL CSV
-            
-            // Velocitat (en segons) -> fila[18] -> item.velocitat
+            // 1. LECTURA DE VALORS PARSEJATS DEL CSV
             let velocitatVal = opcions.velocitat || primerItem.velocitat || '5';
             velocitatVal = (parseFloat(velocitatVal) || 5) * 1000;
         
-            // Bucle continu -> fila[19] -> item.bucle
             let esBucle = true;
             const rawBucle = opcions.bucle !== undefined ? opcions.bucle : primerItem.bucle;
         
@@ -740,7 +737,6 @@
                 }
             }
         
-            // Ample del bloc -> fila[16] -> item.ample
             let ampleContenidor = '900px';
             const valAmple = primerItem.ample;
             if (valAmple && valAmple.toString().trim() !== '' && valAmple !== '#N/A') {
@@ -748,7 +744,6 @@
                 ampleContenidor = (!isNaN(v)) ? `${v}px` : v;
             }
         
-            // Alçada de la imatge / visor -> fila[17] -> item.altImatge
             let alcadaVisor = '400px';
             const valAlcada = primerItem.altImatge;
             if (valAlcada && valAlcada.toString().trim() !== '' && valAlcada !== '#N/A') {
@@ -756,10 +751,9 @@
                 alcadaVisor = (!isNaN(v)) ? `${v}px` : v;
             }
         
-            // Colors -> fila[14] -> item.colorFons
             const fonsContenidor = obtenirColorHex(opcions.colorFons || primerItem.colorFons, '#24153F');
         
-            // 2. CONSTRUCCIÓ DE L'ESTRUCTURA DOM
+            // 2. CONSTRUCCIÓ ESTRUCTURA DOM
             const wrapper = document.createElement('div');
             wrapper.className = 'carrusel-imatges-wrapper';
             wrapper.style.backgroundColor = fonsContenidor;
@@ -783,6 +777,7 @@
             `;
         
             const elDiapositives = wrapper.querySelector('.carrusel-diapositives');
+            const elPeuText = wrapper.querySelector('.carrusel-peu-text');
             const elTitol = wrapper.querySelector('.carrusel-titol');
             const elDescripcio = wrapper.querySelector('.carrusel-descripcio');
             const btnAnt = wrapper.querySelector('.boto-carrusel.ant');
@@ -800,10 +795,12 @@
                 const enllac = item.linkBoto || item.link || '';
                 const teEnllac = enllac !== '' && enllac !== '#' && enllac !== '#N/A';
         
+                // Assignació unificada del link mitjançant navegarA(desti, event)
                 if (teEnllac) {
                     slide.classList.add('es-clicable');
                     slide.addEventListener('click', (e) => {
                         e.preventDefault();
+                        e.stopPropagation();
                         navegarA(enllac, e);
                     });
                 }
@@ -826,7 +823,29 @@
                 const desc = itemActual.descripcio || '';
                 elDescripcio.innerHTML = desc ? desc.replace(/\n/g, '<br>') : '';
         
-                // Estat dels botons de navegació si bucle és False
+                // Actualització del link al peu de text si existeix
+                const enllacActual = itemActual.linkBoto || itemActual.link || '';
+                const teEnllacActual = enllacActual !== '' && enllacActual !== '#' && enllacActual !== '#N/A';
+        
+                // Eliminem listeners anteriors per evitar duplicacions
+                const nouPeuText = elPeuText.cloneNode(true);
+                elPeuText.parentNode.replaceChild(nouPeuText, elPeuText);
+        
+                const elTitolNou = wrapper.querySelector('.carrusel-titol');
+                const elDescripcioNova = wrapper.querySelector('.carrusel-descripcio');
+        
+                if (teEnllacActual) {
+                    nouPeuText.style.cursor = 'pointer';
+                    nouPeuText.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        navegarA(enllacActual, e);
+                    });
+                } else {
+                    nouPeuText.style.cursor = 'default';
+                }
+        
+                // Control d'estat dels botons de navegació si bucle és False
                 if (!esBucle) {
                     btnAnt.style.opacity = index === 0 ? '0.25' : '1';
                     btnAnt.style.pointerEvents = index === 0 ? 'none' : 'auto';
@@ -859,7 +878,7 @@
                 mostrarDiapositiva(indexActual);
             };
         
-            // 3. AUTOPLAY I INTERACCIÓ
+            // 3. AUTOPLAY I ESDEVENIMENTS
             const iniciarAutoplay = () => {
                 if (esBucle && velocitatVal > 0) {
                     aturarAutoplay();
@@ -874,12 +893,14 @@
                 }
             };
         
-            btnSeg.addEventListener('click', () => {
+            btnSeg.addEventListener('click', (e) => {
+                e.stopPropagation();
                 seguent();
                 iniciarAutoplay();
             });
         
-            btnAnt.addEventListener('click', () => {
+            btnAnt.addEventListener('click', (e) => {
+                e.stopPropagation();
                 anterior();
                 iniciarAutoplay();
             });
