@@ -149,17 +149,36 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-    cursor: pointer;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
     box-sizing: border-box;
 }
 
-/* Efecte Hover al passar-hi el ratolí */
-.targeta-imatge-text:hover {
+/* --- TARGETES CLICABLES (amb enllaç) --- */
+.targeta-imatge-text.es-clicable {
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.targeta-imatge-text.es-clicable:hover {
     transform: translateY(-6px);
     border-color: #AC80FF;
     box-shadow: 0 8px 25px rgba(52, 0, 148, 0.4);
+}
+
+.targeta-imatge-text.es-clicable:hover .caixa-img-targeta img {
+    transform: scale(1.05);
+}
+
+/* --- TARGETES ESTÀTIQUES (purament informatives, sense enllaç) --- */
+.targeta-imatge-text.es-estatica {
+    cursor: default;
+    transform: none !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25) !important;
+    border-color: rgba(172, 128, 255, 0.2) !important;
+}
+
+.targeta-imatge-text.es-estatica .caixa-img-targeta img {
+    transform: none !important; /* Desactiva el zoom de la imatge */
 }
 
 /* Contenidor de la imatge dins la targeta */
@@ -176,10 +195,6 @@
     object-fit: cover;
     display: block;
     transition: transform 0.4s ease;
-}
-
-.targeta-imatge-text:hover .caixa-img-targeta img {
-    transform: scale(1.05);
 }
 
 /* Caixa de text interna */
