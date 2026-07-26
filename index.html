@@ -301,18 +301,18 @@
                 if (elementsSeccio.length > 0) {
                     const contenidorContinguts = document.createElement('div');
                     contenidorContinguts.className = 'contenidor-continguts-seccio';
-                
+        
                     let contenidorFilaTargetes = null;
-                    let grupGaleria = []; // Acumulador per agrupar la galeria activa
-
+                    let grupGaleria = []; // Acumulador per a galeria_activa
+                    let grupCarrusel = []; // Acumulador per a carrusel_imatges
+        
                     const processarGaleriaPendent = () => {
                         if (grupGaleria.length > 0) {
                             contenidorContinguts.appendChild(crearGaleriaActiva(grupGaleria));
                             grupGaleria = [];
                         }
                     };
-
-                    let grupCarrusel = []; // Acumulador per agrupar la galeria activa
+        
                     const processarCarruselPendent = () => {
                         if (grupCarrusel.length > 0) {
                             contenidorContinguts.appendChild(crearCarruselImatges(grupCarrusel));
@@ -322,12 +322,15 @@
                     
                     elementsSeccio.forEach(item => {
                         const tipus = item.tipusComponent ? item.tipusComponent.toLowerCase().trim() : '';
-
-                        // Si el component NO és galeria_activa, buidem qualsevol galeria acumulada
+        
+                        // Neteja creuada d'acumuladors segons el tipus de component actual
                         if (tipus !== 'galeria_activa') {
                             processarGaleriaPendent();
                         }
-                
+                        if (tipus !== 'carrusel_imatges') {
+                            processarCarruselPendent();
+                        }
+        
                         if (tipus === 'targeta_imatge_text') {
                             if (!contenidorFilaTargetes || item.novaFila) {
                                 contenidorFilaTargetes = document.createElement('div');
@@ -337,13 +340,13 @@
                             contenidorFilaTargetes.appendChild(crearTargetaImatgeText(item));
                         } else if (tipus === 'galeria_activa') {
                             contenidorFilaTargetes = null;
-                            grupGaleria.push(item); // S'acumula l'element a la mateixa galeria
+                            grupGaleria.push(item);
                         } else if (tipus === 'carrusel_imatges') {
                             contenidorFilaTargetes = null;
-                            grupCarrusel.push(item); // S'acumulen els elements per al carrusel d'imatges
+                            grupCarrusel.push(item);
                         } else {
                             contenidorFilaTargetes = null;
-                        
+        
                             if (tipus === 'bloc_imatge_text') {
                                 contenidorContinguts.appendChild(crearBlocImatgeText(item));
                             } else if (tipus === 'boto_cta') {
@@ -353,10 +356,11 @@
                             }
                         }
                     });
-
-                    // Si al final de la secció quedaven imatges de galeria acumulades, es creen ara
+        
+                    // Processar qualsevol grup que hagi quedat pendent a la darrera fila de la secció
                     processarGaleriaPendent();
-                
+                    processarCarruselPendent();
+        
                     seccioHTML.appendChild(contenidorContinguts);
                 }
         
