@@ -473,6 +473,7 @@
             return bloc;
         }
 
+        
         function crearBotoCTA(item) {
             const contenidor = document.createElement('div');
             const alineacio = (item.alineacioBoto || 'Centre').toLowerCase().trim();
@@ -508,6 +509,7 @@
             return contenidor;
         }
 
+        
         function crearTargetaImatgeText(item) {
             const card = document.createElement('div');
             card.className = 'targeta-imatge-text';
@@ -566,6 +568,86 @@
         
             return card;
         }    
+
+        
+        function crearGaleriaActiva(items, opcions = {}) {
+            const contenidor = document.createElement('div');
+            contenidor.className = 'galeria-activa-wrapper';
+        
+            // Configuració configurable amb valors per defecte de la paleta
+            const velocitat = opcions.velocitat || 25; // segons per volta completa
+            const espaiat = opcions.espaiat || '1.5rem';
+            const fonsContenidor = obtenirColorHex(opcions.colorFons, 'transparent');
+        
+            contenidor.style.backgroundColor = fonsContenidor;
+        
+            const carruselPista = document.createElement('div');
+            carruselPista.className = 'galeria-activa-pista';
+            carruselPista.style.gap = espaiat;
+            carruselPista.style.animationDuration = `${velocitat}s`;
+        
+            // Funció interna per generar cada bloc individual
+            const generarTargeta = (item) => {
+                const card = document.createElement('div');
+                card.className = 'galeria-item';
+        
+                const fonsCard = obtenirColorHex(item.colorFons, '#24153F');
+                const textCard = obtenirColorHex(item.colorText, '#E3D4FF');
+                
+                let ampleCard = '260px';
+                if (item.ample && item.ample.trim() !== '' && item.ample.trim() !== '#N/A') {
+                    const v = item.ample.trim();
+                    ampleCard = (!isNaN(v)) ? `${v}px` : v;
+                }
+        
+                let alcadaImg = '180px';
+                if (item.altImatge && item.altImatge.trim() !== '' && item.altImatge.trim() !== '#N/A') {
+                    const v = item.altImatge.trim();
+                    alcadaImg = (!isNaN(v)) ? `${v}px` : v;
+                }
+        
+                card.style.backgroundColor = fonsCard;
+                card.style.width = ampleCard;
+                card.style.flex = `0 0 ${ampleCard}`;
+        
+                const enllac = item.linkBoto || item.link || '';
+                const teEnllac = enllac !== '' && enllac !== '#' && enllac !== '#N/A';
+        
+                if (teEnllac) {
+                    card.classList.add('es-clicable');
+                    card.onclick = (e) => navegarA(enllac, e);
+                } else {
+                    card.classList.add('es-estatica');
+                }
+        
+                const urlImatge = item.imatgeId && item.imatgeId !== '#N/A' && item.imatgeId.trim() !== ''
+                    ? `https://drive.google.com/thumbnail?sz=w800&id=${item.imatgeId.trim()}`
+                    : 'logo_mm_600.jpg';
+        
+                card.innerHTML = `
+                    <div class="caixa-img-galeria" style="height: ${alcadaImg};">
+                        <img src="${urlImatge}" alt="${item.titol || 'Mínim Món'}">
+                    </div>
+                    ${(item.titol || item.descripcio) ? `
+                        <div class="caixa-text-galeria">
+                            ${item.titol ? `<h4 style="color: ${textCard};">${item.titol}</h4>` : ''}
+                            ${item.descripcio ? `<p style="color: ${textCard};">${item.descripcio.replace(/\n/g, '<br>')}</p>` : ''}
+                        </div>
+                    ` : ''}
+                `;
+        
+                return card;
+            };
+        
+            // 1. Inserim els elements originals
+            items.forEach(item => carruselPista.appendChild(generarTargeta(item)));
+        
+            // 2. Duplicem el conjunt per aconseguir l'efecte infinit sense salts visuals
+            items.forEach(item => carruselPista.appendChild(generarTargeta(item)));
+        
+            contenidor.appendChild(carruselPista);
+            return contenidor;
+        }        
         
     </script>
 </body>
