@@ -596,14 +596,13 @@
             const contenidor = document.createElement('div');
             contenidor.className = 'galeria-activa-wrapper';
         
-            // 1. Llegim la configuració del primer element o dels paràmetres passats
             const primerItem = items[0] || {};
         
             // Velocitat (per defecte 25 segons)
             let velocitatVal = opcions.velocitat || primerItem.velocitat || '25';
             velocitatVal = parseInt(velocitatVal) || 25;
         
-            // Bucle continu (per defecte TRUE)
+            // Bucle continu
             let esBucle = true;
             if (opcions.bucle !== undefined) {
                 esBucle = Boolean(opcions.bucle);
@@ -621,16 +620,15 @@
             carruselPista.className = 'galeria-activa-pista';
             carruselPista.style.gap = espaiat;
         
-            // Aplicar estil segons si és bucle o scroll manual
             if (esBucle) {
                 contenidor.classList.add('mode-bucle');
                 carruselPista.style.animationDuration = `${velocitatVal}s`;
             } else {
                 contenidor.classList.add('mode-manual');
-                carruselPista.style.animation = 'none'; // Deshabilita l'animació
+                carruselPista.style.animation = 'none';
             }
         
-            // Funció interna per generar cada targeta
+            // Funció interna per generar targetes aïllades i segures
             const generarTargeta = (item) => {
                 const card = document.createElement('div');
                 card.className = 'galeria-item';
@@ -660,7 +658,12 @@
         
                 if (teEnllac) {
                     card.classList.add('es-clicable');
-                    card.onclick = (e) => navegarA(enllac, e);
+                    // Afegim l'esdeveniment de manera aïllada prevenint qualsevol comportament per defecte
+                    card.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        navegarA(enllac, e);
+                    });
                 } else {
                     card.classList.add('es-estatica');
                 }
@@ -670,11 +673,11 @@
                     : 'logo_mm_600.jpg';
         
                 card.innerHTML = `
-                    <div class="caixa-img-galeria" style="height: ${alcadaImg};">
+                    <div class="caixa-img-galeria" style="height: ${alcadaImg}; pointer-events: none;">
                         <img src="${urlImatge}" alt="${item.titol || 'Mínim Món'}">
                     </div>
                     ${(item.titol || item.descripcio) ? `
-                        <div class="caixa-text-galeria">
+                        <div class="caixa-text-galeria" style="pointer-events: none;">
                             ${item.titol ? `<h4 style="color: ${textCard};">${item.titol}</h4>` : ''}
                             ${item.descripcio ? `<p style="color: ${textCard};">${item.descripcio.replace(/\n/g, '<br>')}</p>` : ''}
                         </div>
@@ -684,17 +687,17 @@
                 return card;
             };
         
-            // 1. Inserim els elements originals
+            // 1. Elements originals
             items.forEach(item => carruselPista.appendChild(generarTargeta(item)));
         
-            // 2. Si està actiu el BUCLE, dupliquem els elements per l'efecte infinit
+            // 2. Elements duplicats si hi ha bucle
             if (esBucle) {
                 items.forEach(item => carruselPista.appendChild(generarTargeta(item)));
             }
         
             contenidor.appendChild(carruselPista);
             return contenidor;
-        }        
+        }    
         
     </script>
 </body>
