@@ -721,7 +721,7 @@
         
             const primerItem = items[0] || {};
         
-            // 1. VALORS DE CONFIGURACIÓ DES DE CSV (fila[18], fila[19], fila[16], fila[17])
+            // 1. LECTURA DE VALORS PARSEJATS DEL CSV
             let velocitatVal = opcions.velocitat || primerItem.velocitat || '5';
             velocitatVal = (parseFloat(velocitatVal) || 5) * 1000;
         
@@ -753,7 +753,7 @@
         
             const fonsContenidor = obtenirColorHex(opcions.colorFons || primerItem.colorFons, '#24153F');
         
-            // 2. ESTRUCTURA DOM FIXA
+            // 2. ESTRUCTURA DOM
             const wrapper = document.createElement('div');
             wrapper.className = 'carrusel-imatges-wrapper';
             wrapper.style.backgroundColor = fonsContenidor;
@@ -783,7 +783,21 @@
             const btnAnt = wrapper.querySelector('.boto-carrusel.ant');
             const btnSeg = wrapper.querySelector('.boto-carrusel.seg');
         
-            // Carregament inicial de les diapositives (imatges)
+            // Helper per verificar i executar l'enllaç com a la galeria
+            const executarNavegacio = (item, event) => {
+                const desti = (item.linkBoto || item.link || '').trim();
+                if (desti !== '' && desti !== '#' && desti !== '#N/A') {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    if (typeof navegarA === 'function') {
+                        navegarA(desti, event);
+                    } else {
+                        window.location.href = desti;
+                    }
+                }
+            };
+        
+            // Carregament de diapositives (Imatges)
             items.forEach((item, idx) => {
                 const slide = document.createElement('div');
                 slide.className = `carrusel-slide ${idx === 0 ? 'activa' : ''}`;
@@ -792,34 +806,33 @@
                     ? `https://drive.google.com/thumbnail?sz=w1200&id=${item.imatgeId.trim()}`
                     : 'logo_mm_600.jpg';
         
-                const enllac = item.linkBoto || item.link || '';
-                const teEnllac = enllac !== '' && enllac !== '#' && enllac !== '#N/A';
+                const desti = (item.linkBoto || item.link || '').trim();
+                const teEnllac = desti !== '' && desti !== '#' && desti !== '#N/A';
         
                 if (teEnllac) {
                     slide.classList.add('es-clicable');
-                    slide.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        navegarA(enllac, e);
-                    });
+                    slide.style.cursor = 'pointer';
+                } else {
+                    slide.style.cursor = 'default';
                 }
         
                 slide.innerHTML = `<img src="${urlImatge}" alt="${item.titol || 'Mínim Món'}">`;
+        
+                // Event de clic a la imatge
+                slide.addEventListener('click', (e) => {
+                    executarNavegacio(item, e);
+                });
+        
                 elDiapositives.appendChild(slide);
             });
         
-            // Event de clic únic al peu de text (aprofita el destí de l'item actiu en cada moment)
+            // Event de clic al peu de text (agafa SEMPRE l'índex actualitzat)
             elPeuText.addEventListener('click', (e) => {
                 const itemActual = items[indexActual] || {};
-                const enllacActual = itemActual.linkBoto || itemActual.link || '';
-                if (enllacActual && enllacActual !== '#' && enllacActual !== '#N/A') {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    navegarA(enllacActual, e);
-                }
+                executarNavegacio(itemActual, e);
             });
         
-            // 3. FUNCIÓ PER ACTUALITZAR I MOSTRAR LA DIAPOSITIVA ACTIVA
+            // 3. ACTUALITZACIÓ DINÀMICA DE DIAPOSITIVES I TEXTOS
             const mostrarDiapositiva = (index) => {
                 const slides = wrapper.querySelectorAll('.carrusel-slide');
                 slides.forEach((s, i) => s.classList.toggle('activa', i === index));
@@ -827,7 +840,7 @@
                 const itemActual = items[index] || {};
                 const colorText = obtenirColorHex(itemActual.colorText, '#E3D4FF');
         
-                // Actualització dels textos
+                // Actualitzar textos
                 elTitol.style.color = colorText;
                 elDescripcio.style.color = colorText;
         
@@ -835,12 +848,19 @@
                 const desc = itemActual.descripcio || '';
                 elDescripcio.innerHTML = desc ? desc.replace(/\n/g, '<br>') : '';
         
-                // Actualització del cursor segons si l'item actual té enllaç
-                const enllacActual = itemActual.linkBoto || itemActual.link || '';
-                const teEnllacActual = enllacActual !== '' && enllacActual !== '#' && enllacActual !== '#N/A';
-                elPeuText.style.cursor = teEnllacActual ? 'pointer' : 'default';
+                // Actualitzar estat del cursor al peu de text segons si l'item actiu té enllaç
+                const destiActual = (itemActual.linkBoto || itemActual.link || '').trim();
+                const teEnllac = destiActual !== '' && destiActual !== '#' && destiActual !== '#N/A';
         
-                // Control d'opacitat i bloqueig de botons quan bucle = false
+                if (teEnllac) {
+                    elPeuText.classList.add('es-clicable');
+                    elPeuText.style.cursor = 'pointer';
+                } else {
+                    elPeuText.classList.remove('es-clicable');
+                    elPeuText.style.cursor = 'default';
+                }
+        
+                // Control d'estat de botons de navegació (si bucle = false)
                 if (!esBucle) {
                     btnAnt.style.opacity = index === 0 ? '0.25' : '1';
                     btnAnt.style.pointerEvents = index === 0 ? 'none' : 'auto';
