@@ -251,9 +251,11 @@
 
 /* Pista en moviment continu */
 .galeria-activa-pista {
-    display: flex;
-    width: max-content;
-    animation: movimentCarrusel linear infinite;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important; /* Impedeix que els blocs baixin a la següent línia */
+    width: max-content !important; /* L'ample total serà la suma de tots els blocs */
+    animation: movimentCarrusel 25s linear infinite;
 }
 
 /* Pausa el moviment quan l'usuari vol llegir o interactuar */
@@ -277,6 +279,7 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    flex-shrink: 0 !important; /* Evita que la targeta es faixi petita o es deforma */
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     box-sizing: border-box;
 }
