@@ -698,6 +698,160 @@
             contenidor.appendChild(carruselPista);
             return contenidor;
         }    
+
+        
+        
+        function crearCarruselImatges(items, opcions = {}) {
+            if (!items || items.length === 0) return document.createElement('div');
+        
+            const primerItem = items[0] || {};
+        
+            // Configuració des de Sheets / Opcions
+            let velocitatVal = opcions.velocitat || primerItem.velocitat || '5';
+            velocitatVal = (parseFloat(velocitatVal) || 5) * 1000;
+        
+            let esBucle = true;
+            if (opcions.bucle !== undefined) {
+                esBucle = Boolean(opcions.bucle);
+            } else if (primerItem.bucle !== undefined && primerItem.bucle !== '') {
+                const valBucle = primerItem.bucle.toString().trim().toLowerCase();
+                esBucle = !(valBucle === 'false' || valBucle === 'no' || valBucle === '0');
+            }
+        
+            const fonsContenidor = obtenirColorHex(opcions.colorFons || primerItem.colorFons, '#24153F');
+        
+            const wrapper = document.createElement('div');
+            wrapper.className = 'carrusel-imatges-wrapper';
+            wrapper.style.backgroundColor = fonsContenidor;
+        
+            let indexActual = 0;
+            let temporitzador = null;
+        
+            // Estructura amb botons flanquejant el visor principal de la imatge
+            wrapper.innerHTML = `
+                <div class="carrusel-caixa-principal">
+                    <button class="boto-carrusel ant" aria-label="Anterior">&#10094;</button>
+                    <div class="carrusel-visor">
+                        <div class="carrusel-diapositives"></div>
+                    </div>
+                    <button class="boto-carrusel seg" aria-label="Següent">&#10095;</button>
+                </div>
+                <div class="carrusel-peu-text">
+                    <h4 class="carrusel-titol"></h4>
+                    <p class="carrusel-descripcio"></p>
+                </div>
+            `;
+        
+            const elDiapositives = wrapper.querySelector('.carrusel-diapositives');
+            const elTitol = wrapper.querySelector('.carrusel-titol');
+            const elDescripcio = wrapper.querySelector('.carrusel-descripcio');
+            const btnAnt = wrapper.querySelector('.boto-carrusel.ant');
+            const btnSeg = wrapper.querySelector('.boto-carrusel.seg');
+        
+            // Carregament de diapositives
+            items.forEach((item, idx) => {
+                const slide = document.createElement('div');
+                slide.className = `carrusel-slide ${idx === 0 ? 'activa' : ''}`;
+        
+                const urlImatge = item.imatgeId && item.imatgeId !== '#N/A' && item.imatgeId.trim() !== ''
+                    ? `https://drive.google.com/thumbnail?sz=w1200&id=${item.imatgeId.trim()}`
+                    : 'logo_mm_600.jpg';
+        
+                const enllac = item.linkBoto || item.link || '';
+                const teEnllac = enllac !== '' && enllac !== '#' && enllac !== '#N/A';
+        
+                if (teEnllac) {
+                    slide.classList.add('es-clicable');
+                    slide.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        navegarA(enllac, e);
+                    });
+                }
+        
+                slide.innerHTML = `<img src="${urlImatge}" alt="${item.titol || 'Mínim Món'}">`;
+                elDiapositives.appendChild(slide);
+            });
+        
+            const mostrarDiapositiva = (index) => {
+                const slides = wrapper.querySelectorAll('.carrusel-slide');
+                slides.forEach((s, i) => s.classList.toggle('activa', i === index));
+        
+                const itemActual = items[index] || {};
+                const colorText = obtenirColorHex(itemActual.colorText, '#E3D4FF');
+        
+                elTitol.style.color = colorText;
+                elDescripcio.style.color = colorText;
+        
+                elTitol.innerText = itemActual.titol || '';
+                elDescripcio.innerHTML = itemActual.descripcio ? itemActual.descripcio.replace(/\n/g, '<br>') : '';
+        
+                // Control d'estat dels botons quan bucle = false
+                if (!esBucle) {
+                    btnAnt.style.opacity = index === 0 ? '0.25' : '1';
+                    btnAnt.style.pointerEvents = index === 0 ? 'none' : 'auto';
+        
+                    btnSeg.style.opacity = index === items.length - 1 ? '0.25' : '1';
+                    btnSeg.style.pointerEvents = index === items.length - 1 ? 'none' : 'auto';
+                }
+            };
+        
+            const seguent = () => {
+                if (indexActual < items.length - 1) {
+                    indexActual++;
+                } else if (esBucle) {
+                    indexActual = 0;
+                }
+                mostrarDiapositiva(indexActual);
+            };
+        
+            const anterior = () => {
+                if (indexActual > 0) {
+                    indexActual--;
+                } else if (esBucle) {
+                    indexActual = items.length - 1;
+                }
+                mostrarDiapositiva(indexActual);
+            };
+        
+            // Gestió d'Autoplay i Pausa
+            const iniciarAutoplay = () => {
+                if (esBucle && velocitatVal > 0) {
+                    aturarAutoplay();
+                    temporitzador = setInterval(seguent, velocitatVal);
+                }
+            };
+        
+            const aturarAutoplay = () => {
+                if (temporitzador) {
+                    clearInterval(temporitzador);
+                    temporitzador = null;
+                }
+            };
+        
+            // Events de navegació manual
+            btnSeg.addEventListener('click', () => {
+                seguent();
+                iniciarAutoplay();
+            });
+        
+            btnAnt.addEventListener('click', () => {
+                anterior();
+                iniciarAutoplay();
+            });
+        
+            // Activar l'Auto-pausa quan l'usuari interacciona o explora la imatge
+            wrapper.addEventListener('mouseenter', aturarAutoplay);
+            wrapper.addEventListener('mouseleave', iniciarAutoplay);
+            wrapper.addEventListener('touchstart', aturarAutoplay, { passive: true });
+        
+            // Inicialització
+            mostrarDiapositiva(0);
+            iniciarAutoplay();
+        
+            return wrapper;
+        }
+
+        
         
     </script>
 </body>
