@@ -240,27 +240,60 @@
    COMPONENT: GALERIA ACTIVA
    ========================================================================== */
 
-/* Contenidor extern amb tall d'overflow */
+/* Contenidor extern */
 .galeria-activa-wrapper {
     width: 100%;
-    overflow: hidden;
     position: relative;
     padding: 1.5rem 0;
     margin: 1.5rem 0;
 }
 
-/* Pista en moviment continu */
+/* Mode bucle continu infinit */
+.galeria-activa-wrapper.mode-bucle {
+    overflow: hidden;
+}
+
+/* Mode manual: permet scroll horitzontal */
+.galeria-activa-wrapper.mode-manual {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    padding-bottom: 2rem; /* Espai per a la barra de desplaçament */
+}
+
+/* Personalització de la barra de desplaçament (scroll) en mode manual */
+.galeria-activa-wrapper.mode-manual::-webkit-scrollbar {
+    height: 8px;
+}
+
+.galeria-activa-wrapper.mode-manual::-webkit-scrollbar-track {
+    background: #24153F;
+    border-radius: 4px;
+}
+
+.galeria-activa-wrapper.mode-manual::-webkit-scrollbar-thumb {
+    background: #AC80FF;
+    border-radius: 4px;
+}
+
+.galeria-activa-wrapper.mode-manual::-webkit-scrollbar-thumb:hover {
+    background: #C8AAFF;
+}
+
+/* Pista de targetes */
 .galeria-activa-pista {
     display: flex !important;
     flex-direction: row !important;
-    flex-wrap: nowrap !important; /* Impedeix que els blocs baixin a la següent línia */
-    width: max-content !important; /* L'ample total serà la suma de tots els blocs */
+    flex-wrap: nowrap !important;
+    width: max-content !important;
     min-width: max-content !important;
+}
+
+.galeria-activa-wrapper.mode-bucle .galeria-activa-pista {
     animation: movimentCarrusel 25s linear infinite;
 }
 
-/* Pausa el moviment quan l'usuari vol llegir o interactuar */
-.galeria-activa-wrapper:hover .galeria-activa-pista {
+.galeria-activa-wrapper.mode-bucle:hover .galeria-activa-pista {
     animation-play-state: paused;
 }
 
@@ -269,7 +302,7 @@
         transform: translateX(0);
     }
     100% {
-        transform: translateX(-50%); /* Es desplaça exactament la meitat (el conjunt duplicat) */
+        transform: translateX(-50%);
     }
 }
 
@@ -280,12 +313,11 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    flex-shrink: 0 !important; /* Evita que la targeta es faixi petita o es deforma */
+    flex-shrink: 0 !important;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     box-sizing: border-box;
 }
 
-/* Targetes clicables */
 .galeria-item.es-clicable {
     cursor: pointer;
     transition: transform 0.25s ease, border-color 0.25s ease;
@@ -296,12 +328,10 @@
     border-color: #AC80FF;
 }
 
-/* Targetes estàtiques */
 .galeria-item.es-estatica {
     cursor: default;
 }
 
-/* Immagine */
 .caixa-img-galeria {
     width: 100%;
     overflow: hidden;
@@ -315,7 +345,6 @@
     display: block;
 }
 
-/* Text de la galeria */
 .caixa-text-galeria {
     padding: 0.85rem 1rem;
     display: flex;
@@ -338,11 +367,4 @@
     margin: 0;
     line-height: 1.4;
     opacity: 0.9;
-}
-
-/* Adaptabilitat per a pantalles petites */
-@media (max-width: 768px) {
-    .galeria-activa-wrapper {
-        padding: 1rem 0;
-    }
 }
