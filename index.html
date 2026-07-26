@@ -311,7 +311,15 @@
                             grupGaleria = [];
                         }
                     };
-                
+
+                    let grupCarrusel = []; // Acumulador per agrupar la galeria activa
+                    const processarCarruselPendent = () => {
+                        if (grupCarrusel.length > 0) {
+                            contenidorContinguts.appendChild(crearCarruselImatges(grupCarrusel));
+                            grupCarrusel = [];
+                        }
+                    };
+                    
                     elementsSeccio.forEach(item => {
                         const tipus = item.tipusComponent ? item.tipusComponent.toLowerCase().trim() : '';
 
