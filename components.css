@@ -368,3 +368,156 @@
     line-height: 1.4;
     opacity: 0.9;
 }
+
+
+/* ==========================================================================
+   COMPONENT: CARRUSEL D'IMATGES
+   ========================================================================== */
+
+.carrusel-imatges-wrapper {
+    width: 100%;
+    max-width: 900px;
+    margin: 1.5rem auto;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(172, 128, 255, 0.3);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+/* Àrea superior: Visor central flanquejat pels botons d'acció */
+.carrusel-caixa-principal {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem;
+    gap: 0.75rem;
+    background-color: #24153F;
+}
+
+/* Visor centrat per a la imatge */
+.carrusel-visor {
+    flex: 1;
+    position: relative;
+    height: 400px;
+    background-color: #301269;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(172, 128, 255, 0.15);
+}
+
+.carrusel-diapositives {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.carrusel-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.45s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.carrusel-slide.activa {
+    opacity: 1;
+    z-index: 1;
+}
+
+.carrusel-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.carrusel-slide.es-clicable {
+    cursor: pointer;
+}
+
+/* Botons exteriors centrats verticalment respecte a la imatge */
+.boto-carrusel {
+    background: rgba(172, 128, 255, 0.12);
+    color: #E3D4FF;
+    border: 1px solid #AC80FF;
+    border-radius: 50%;
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    user-select: none;
+}
+
+.boto-carrusel:hover {
+    background: #AC80FF;
+    color: #24153F;
+    transform: scale(1.08);
+}
+
+/* Àrea inferior de text */
+.carrusel-peu-text {
+    padding: 1rem 1.5rem;
+    background-color: #24153F;
+    border-top: 1px solid rgba(172, 128, 255, 0.2);
+    text-align: center;
+}
+
+.carrusel-titol {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 0.3rem 0;
+    line-height: 1.3;
+}
+
+.carrusel-descripcio {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 400;
+    margin: 0;
+    line-height: 1.45;
+    opacity: 0.92;
+}
+
+/* Adaptació per a pantalles petites/mòbils */
+@media (max-width: 600px) {
+    .carrusel-caixa-principal {
+        padding: 0.5rem;
+        gap: 0.4rem;
+    }
+
+    .carrusel-visor {
+        height: 260px;
+    }
+
+    .boto-carrusel {
+        width: 34px;
+        height: 34px;
+        font-size: 0.9rem;
+    }
+
+    .carrusel-peu-text {
+        padding: 0.85rem 1rem;
+    }
+
+    .carrusel-titol {
+        font-size: 1rem;
+    }
+
+    .carrusel-descripcio {
+        font-size: 0.82rem;
+    }
+}
