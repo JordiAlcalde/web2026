@@ -536,7 +536,11 @@
             card.style.width = ampleCard;
             card.style.flex = `0 1 ${ampleCard}`;
 
-            // --- GESTIÓ DE L'ENLLAÇ I NAVEGACIÓ ---
+            const urlImatge = item.imatgeId && item.imatgeId !== '#N/A' && item.imatgeId.trim() !== ''
+                ? `https://drive.google.com/thumbnail?sz=w800&id=${item.imatgeId.trim()}`
+                : 'logo_mm_600.jpg';
+
+             // --- GESTIÓ DE L'ENLLAÇ I NAVEGACIÓ ---
             const enllac = item.linkBoto || item.link || '';
             const teEnllac = enllac !== '' && enllac !== '#' && enllac !== '#N/A';
         
@@ -548,17 +552,7 @@
                 // Si no té enllaç, s'assegura que no faci res al fer clic
                 card.classList.add('es-estatica');
                 card.onclick = null;
-            }            
-        
-            const urlImatge = item.imatgeId && item.imatgeId !== '#N/A' && item.imatgeId.trim() !== ''
-                ? `https://drive.google.com/thumbnail?sz=w800&id=${item.imatgeId.trim()}`
-                : 'logo_mm_600.jpg';
-        
-            const enllac = item.linkBoto || item.link || '#';
-        
-            if (enllac !== '#') {
-                card.onclick = (e) => navegarA(enllac, e);
-            }
+            }             
         
             card.innerHTML = `
                 <div class="caixa-img-targeta" style="height: ${alcadaImg};">
