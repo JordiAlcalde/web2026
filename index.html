@@ -229,7 +229,9 @@
                 colorFons: (fila[14] || '').trim(),
                 colorText: (fila[15] || '').trim(),
                 ample: (fila[16] || '').trim(),
-                altImatge: (fila[17] || '').trim()
+                altImatge: (fila[17] || '').trim(),
+                velocitat: (fila[18] || '').trim(),
+                bucle: (fila[19] || '').trim()
             })).filter(item => item.id !== '');
         }
 
@@ -594,19 +596,41 @@
             const contenidor = document.createElement('div');
             contenidor.className = 'galeria-activa-wrapper';
         
-            // Configuració configurable amb valors per defecte de la paleta
-            const velocitat = opcions.velocitat || 25; // segons per volta completa
+            // 1. Llegim la configuració del primer element o dels paràmetres passats
+            const primerItem = items[0] || {};
+        
+            // Velocitat (per defecte 25 segons)
+            let velocitatVal = opcions.velocitat || primerItem.velocitat || '25';
+            velocitatVal = parseInt(velocitatVal) || 25;
+        
+            // Bucle continu (per defecte TRUE)
+            let esBucle = true;
+            if (opcions.bucle !== undefined) {
+                esBucle = Boolean(opcions.bucle);
+            } else if (primerItem.bucle !== undefined && primerItem.bucle !== '') {
+                const valBucle = primerItem.bucle.toString().trim().toLowerCase();
+                esBucle = !(valBucle === 'false' || valBucle === 'no' || valBucle === '0');
+            }
+        
             const espaiat = opcions.espaiat || '1.5rem';
-            const fonsContenidor = obtenirColorHex(opcions.colorFons, 'transparent');
+            const fonsContenidor = obtenirColorHex(opcions.colorFons || primerItem.colorFons, 'transparent');
         
             contenidor.style.backgroundColor = fonsContenidor;
         
             const carruselPista = document.createElement('div');
             carruselPista.className = 'galeria-activa-pista';
             carruselPista.style.gap = espaiat;
-            carruselPista.style.animationDuration = `${velocitat}s`;
         
-            // Funció interna per generar cada bloc individual
+            // Aplicar estil segons si és bucle o scroll manual
+            if (esBucle) {
+                contenidor.classList.add('mode-bucle');
+                carruselPista.style.animationDuration = `${velocitatVal}s`;
+            } else {
+                contenidor.classList.add('mode-manual');
+                carruselPista.style.animation = 'none'; // Deshabilita l'animació
+            }
+        
+            // Funció interna per generar cada targeta
             const generarTargeta = (item) => {
                 const card = document.createElement('div');
                 card.className = 'galeria-item';
@@ -663,8 +687,10 @@
             // 1. Inserim els elements originals
             items.forEach(item => carruselPista.appendChild(generarTargeta(item)));
         
-            // 2. Duplicem el conjunt per aconseguir l'efecte infinit sense salts visuals
-            items.forEach(item => carruselPista.appendChild(generarTargeta(item)));
+            // 2. Si està actiu el BUCLE, dupliquem els elements per l'efecte infinit
+            if (esBucle) {
+                items.forEach(item => carruselPista.appendChild(generarTargeta(item)));
+            }
         
             contenidor.appendChild(carruselPista);
             return contenidor;
