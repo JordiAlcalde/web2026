@@ -217,6 +217,7 @@
                 titol: (fila[2] || '').trim(),
                 descripcio: (fila[3] || '').trim(),
                 imatgeId: (fila[4] || '').trim(),
+                link: (fila[5] || '').trim(),
                 destacat: fila[6] ? fila[6].toUpperCase().trim() === 'TRUE' : false,
                 tipusComponent: (fila[7] || '').trim(),
                 situacioImatge: (fila[8] || 'Esquerra').trim(),
@@ -300,9 +301,22 @@
                     contenidorContinguts.className = 'contenidor-continguts-seccio';
                 
                     let contenidorFilaTargetes = null;
+                    let grupGaleria = []; // Acumulador per agrupar la galeria activa
+
+                    const processarGaleriaPendent = () => {
+                        if (grupGaleria.length > 0) {
+                            contenidorContinguts.appendChild(crearGaleriaActiva(grupGaleria));
+                            grupGaleria = [];
+                        }
+                    };
                 
                     elementsSeccio.forEach(item => {
                         const tipus = item.tipusComponent ? item.tipusComponent.toLowerCase().trim() : '';
+
+                        // Si el component NO és galeria_activa, buidem qualsevol galeria acumulada
+                        if (tipus !== 'galeria_activa') {
+                            processarGaleriaPendent();
+                        }
                 
                         if (tipus === 'targeta_imatge_text') {
                             if (!contenidorFilaTargetes || item.novaFila) {
@@ -311,6 +325,9 @@
                                 contenidorContinguts.appendChild(contenidorFilaTargetes);
                             }
                             contenidorFilaTargetes.appendChild(crearTargetaImatgeText(item));
+                        } else if (tipus === 'galeria_activa') {
+                            contenidorFilaTargetes = null;
+                            grupGaleria.push(item); // S'acumula l'element a la mateixa galeria
                         } else {
                             contenidorFilaTargetes = null;
         
@@ -323,6 +340,9 @@
                             }
                         }
                     });
+
+                    // Si al final de la secció quedaven imatges de galeria acumulades, es creen ara
+                    processarGaleriaPendent();
                 
                     seccioHTML.appendChild(contenidorContinguts);
                 }
@@ -608,6 +628,7 @@
         
                 card.style.backgroundColor = fonsCard;
                 card.style.width = ampleCard;
+                card.style.minWidth = ampleCard;
                 card.style.flex = `0 0 ${ampleCard}`;
         
                 const enllac = item.linkBoto || item.link || '';
