@@ -255,6 +255,7 @@
     flex-direction: row !important;
     flex-wrap: nowrap !important; /* Impedeix que els blocs baixin a la següent línia */
     width: max-content !important; /* L'ample total serà la suma de tots els blocs */
+    min-width: max-content !important;
     animation: movimentCarrusel 25s linear infinite;
 }
 
@@ -345,4 +346,3 @@
         padding: 1rem 0;
     }
 }
-
