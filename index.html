@@ -721,7 +721,7 @@
         
             const primerItem = items[0] || {};
         
-            // 1. LECTURA DE VALORS PARSEJATS DEL CSV
+            // 1. VALORS DE CONFIGURACIÓ DES DE CSV (fila[18], fila[19], fila[16], fila[17])
             let velocitatVal = opcions.velocitat || primerItem.velocitat || '5';
             velocitatVal = (parseFloat(velocitatVal) || 5) * 1000;
         
@@ -753,7 +753,7 @@
         
             const fonsContenidor = obtenirColorHex(opcions.colorFons || primerItem.colorFons, '#24153F');
         
-            // 2. CONSTRUCCIÓ ESTRUCTURA DOM
+            // 2. ESTRUCTURA DOM FIXA
             const wrapper = document.createElement('div');
             wrapper.className = 'carrusel-imatges-wrapper';
             wrapper.style.backgroundColor = fonsContenidor;
@@ -783,7 +783,7 @@
             const btnAnt = wrapper.querySelector('.boto-carrusel.ant');
             const btnSeg = wrapper.querySelector('.boto-carrusel.seg');
         
-            // Carregament de diapositives
+            // Carregament inicial de les diapositives (imatges)
             items.forEach((item, idx) => {
                 const slide = document.createElement('div');
                 slide.className = `carrusel-slide ${idx === 0 ? 'activa' : ''}`;
@@ -795,7 +795,6 @@
                 const enllac = item.linkBoto || item.link || '';
                 const teEnllac = enllac !== '' && enllac !== '#' && enllac !== '#N/A';
         
-                // Assignació unificada del link mitjançant navegarA(desti, event)
                 if (teEnllac) {
                     slide.classList.add('es-clicable');
                     slide.addEventListener('click', (e) => {
@@ -809,6 +808,18 @@
                 elDiapositives.appendChild(slide);
             });
         
+            // Event de clic únic al peu de text (aprofita el destí de l'item actiu en cada moment)
+            elPeuText.addEventListener('click', (e) => {
+                const itemActual = items[indexActual] || {};
+                const enllacActual = itemActual.linkBoto || itemActual.link || '';
+                if (enllacActual && enllacActual !== '#' && enllacActual !== '#N/A') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    navegarA(enllacActual, e);
+                }
+            });
+        
+            // 3. FUNCIÓ PER ACTUALITZAR I MOSTRAR LA DIAPOSITIVA ACTIVA
             const mostrarDiapositiva = (index) => {
                 const slides = wrapper.querySelectorAll('.carrusel-slide');
                 slides.forEach((s, i) => s.classList.toggle('activa', i === index));
@@ -816,6 +827,7 @@
                 const itemActual = items[index] || {};
                 const colorText = obtenirColorHex(itemActual.colorText, '#E3D4FF');
         
+                // Actualització dels textos
                 elTitol.style.color = colorText;
                 elDescripcio.style.color = colorText;
         
@@ -823,29 +835,12 @@
                 const desc = itemActual.descripcio || '';
                 elDescripcio.innerHTML = desc ? desc.replace(/\n/g, '<br>') : '';
         
-                // Actualització del link al peu de text si existeix
+                // Actualització del cursor segons si l'item actual té enllaç
                 const enllacActual = itemActual.linkBoto || itemActual.link || '';
                 const teEnllacActual = enllacActual !== '' && enllacActual !== '#' && enllacActual !== '#N/A';
+                elPeuText.style.cursor = teEnllacActual ? 'pointer' : 'default';
         
-                // Eliminem listeners anteriors per evitar duplicacions
-                const nouPeuText = elPeuText.cloneNode(true);
-                elPeuText.parentNode.replaceChild(nouPeuText, elPeuText);
-        
-                const elTitolNou = wrapper.querySelector('.carrusel-titol');
-                const elDescripcioNova = wrapper.querySelector('.carrusel-descripcio');
-        
-                if (teEnllacActual) {
-                    nouPeuText.style.cursor = 'pointer';
-                    nouPeuText.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        navegarA(enllacActual, e);
-                    });
-                } else {
-                    nouPeuText.style.cursor = 'default';
-                }
-        
-                // Control d'estat dels botons de navegació si bucle és False
+                // Control d'opacitat i bloqueig de botons quan bucle = false
                 if (!esBucle) {
                     btnAnt.style.opacity = index === 0 ? '0.25' : '1';
                     btnAnt.style.pointerEvents = index === 0 ? 'none' : 'auto';
@@ -865,6 +860,9 @@
                     indexActual++;
                 } else if (esBucle) {
                     indexActual = 0;
+                } else {
+                    aturarAutoplay();
+                    return;
                 }
                 mostrarDiapositiva(indexActual);
             };
@@ -878,7 +876,7 @@
                 mostrarDiapositiva(indexActual);
             };
         
-            // 3. AUTOPLAY I ESDEVENIMENTS
+            // 4. AUTOPLAY I INTERACCIÓ
             const iniciarAutoplay = () => {
                 if (esBucle && velocitatVal > 0) {
                     aturarAutoplay();
@@ -915,7 +913,6 @@
         
             return wrapper;
         }
-
         
         
     </script>
