@@ -721,32 +721,57 @@
         
             const primerItem = items[0] || {};
         
-            // Configuració des de Sheets / Opcions
+            // 1. LECTURA DIRECTA DELS VALORS PARSEJATS DEL CSV
+            
+            // Velocitat (en segons) -> fila[18] -> item.velocitat
             let velocitatVal = opcions.velocitat || primerItem.velocitat || '5';
             velocitatVal = (parseFloat(velocitatVal) || 5) * 1000;
         
+            // Bucle continu -> fila[19] -> item.bucle
             let esBucle = true;
-            if (opcions.bucle !== undefined) {
-                esBucle = Boolean(opcions.bucle);
-            } else if (primerItem.bucle !== undefined && primerItem.bucle !== '') {
-                const valBucle = primerItem.bucle.toString().trim().toLowerCase();
-                esBucle = !(valBucle === 'false' || valBucle === 'no' || valBucle === '0');
+            const rawBucle = opcions.bucle !== undefined ? opcions.bucle : primerItem.bucle;
+        
+            if (rawBucle !== undefined && rawBucle !== '') {
+                if (typeof rawBucle === 'boolean') {
+                    esBucle = rawBucle;
+                } else {
+                    const valStr = rawBucle.toString().trim().toLowerCase();
+                    esBucle = !(valStr === 'false' || valStr === 'no' || valStr === '0');
+                }
             }
         
+            // Ample del bloc -> fila[16] -> item.ample
+            let ampleContenidor = '900px';
+            const valAmple = primerItem.ample;
+            if (valAmple && valAmple.toString().trim() !== '' && valAmple !== '#N/A') {
+                const v = valAmple.toString().trim();
+                ampleContenidor = (!isNaN(v)) ? `${v}px` : v;
+            }
+        
+            // Alçada de la imatge / visor -> fila[17] -> item.altImatge
+            let alcadaVisor = '400px';
+            const valAlcada = primerItem.altImatge;
+            if (valAlcada && valAlcada.toString().trim() !== '' && valAlcada !== '#N/A') {
+                const v = valAlcada.toString().trim();
+                alcadaVisor = (!isNaN(v)) ? `${v}px` : v;
+            }
+        
+            // Colors -> fila[14] -> item.colorFons
             const fonsContenidor = obtenirColorHex(opcions.colorFons || primerItem.colorFons, '#24153F');
         
+            // 2. CONSTRUCCIÓ DE L'ESTRUCTURA DOM
             const wrapper = document.createElement('div');
             wrapper.className = 'carrusel-imatges-wrapper';
             wrapper.style.backgroundColor = fonsContenidor;
+            wrapper.style.maxWidth = ampleContenidor;
         
             let indexActual = 0;
             let temporitzador = null;
         
-            // Estructura amb botons flanquejant el visor principal de la imatge
             wrapper.innerHTML = `
                 <div class="carrusel-caixa-principal">
                     <button class="boto-carrusel ant" aria-label="Anterior">&#10094;</button>
-                    <div class="carrusel-visor">
+                    <div class="carrusel-visor" style="height: ${alcadaVisor};">
                         <div class="carrusel-diapositives"></div>
                     </div>
                     <button class="boto-carrusel seg" aria-label="Següent">&#10095;</button>
@@ -798,15 +823,21 @@
                 elDescripcio.style.color = colorText;
         
                 elTitol.innerText = itemActual.titol || '';
-                elDescripcio.innerHTML = itemActual.descripcio ? itemActual.descripcio.replace(/\n/g, '<br>') : '';
+                const desc = itemActual.descripcio || '';
+                elDescripcio.innerHTML = desc ? desc.replace(/\n/g, '<br>') : '';
         
-                // Control d'estat dels botons quan bucle = false
+                // Estat dels botons de navegació si bucle és False
                 if (!esBucle) {
                     btnAnt.style.opacity = index === 0 ? '0.25' : '1';
                     btnAnt.style.pointerEvents = index === 0 ? 'none' : 'auto';
         
                     btnSeg.style.opacity = index === items.length - 1 ? '0.25' : '1';
                     btnSeg.style.pointerEvents = index === items.length - 1 ? 'none' : 'auto';
+                } else {
+                    btnAnt.style.opacity = '1';
+                    btnAnt.style.pointerEvents = 'auto';
+                    btnSeg.style.opacity = '1';
+                    btnSeg.style.pointerEvents = 'auto';
                 }
             };
         
@@ -828,7 +859,7 @@
                 mostrarDiapositiva(indexActual);
             };
         
-            // Gestió d'Autoplay i Pausa
+            // 3. AUTOPLAY I INTERACCIÓ
             const iniciarAutoplay = () => {
                 if (esBucle && velocitatVal > 0) {
                     aturarAutoplay();
@@ -843,7 +874,6 @@
                 }
             };
         
-            // Events de navegació manual
             btnSeg.addEventListener('click', () => {
                 seguent();
                 iniciarAutoplay();
@@ -854,7 +884,6 @@
                 iniciarAutoplay();
             });
         
-            // Activar l'Auto-pausa quan l'usuari interacciona o explora la imatge
             wrapper.addEventListener('mouseenter', aturarAutoplay);
             wrapper.addEventListener('mouseleave', iniciarAutoplay);
             wrapper.addEventListener('touchstart', aturarAutoplay, { passive: true });
