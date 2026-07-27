@@ -438,6 +438,9 @@
         /* C O M P O N E N T S 
         /* ********************************************************** */
 
+        /* *************************************************************
+        /* bloc_imatge_text
+        /* ********************************************************** */        
         function crearBlocImatgeText(item) {
             const bloc = document.createElement('div');
             bloc.className = 'bloc-imatge-text';
@@ -499,6 +502,9 @@
             return bloc;
         }
 
+        /* *************************************************************
+        /* boto_cta
+        /* ********************************************************** */        
         function crearBotoCTA(item) {
             const contenidor = document.createElement('div');
             const alineacio = (item.alineacioBoto || 'Centre').toLowerCase().trim();
@@ -533,7 +539,10 @@
         
             return contenidor;
         }
-
+        
+        /* *************************************************************
+        /* targeta_imatge_text
+        /* ********************************************************** */
         function crearTargetaImatgeText(item) {
             const card = document.createElement('div');
             card.className = 'targeta-imatge-text';
@@ -589,6 +598,9 @@
             return card;
         }    
 
+        /* *************************************************************
+        /* galeria_activa
+        /* ********************************************************** */        
         function crearGaleriaActiva(items, opcions = {}) {
             const contenidor = document.createElement('div');
             contenidor.className = 'galeria-activa-wrapper';
@@ -690,6 +702,9 @@
             return contenidor;
         }    
 
+        /* *************************************************************
+        /* carrusel_imatges
+        /* ********************************************************** */        
         function crearCarruselImatges(items, opcions = {}) {
             if (!items || items.length === 0) return document.createElement('div');
         
@@ -901,7 +916,10 @@
         
             return wrapper;
         }
-
+        
+        /* *************************************************************
+        /* bloc_text
+        /* ********************************************************** */
         function crearBlocText(item = {}) {
             const bloc = document.createElement('div');
             bloc.className = 'component-bloc-text';
@@ -981,6 +999,81 @@
         
             return bloc;
         }
+
+        /* *************************************************************
+        /* video_1:1, video_16:9, video_9:16
+        /* ********************************************************** */
+        /**
+         * Transforma un enllaç de Google Drive en un enllaç directe de reproducció
+         * @param {string} url - URL de Google Drive (compartida o de cerca)
+         * @returns {string} - URL directa de streaming de Drive
+         */
+        function obtenirUrlDirectaDrive(url) {
+            if (!url) return '';
+            // Extreu l'ID del fitxer de Drive
+            const match = url.match(/(?:id=|\/d\/|\/file\/d\/)([\w-]+)/);
+            if (match && match[1]) {
+                return `https://drive.google.com/uc?export=download&id=${match[1]}`;
+            }
+            return url;
+        }
+        
+        /**
+         * Genera l'HTML del component Vídeo
+         * @param {Object} dades - Dades de la fila de Google Sheets
+         * @returns {string} - Cadena HTML del component
+         */
+        function crearComponentVideo(dades) {
+            // Tipus: video_1:1, video_16:9, video_9:16
+            const tipus = dades.TipusComponent || 'video_16:9';
+            const urlDrive = dades.UrlMedia || '';
+            const titol = dades.Titol || '';
+            const descripcio = dades.Descripcio || '';
+            
+            // Opcions de configuració (des de columna de Sheets o opcions per defecte)
+            const autoStart = dades.AutoStart === 'SI' || dades.AutoStart === true;
+            const mostrarControls = dades.Controls !== 'NO'; // Per defecte mostrar controls
+            
+            // Determinador de ràtio CSS
+            let ratioClass = 'ratio-16-9';
+            if (tipus === 'video_1:1') ratioClass = 'ratio-1-1';
+            if (tipus === 'video_9:16') ratioClass = 'ratio-9-16';
+        
+            const srcDirecta = obtenirUrlDirectaDrive(urlDrive);
+        
+            // Atributs per al reproductor HTML5
+            const atributAutoplay = autoStart ? 'autoplay muted loop' : '';
+            const atributControls = mostrarControls ? 'controls' : '';
+            const playsInline = 'playsinline'; // Crucial per a una navegació fluïda en iOS/mòbil
+        
+            // Construcció del text inferior si existeix
+            let htmlPeu = '';
+            if (titol || descripcio) {
+                htmlPeu = `
+                    <div class="video-peu-text">
+                        ${titol ? `<h3>${titol}</h3>` : ''}
+                        ${descripcio ? `<p>${descripcio}</p>` : ''}
+                    </div>
+                `;
+            }
+        
+            return `
+                <div class="contenidor-video-wrapper">
+                    <div class="caixa-reproductor-video ${ratioClass}">
+                        <video 
+                            src="${srcDirecta}" 
+                            ${atributControls} 
+                            ${atributAutoplay} 
+                            ${playsInline}
+                            preload="metadata">
+                            El teu navegador no suporta la reproducció de vídeo HTML5.
+                        </video>
+                    </div>
+                    ${htmlPeu}
+                </div>
+            `;
+        }
+        
     </script>
 </body>
 </html>
