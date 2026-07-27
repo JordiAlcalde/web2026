@@ -302,7 +302,7 @@
                     const contenidorContinguts = document.createElement('div');
                     contenidorContinguts.className = 'contenidor-continguts-seccio';
         
-                    let contenidorFilaTargetes = null;
+                    let contenidorFilaFlex = null;
                     let grupGaleria = []; // Acumulador per a galeria_activa
                     let grupCarrusel = []; // Acumulador per a carrusel_imatges
         
@@ -324,47 +324,44 @@
                         const tipus = item.tipusComponent ? item.tipusComponent.toLowerCase().trim() : '';
         
                         // Neteja creuada d'acumuladors segons el tipus de component actual
-                        if (tipus !== 'galeria_activa') {
-                            processarGaleriaPendent();
-                        }
-                        if (tipus !== 'carrusel_imatges') {
-                            processarCarruselPendent();
-                        }
+                        if (tipus !== 'galeria_activa') processarGaleriaPendent();
+                        if (tipus !== 'carrusel_imatges') processarCarruselPendent();
         
-                        if (tipus === 'targeta_imatge_text') {
-                            if (!contenidorFilaTargetes || item.novaFila) {
-                                contenidorFilaTargetes = document.createElement('div');
-                                contenidorFilaTargetes.className = 'contenidor-targetes-fila';
-                                contenidorContinguts.appendChild(contenidorFilaTargetes);
-                            }
-                            contenidorFilaTargetes.appendChild(crearTargetaImatgeText(item));
-                        } else if (tipus === 'galeria_activa') {
-                            contenidorFilaTargetes = null;
+                        // 1. COMPONENTS D'AMPLE COMPLET / ACUMULADORS (Trenquen la fila flex)
+                        if (tipus === 'galeria_activa') {
+                            contenidorFilaFlex = null;
                             grupGaleria.push(item);
-                        } else if (tipus === 'carrusel_imatges') {
-                            contenidorFilaTargetes = null;
-                            grupCarrusel.push(item);
-                        } else {
-                            contenidorFilaTargetes = null;
         
-                            if (tipus === 'bloc_imatge_text') {
-                                contenidorContinguts.appendChild(crearBlocImatgeText(item));
-                            } else if (tipus === 'boto_cta') {
-                                contenidorContinguts.appendChild(crearBotoCTA(item));
-                            } else {
-                                contenidorContinguts.appendChild(crearTargetaElement(item));
-                            }
-
+                        } else if (tipus === 'carrusel_imatges') {
+                            contenidorFilaFlex = null;
+                            grupCarrusel.push(item);
+        
+                        } else {
+                            // 2. COMPONENTS EN FILA (Flex / Grid)
+                            // Si el component demana nova fila o no n'hi ha cap de creada, obrim una de nova
                             if (item.novaFila || !contenidorFilaFlex) {
                                 contenidorFilaFlex = document.createElement('div');
                                 contenidorFilaFlex.className = 'contenidor-fila-flex';
                                 contenidorContinguts.appendChild(contenidorFilaFlex);
                             }
-                            
+        
+                            // Inserim el component corresponent dins la fila activa
                             if (tipus === 'bloc_text') {
                                 contenidorFilaFlex.appendChild(crearBlocText(item));
+        
+                            } else if (tipus === 'targeta_imatge_text') {
+                                contenidorFilaFlex.appendChild(crearTargetaImatgeText(item));
+        
+                            } else if (tipus === 'bloc_imatge_text') {
+                                contenidorFilaFlex.appendChild(crearBlocImatgeText(item));
+        
+                            } else if (tipus === 'boto_cta') {
+                                contenidorFilaFlex.appendChild(crearBotoCTA(item));
+        
+                            } else {
+                                // Per defecte, si és un altre tipus de targeta o element
+                                contenidorFilaFlex.appendChild(crearTargetaElement(item));
                             }
-                            
                         }
                     });
         
@@ -377,7 +374,8 @@
         
                 contenidorPrincipal.appendChild(seccioHTML);
             });
-        }
+        }        
+
         
         function crearTargetaElement(item) {
             const card = document.createElement('div');
