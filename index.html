@@ -63,10 +63,6 @@
             'Negre': '#000000'
         };
         
-        /**
-         * Retorna el codi HEX corresponent al nom del color enviat pel CSV/Sheets.
-         * Si ja és un codi HEX o no es troba al diccionari, el manté o aplica el valor per defecte.
-         */
         function obtenirColorHex(nomColor, valorPerDefecte = '#24153F') {
             if (!nomColor || nomColor.trim() === '' || nomColor.trim() === '#N/A') {
                 return valorPerDefecte;
@@ -74,12 +70,10 @@
         
             const net = nomColor.trim();
         
-            // 1. Si és un dels noms definits a la validació de Sheets
             if (MAPA_COLORS[net]) {
                 return MAPA_COLORS[net];
             }
         
-            // 2. Si ja ve com a codi Hexadecimal (ex: #301269 o 301269)
             if (net.startsWith('#')) {
                 return net;
             }
@@ -91,7 +85,7 @@
         }
                 
         function carregarDadesPàgina() {
-            const t = Date.now(); // Evitem memòria cau de Google Sheets
+            const t = Date.now();
             Promise.all([
                 fetch(`${URL_CSV_CONFIG}&_t=${t}`).then(r => r.text()),
                 fetch(`${URL_CSV_ESTRUCTURA}&_t=${t}`).then(r => r.text()),
@@ -258,7 +252,6 @@
                 seccioHTML.id = `pantalla-${pagina.id}`;
                 seccioHTML.className = 'seccio-web';
                 
-                // --- 1. RENDERITZACIÓ DEL HERO ---
                 const teImatge = pagina.heroImatge && pagina.heroImatge.trim() !== '' && pagina.heroImatge.trim() !== '#N/A';
                 const urlHeroImatge = teImatge ? `https://drive.google.com/thumbnail?sz=w1600&id=${pagina.heroImatge.trim()}` : '';
         
@@ -295,7 +288,6 @@
         
                 seccioHTML.innerHTML = htmlHero;
         
-                // --- 2. RENDERITZACIÓ DELS CONTINGUTS DE LA SECCIÓ ---
                 const elementsSeccio = dadesWeb.continguts.filter(item => item.seccio === pagina.id);
                 
                 if (elementsSeccio.length > 0) {
@@ -303,8 +295,8 @@
                     contenidorContinguts.className = 'contenidor-continguts-seccio';
         
                     let contenidorFilaFlex = null;
-                    let grupGaleria = []; // Mantingut únicament per a galeries d'ample complet
-                    let grupCarrusel = []; // Acumulador de diapos per al carrusel actual
+                    let grupGaleria = [];
+                    let grupCarrusel = [];
         
                     const processarGaleriaPendent = () => {
                         if (grupGaleria.length > 0) {
@@ -323,51 +315,49 @@
                     elementsSeccio.forEach(item => {
                         const tipus = item.tipusComponent ? item.tipusComponent.toLowerCase().trim() : '';
         
-                        // Neteja de galeria d'ample complet si trobem un altre component
                         if (tipus !== 'galeria_activa') processarGaleriaPendent();
-        
-                        // Si trobem un tipus diferent a carrusel, processem les diapositives acumulades fins ara
                         if (tipus !== 'carrusel_imatges') processarCarruselPendent();
         
-                        // 1. BLOCS D'AMPLE COMPLET QUE TRENCAN LA FILA (com la Galeria Activa)
                         if (tipus === 'galeria_activa') {
                             contenidorFilaFlex = null;
                             grupGaleria.push(item);
         
                         } else {
-                            // 2. COMPONENTS FLEXIBLES DE FILA (I.e., Bloc Text, Carrusel, Targetes, CTA...)
                             if (item.novaFila || !contenidorFilaFlex) {
-                                // Abans de canviar de fila, si hi havia un carrusel en construcció, el tanquem
                                 processarCarruselPendent();
                                 
                                 contenidorFilaFlex = document.createElement('div');
                                 contenidorFilaFlex.className = 'contenidor-fila-flex';
+                                
+                                // LLEGEIX LA POSICIÓ DINÀMICA DE LA COLUMNA SituacióImatge
+                                const pos = (item.situacioImatge || '').toLowerCase().trim();
+                                if (pos === 'centre' || pos === 'center') {
+                                    contenidorFilaFlex.classList.add('posicio-centre');
+                                } else if (pos === 'dreta' || pos === 'right') {
+                                    contenidorFilaFlex.classList.add('posicio-dreta');
+                                } else {
+                                    contenidorFilaFlex.classList.add('posicio-esquerra');
+                                }
+
                                 contenidorContinguts.appendChild(contenidorFilaFlex);
                             }
         
                             if (tipus === 'carrusel_imatges') {
-                                // Acumulem les imatges del carrusel actual
                                 grupCarrusel.push(item);
-        
                             } else if (tipus === 'bloc_text') {
                                 contenidorFilaFlex.appendChild(crearBlocText(item));
-        
                             } else if (tipus === 'targeta_imatge_text') {
                                 contenidorFilaFlex.appendChild(crearTargetaImatgeText(item));
-        
                             } else if (tipus === 'bloc_imatge_text') {
                                 contenidorFilaFlex.appendChild(crearBlocImatgeText(item));
-        
                             } else if (tipus === 'boto_cta') {
                                 contenidorFilaFlex.appendChild(crearBotoCTA(item));
-        
                             } else {
                                 contenidorFilaFlex.appendChild(crearTargetaElement(item));
                             }
                         }
                     });
         
-                    // Processar pendents finals
                     processarGaleriaPendent();
                     processarCarruselPendent();
         
@@ -390,15 +380,6 @@
                 <p style="color: var(--color-suau, #C8AAFF); font-size: 0.85rem;">${item.descripcio || ''}</p>
             `;
             return card;
-        }
-
-        function obtenirFontWeight(textGruix) {
-            if (!textGruix) return '400';
-            const t = textGruix.toString().toLowerCase();
-            if (t.includes('bold') || t.includes('negreta')) return '700';
-            if (t.includes('medium') || t.includes('mitjana')) return '500';
-            if (t.includes('light') || t.includes('fina')) return '300';
-            return '400';
         }
 
         function canviarSeccio(idSeccio) {
@@ -453,7 +434,6 @@
             }
         }
 
-        
         /* *************************************************************
         /* C O M P O N E N T S 
         /* ********************************************************** */
@@ -466,8 +446,7 @@
                 bloc.classList.add('orientacio-dreta');
             }
         
-            // --- CÀLCUL I ADAPTACIÓ DE LA MIDA DE LA IMATGE ---
-            let amplaImatge = '50%'; // Valor per defecte si no ve definit al Sheet
+            let amplaImatge = '50%';
             if (item.midaImatge && item.midaImatge.trim() !== '' && item.midaImatge.trim() !== '#N/A') {
                 const valor = item.midaImatge.trim().toLowerCase();
                 if (valor === 'petita') amplaImatge = '25%';
@@ -520,7 +499,6 @@
             return bloc;
         }
 
-        
         function crearBotoCTA(item) {
             const contenidor = document.createElement('div');
             const alineacio = (item.alineacioBoto || 'Centre').toLowerCase().trim();
@@ -556,7 +534,6 @@
             return contenidor;
         }
 
-        
         function crearTargetaImatgeText(item) {
             const card = document.createElement('div');
             card.className = 'targeta-imatge-text';
@@ -568,7 +545,6 @@
             const fons = obtenirColorHex(item.colorFons, configDefecte.colorFonsDefecte);
             const text = obtenirColorHex(item.colorText, configDefecte.colorTextDefecte);
         
-            // --- CÀLCUL I ADAPTACIÓ DE MIDES D'AMPLE I ALÇADA ---
             let ampleCard = '280px';
             if (item.ample && item.ample.trim() !== '' && item.ample.trim() !== '#N/A') {
                 const v = item.ample.trim();
@@ -589,16 +565,13 @@
                 ? `https://drive.google.com/thumbnail?sz=w800&id=${item.imatgeId.trim()}`
                 : 'logo_mm_600.jpg';
 
-             // --- GESTIÓ DE L'ENLLAÇ I NAVEGACIÓ ---
             const enllac = item.linkBoto || item.link || '';
             const teEnllac = enllac !== '' && enllac !== '#' && enllac !== '#N/A';
         
             if (teEnllac) {
-                // Només si té un enllaç vàlid s'activa el clic i la classe per a efectes visuals
                 card.classList.add('es-clicable');
                 card.onclick = (e) => navegarA(enllac, e);
             } else {
-                // Si no té enllaç, s'assegura que no faci res al fer clic
                 card.classList.add('es-estatica');
                 card.onclick = null;
             }             
@@ -616,18 +589,15 @@
             return card;
         }    
 
-        
         function crearGaleriaActiva(items, opcions = {}) {
             const contenidor = document.createElement('div');
             contenidor.className = 'galeria-activa-wrapper';
         
             const primerItem = items[0] || {};
         
-            // Velocitat (per defecte 25 segons)
             let velocitatVal = opcions.velocitat || primerItem.velocitat || '25';
             velocitatVal = parseInt(velocitatVal) || 25;
         
-            // Bucle continu
             let esBucle = true;
             if (opcions.bucle !== undefined) {
                 esBucle = Boolean(opcions.bucle);
@@ -653,7 +623,6 @@
                 carruselPista.style.animation = 'none';
             }
         
-            // Funció interna per generar targetes aïllades i segures
             const generarTargeta = (item) => {
                 const card = document.createElement('div');
                 card.className = 'galeria-item';
@@ -683,7 +652,6 @@
         
                 if (teEnllac) {
                     card.classList.add('es-clicable');
-                    // Afegim l'esdeveniment de manera aïllada prevenint qualsevol comportament per defecte
                     card.addEventListener('click', (e) => {
                         e.preventDefault();
                         e.stopPropagation();
@@ -712,10 +680,8 @@
                 return card;
             };
         
-            // 1. Elements originals
             items.forEach(item => carruselPista.appendChild(generarTargeta(item)));
         
-            // 2. Elements duplicats si hi ha bucle
             if (esBucle) {
                 items.forEach(item => carruselPista.appendChild(generarTargeta(item)));
             }
@@ -724,14 +690,11 @@
             return contenidor;
         }    
 
-        
-        
         function crearCarruselImatges(items, opcions = {}) {
             if (!items || items.length === 0) return document.createElement('div');
         
             const primerItem = items[0] || {};
         
-            // 1. CONFIGURACIÓ DES DEL CSV
             let velocitatVal = opcions.velocitat || primerItem.velocitat || '5';
             velocitatVal = (parseFloat(velocitatVal) || 5) * 1000;
         
@@ -763,7 +726,6 @@
         
             const fonsContenidor = obtenirColorHex(opcions.colorFons || primerItem.colorFons, '#24153F');
         
-            // 2. DOM PRINCIPAL
             const wrapper = document.createElement('div');
             wrapper.className = 'carrusel-imatges-wrapper';
             wrapper.style.backgroundColor = fonsContenidor;
@@ -793,7 +755,6 @@
             const btnAnt = wrapper.querySelector('.boto-carrusel.ant');
             const btnSeg = wrapper.querySelector('.boto-carrusel.seg');
         
-            // Funció de suport per validar enllaços (com a la galeria activa)
             const obtenirEnllacValid = (item) => {
                 if (!item) return '';
                 const desti = (item.linkBoto || '').trim();
@@ -801,7 +762,6 @@
                 return desti;
             };
         
-            // Carregament de diapositives
             items.forEach((item, idx) => {
                 const slide = document.createElement('div');
                 slide.className = `carrusel-slide ${idx === 0 ? 'activa' : ''}`;
@@ -813,10 +773,7 @@
                 slide.innerHTML = `<img src="${urlImatge}" alt="${item.titol || 'Mínim Món'}">`;
         
                 const enllac = obtenirEnllacValid(item);
-
-                // console.log("Enllaç:", enllac);
                 
-                // NOMÉS s'activa el punter i el listener si realment hi ha un enllaç vàlid
                 if (enllac) {
                     slide.classList.add('es-clicable');
                     slide.style.cursor = 'pointer';
@@ -837,7 +794,6 @@
                 elDiapositives.appendChild(slide);
             });
         
-            // Event de clic al peu de text (avalua si l'item actual té enllaç abans d'actuar)
             elPeuText.addEventListener('click', (e) => {
                 const itemActual = items[indexActual] || {};
                 const enllacActual = obtenirEnllacValid(itemActual);
@@ -853,7 +809,6 @@
                 }
             });
         
-            // 3. CONTROL DE DIAPOSITIVA ACTIVA I TEXTOS
             const mostrarDiapositiva = (index) => {
                 const slides = wrapper.querySelectorAll('.carrusel-slide');
                 slides.forEach((s, i) => s.classList.toggle('activa', i === index));
@@ -861,14 +816,12 @@
                 const itemActual = items[index] || {};
                 const colorText = obtenirColorHex(itemActual.colorText, '#E3D4FF');
         
-                // Textos
                 elTitol.style.color = colorText;
                 elDescripcio.style.color = colorText;
                 elTitol.innerText = itemActual.titol || '';
                 const desc = itemActual.descripcio || '';
                 elDescripcio.innerHTML = desc ? desc.replace(/\n/g, '<br>') : '';
         
-                // Estat del punter al peu de text
                 const enllacActual = obtenirEnllacValid(itemActual);
                 if (enllacActual) {
                     elPeuText.classList.add('es-clicable');
@@ -878,7 +831,6 @@
                     elPeuText.style.cursor = 'default';
                 }
         
-                // Estat de botons
                 if (!esBucle) {
                     btnAnt.style.opacity = index === 0 ? '0.25' : '1';
                     btnAnt.style.pointerEvents = index === 0 ? 'none' : 'auto';
@@ -914,7 +866,6 @@
                 mostrarDiapositiva(indexActual);
             };
         
-            // 4. AUTOPLAY
             const iniciarAutoplay = () => {
                 if (esBucle && velocitatVal > 0) {
                     aturarAutoplay();
@@ -945,20 +896,16 @@
             wrapper.addEventListener('mouseleave', iniciarAutoplay);
             wrapper.addEventListener('touchstart', aturarAutoplay, { passive: true });
         
-            // Inicialització
             mostrarDiapositiva(0);
             iniciarAutoplay();
         
             return wrapper;
         }
 
-
         function crearBlocText(item = {}) {
-            // 1. CONTENIDOR PRINCIPAL DEL BLOC DE TEXT
             const bloc = document.createElement('div');
             bloc.className = 'component-bloc-text';
         
-            // Gestió d'ample del bloc (p. ex. "400px", "50%", "100%")
             let ampleVal = item.ample ? item.ample.toString().trim() : '';
             if (ampleVal && ampleVal !== '#N/A') {
                 bloc.style.maxWidth = !isNaN(ampleVal) ? `${ampleVal}px` : ampleVal;
@@ -967,20 +914,17 @@
                 bloc.style.width = '100%';
             }
         
-            // Gestió de colors de fons i text
             const colorFons = obtenirColorHex(item.colorFons, 'transparent');
             const colorText = obtenirColorHex(item.colorText, '#E3D4FF');
             
             bloc.style.backgroundColor = colorFons;
             bloc.style.color = colorText;
             
-            // Si té fons personalitzat, afegim un encoixinat (padding) elegant
             if (colorFons !== 'transparent') {
                 bloc.style.padding = '1.8rem';
                 bloc.style.borderRadius = '8px';
             }
         
-            // 2. TÍTOL (Opcional)
             const teTitol = item.titol && item.titol.trim() !== '' && item.titol.trim() !== '#N/A';
             if (teTitol) {
                 const elTitol = document.createElement('h3');
@@ -988,9 +932,7 @@
                 elTitol.innerText = item.titol.trim();
                 elTitol.style.color = colorText;
         
-                // Mida de font configurable (si no es defineix, usa un valor per defecte)
                 if (item.midaImatge && item.midaImatge !== '#N/A') { 
-                    // Reutilitzem camp o podem usar midaFont si existeix al CSV
                     elTitol.style.fontSize = !isNaN(item.midaImatge) ? `${item.midaImatge}px` : item.midaImatge;
                 } else {
                     elTitol.style.fontSize = '1.6rem';
@@ -999,17 +941,14 @@
                 bloc.appendChild(elTitol);
             }
         
-            // 3. COS DE TEXT / DESCRIPCIÓ (Opcional)
             const teText = item.descripcio && item.descripcio.trim() !== '' && item.descripcio.trim() !== '#N/A';
             if (teText) {
                 const elText = document.createElement('div');
                 elText.className = 'bloc-text-cos';
                 
-                // Convertim els salts de línia en <br>
                 elText.innerHTML = item.descripcio.trim().replace(/\n/g, '<br>');
                 elText.style.color = colorText;
         
-                // Mida de font del cos si es requereix un ajust secundari
                 if (item.midaFontText) {
                     elText.style.fontSize = !isNaN(item.midaFontText) ? `${item.midaFontText}px` : item.midaFontText;
                 } else {
@@ -1019,7 +958,6 @@
                 bloc.appendChild(elText);
             }
         
-            // 4. BOTO DE CRIDA A L'ACCIÓ / ENLLAÇ (Opcional)
             const desti = (item.linkBoto || item.link || '').trim();
             const teEnllac = desti !== '' && desti !== '#' && desti !== '#N/A';
         
@@ -1043,8 +981,6 @@
         
             return bloc;
         }
-        
-        
     </script>
 </body>
 </html>
