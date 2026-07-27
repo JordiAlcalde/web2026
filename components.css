@@ -600,6 +600,30 @@
 
 
 /* ==========================================================================
+   COMPONENTS ESTRUCTURALS: ESPAIADOR I SEPARADOR
+   ========================================================================== */
+
+.component-espaiador {
+    display: block;
+    clear: both;
+    transition: height 0.2s ease;
+}
+
+.component-separador-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    clear: both;
+    box-sizing: border-box;
+}
+
+.linia-separadora {
+    border: none;
+    border-radius: 2px;
+}
+
+
+/* ==========================================================================
    ADAPTACIÓ MÒBIL GENERAL (REVISADA I FORÇADA AL 100%)
    ========================================================================== */
 
@@ -679,4 +703,5 @@
         width: 100% !important;
         max-width: 100% !important;
     }
+   
 }
