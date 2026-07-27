@@ -721,7 +721,7 @@
         
             const primerItem = items[0] || {};
         
-            // 1. LECTURA DE VALORS PARSEJATS DEL CSV
+            // 1. CONFIGURACIÓ DES DEL CSV
             let velocitatVal = opcions.velocitat || primerItem.velocitat || '5';
             velocitatVal = (parseFloat(velocitatVal) || 5) * 1000;
         
@@ -753,7 +753,7 @@
         
             const fonsContenidor = obtenirColorHex(opcions.colorFons || primerItem.colorFons, '#24153F');
         
-            // 2. ESTRUCTURA DOM
+            // 2. DOM PRINCIPAL
             const wrapper = document.createElement('div');
             wrapper.className = 'carrusel-imatges-wrapper';
             wrapper.style.backgroundColor = fonsContenidor;
@@ -783,21 +783,15 @@
             const btnAnt = wrapper.querySelector('.boto-carrusel.ant');
             const btnSeg = wrapper.querySelector('.boto-carrusel.seg');
         
-            // Helper per verificar i executar l'enllaç com a la galeria
-            const executarNavegacio = (item, event) => {
+            // Funció de suport per validar enllaços (com a la galeria activa)
+            const obtenirEnllacValid = (item) => {
+                if (!item) return '';
                 const desti = (item.linkBoto || item.link || '').trim();
-                if (desti !== '' && desti !== '#' && desti !== '#N/A') {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    if (typeof navegarA === 'function') {
-                        navegarA(desti, event);
-                    } else {
-                        window.location.href = desti;
-                    }
-                }
+                if (desti === '' || desti === '#' || desti === '#N/A') return '';
+                return desti;
             };
         
-            // Carregament de diapositives (Imatges)
+            // Carregament de diapositives
             items.forEach((item, idx) => {
                 const slide = document.createElement('div');
                 slide.className = `carrusel-slide ${idx === 0 ? 'activa' : ''}`;
@@ -806,33 +800,48 @@
                     ? `https://drive.google.com/thumbnail?sz=w1200&id=${item.imatgeId.trim()}`
                     : 'logo_mm_600.jpg';
         
-                const desti = (item.linkBoto || item.link || '').trim();
-                const teEnllac = desti !== '' && desti !== '#' && desti !== '#N/A';
-        
-                if (teEnllac) {
-                    slide.classList.add('es-clicable');
-                    slide.style.cursor = 'pointer';
-                } else {
-                    slide.style.cursor = 'default';
-                }
-        
                 slide.innerHTML = `<img src="${urlImatge}" alt="${item.titol || 'Mínim Món'}">`;
         
-                // Event de clic a la imatge
-                slide.addEventListener('click', (e) => {
-                    executarNavegacio(item, e);
-                });
+                const enllac = obtenirEnllacValid(item);
+        
+                // NOMÉS s'activa el punter i el listener si realment hi ha un enllaç vàlid
+                if (enllac) {
+                    slide.classList.add('es-clicable');
+                    slide.style.cursor = 'pointer';
+                    slide.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (typeof navegarA === 'function') {
+                            navegarA(enllac, e);
+                        } else {
+                            window.location.href = enllac;
+                        }
+                    });
+                } else {
+                    slide.classList.remove('es-clicable');
+                    slide.style.cursor = 'default';
+                }
         
                 elDiapositives.appendChild(slide);
             });
         
-            // Event de clic al peu de text (agafa SEMPRE l'índex actualitzat)
+            // Event de clic al peu de text (avalua si l'item actual té enllaç abans d'actuar)
             elPeuText.addEventListener('click', (e) => {
                 const itemActual = items[indexActual] || {};
-                executarNavegacio(itemActual, e);
+                const enllacActual = obtenirEnllacValid(itemActual);
+                
+                if (enllacActual) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (typeof navegarA === 'function') {
+                        navegarA(enllacActual, e);
+                    } else {
+                        window.location.href = enllacActual;
+                    }
+                }
             });
         
-            // 3. ACTUALITZACIÓ DINÀMICA DE DIAPOSITIVES I TEXTOS
+            // 3. CONTROL DE DIAPOSITIVA ACTIVA I TEXTOS
             const mostrarDiapositiva = (index) => {
                 const slides = wrapper.querySelectorAll('.carrusel-slide');
                 slides.forEach((s, i) => s.classList.toggle('activa', i === index));
@@ -840,19 +849,16 @@
                 const itemActual = items[index] || {};
                 const colorText = obtenirColorHex(itemActual.colorText, '#E3D4FF');
         
-                // Actualitzar textos
+                // Textos
                 elTitol.style.color = colorText;
                 elDescripcio.style.color = colorText;
-        
                 elTitol.innerText = itemActual.titol || '';
                 const desc = itemActual.descripcio || '';
                 elDescripcio.innerHTML = desc ? desc.replace(/\n/g, '<br>') : '';
         
-                // Actualitzar estat del cursor al peu de text segons si l'item actiu té enllaç
-                const destiActual = (itemActual.linkBoto || itemActual.link || '').trim();
-                const teEnllac = destiActual !== '' && destiActual !== '#' && destiActual !== '#N/A';
-        
-                if (teEnllac) {
+                // Estat del punter al peu de text
+                const enllacActual = obtenirEnllacValid(itemActual);
+                if (enllacActual) {
                     elPeuText.classList.add('es-clicable');
                     elPeuText.style.cursor = 'pointer';
                 } else {
@@ -860,7 +866,7 @@
                     elPeuText.style.cursor = 'default';
                 }
         
-                // Control d'estat de botons de navegació (si bucle = false)
+                // Estat de botons
                 if (!esBucle) {
                     btnAnt.style.opacity = index === 0 ? '0.25' : '1';
                     btnAnt.style.pointerEvents = index === 0 ? 'none' : 'auto';
@@ -896,7 +902,7 @@
                 mostrarDiapositiva(indexActual);
             };
         
-            // 4. AUTOPLAY I INTERACCIÓ
+            // 4. AUTOPLAY
             const iniciarAutoplay = () => {
                 if (esBucle && velocitatVal > 0) {
                     aturarAutoplay();
