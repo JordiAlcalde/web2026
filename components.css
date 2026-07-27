@@ -1,6 +1,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
 
 /* ==========================================================================
+   VARIABLES DE COLOR I TIPOGRAFIA (Mínim Món)
+   ========================================================================== */
+:root {
+    --color-primari: #301269;
+    --color-fons-fosc: #24153F;
+    --color-vivid: #340094;
+    --color-accent: #AC80FF;
+    --color-accent-clar: #C8AAFF;
+    --color-clar: #E3D4FF;
+    --font-principal: 'Montserrat', sans-serif;
+}
+
+/* ==========================================================================
    COMPONENT: CONTENIDOR DE FILA FLEX (Alineacions des de Sheets)
    ========================================================================== */
 
@@ -27,16 +40,6 @@
     justify-content: flex-end;
 }
 
-/* En mòbils, forcem disposició vertical i alineació a l'esquerra */
-@media (max-width: 768px) {
-    .contenidor-fila-flex {
-        flex-direction: column !important;
-        justify-content: flex-start !important;
-        align-items: stretch !important;
-        gap: 1.5rem !important;
-    }
-}
-
 
 /* ==========================================================================
    COMPONENT: BLOC IMATGE TEXT
@@ -49,8 +52,8 @@
     gap: 2.5rem;
     width: 100%;
     box-sizing: border-box;
-    background-color: var(--color-fons-fosc, #24153F);
-    border: 1px solid var(--color-accent-clar, #AC80FF);
+    background-color: var(--color-fons-fosc);
+    border: 1px solid var(--color-accent);
     border-radius: 12px;
     padding: 2rem;
     margin: 2rem 0;
@@ -81,7 +84,7 @@
 }
 
 .bloc-imatge-text .caixa-text h2 {
-    color: var(--color-clar, #E3D4FF);
+    color: var(--color-clar);
     font-size: 1.6rem;
     font-weight: 700;
     margin-top: 0;
@@ -89,25 +92,10 @@
 }
 
 .bloc-imatge-text .caixa-text p {
-    color: var(--color-text-suau, #C8AAFF);
+    color: var(--color-accent-clar);
     font-size: 1rem;
     line-height: 1.6;
     margin: 0;
-}
-
-@media (max-width: 768px) {
-    .bloc-imatge-text,
-    .bloc-imatge-text.orientacio-dreta {
-        flex-direction: column !important;
-        padding: 1.25rem;
-        gap: 1.25rem;
-    }
-
-    .bloc-imatge-text .caixa-imatge {
-        flex: 0 0 100% !important;
-        max-width: 100% !important;
-        width: 100% !important;
-    }
 }
 
 
@@ -130,7 +118,7 @@
     align-items: center;
     justify-content: center;
     padding: 0.8rem 1.8rem;
-    font-family: var(--font-principal, 'Montserrat', sans-serif);
+    font-family: var(--font-principal);
     font-size: 1rem;
     font-weight: 600;
     text-decoration: none;
@@ -141,14 +129,14 @@
 }
 
 .boto-cta.estil-principal {
-    background-color: var(--color-vivid, #340094);
+    background-color: var(--color-vivid);
     color: #FFFFFF;
-    border: 1px solid var(--color-accent, #AC80FF);
+    border: 1px solid var(--color-accent);
 }
 
 .boto-cta.estil-principal:hover {
-    background-color: var(--color-accent, #AC80FF);
-    color: var(--color-primari, #301269);
+    background-color: var(--color-accent);
+    color: var(--color-primari);
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(172, 128, 255, 0.35);
 }
@@ -172,7 +160,7 @@
 }
 
 .targeta-imatge-text {
-    background-color: #24153F;
+    background-color: var(--color-fons-fosc);
     border: 1px solid rgba(172, 128, 255, 0.2);
     border-radius: 12px;
     overflow: hidden;
@@ -189,7 +177,7 @@
 
 .targeta-imatge-text.es-clicable:hover {
     transform: translateY(-6px);
-    border-color: #AC80FF;
+    border-color: var(--color-accent);
     box-shadow: 0 8px 25px rgba(52, 0, 148, 0.4);
 }
 
@@ -212,7 +200,7 @@
     width: 100%;
     overflow: hidden;
     position: relative;
-    background-color: #301269;
+    background-color: var(--color-primari);
 }
 
 .targeta-imatge-text .caixa-img-targeta img {
@@ -232,29 +220,21 @@
 }
 
 .targeta-imatge-text .caixa-text-targeta h3 {
-    font-family: 'Montserrat', sans-serif;
+    font-family: var(--font-principal);
     font-size: 1.15rem;
     font-weight: 600;
-    color: #E3D4FF;
+    color: var(--color-clar);
     margin: 0;
     line-height: 1.3;
 }
 
 .targeta-imatge-text .caixa-text-targeta p {
-    font-family: 'Montserrat', sans-serif;
+    font-family: var(--font-principal);
     font-size: 0.88rem;
     font-weight: 400;
-    color: #C8AAFF;
+    color: var(--color-accent-clar);
     margin: 0;
     line-height: 1.5;
-}
-
-@media (max-width: 768px) {
-    .targeta-imatge-text {
-        width: 100% !important;
-        max-width: 100% !important;
-        flex: 1 1 100% !important;
-    }
 }
 
 
@@ -285,17 +265,17 @@
 }
 
 .galeria-activa-wrapper.mode-manual::-webkit-scrollbar-track {
-    background: #24153F;
+    background: var(--color-fons-fosc);
     border-radius: 4px;
 }
 
 .galeria-activa-wrapper.mode-manual::-webkit-scrollbar-thumb {
-    background: #AC80FF;
+    background: var(--color-accent);
     border-radius: 4px;
 }
 
 .galeria-activa-wrapper.mode-manual::-webkit-scrollbar-thumb:hover {
-    background: #C8AAFF;
+    background: var(--color-accent-clar);
 }
 
 .galeria-activa-pista {
@@ -337,7 +317,7 @@
 
 .galeria-item.es-clicable:hover {
     transform: translateY(-4px);
-    border-color: #AC80FF;
+    border-color: var(--color-accent);
 }
 
 .galeria-item.es-estatica {
@@ -347,7 +327,7 @@
 .caixa-img-galeria {
     width: 100%;
     overflow: hidden;
-    background-color: #301269;
+    background-color: var(--color-primari);
 }
 
 .caixa-img-galeria img {
@@ -365,7 +345,7 @@
 }
 
 .caixa-text-galeria h4 {
-    font-family: 'Montserrat', sans-serif;
+    font-family: var(--font-principal);
     font-size: 1rem;
     font-weight: 600;
     margin: 0;
@@ -373,7 +353,7 @@
 }
 
 .caixa-text-galeria p {
-    font-family: 'Montserrat', sans-serif;
+    font-family: var(--font-principal);
     font-size: 0.82rem;
     font-weight: 400;
     margin: 0;
@@ -405,14 +385,14 @@
     justify-content: space-between;
     padding: 0.75rem;
     gap: 0.75rem;
-    background-color: #24153F;
+    background-color: var(--color-fons-fosc);
 }
 
 .carrusel-visor {
     flex: 1;
     position: relative;
     height: 400px;
-    background-color: #301269;
+    background-color: var(--color-primari);
     border-radius: 8px;
     overflow: hidden;
     border: 1px solid rgba(172, 128, 255, 0.15);
@@ -455,8 +435,8 @@
 
 .boto-carrusel {
     background: rgba(172, 128, 255, 0.12);
-    color: #E3D4FF;
-    border: 1px solid #AC80FF;
+    color: var(--color-clar);
+    border: 1px solid var(--color-accent);
     border-radius: 50%;
     width: 42px;
     height: 42px;
@@ -471,20 +451,20 @@
 }
 
 .boto-carrusel:hover {
-    background: #AC80FF;
-    color: #24153F;
+    background: var(--color-accent);
+    color: var(--color-fons-fosc);
     transform: scale(1.08);
 }
 
 .carrusel-peu-text {
     padding: 1rem 1.5rem;
-    background-color: #24153F;
+    background-color: var(--color-fons-fosc);
     border-top: 1px solid rgba(172, 128, 255, 0.2);
     text-align: center;
 }
 
 .carrusel-titol {
-    font-family: 'Montserrat', sans-serif;
+    font-family: var(--font-principal);
     font-size: 1.1rem;
     font-weight: 600;
     margin: 0 0 0.3rem 0;
@@ -492,41 +472,12 @@
 }
 
 .carrusel-descripcio {
-    font-family: 'Montserrat', sans-serif;
+    font-family: var(--font-principal);
     font-size: 0.88rem;
     font-weight: 400;
     margin: 0;
     line-height: 1.45;
     opacity: 0.92;
-}
-
-@media (max-width: 600px) {
-    .carrusel-caixa-principal {
-        padding: 0.5rem;
-        gap: 0.4rem;
-    }
-
-    .carrusel-visor {
-        height: 260px;
-    }
-
-    .boto-carrusel {
-        width: 34px;
-        height: 34px;
-        font-size: 0.9rem;
-    }
-
-    .carrusel-peu-text {
-        padding: 0.85rem 1rem;
-    }
-
-    .carrusel-titol {
-        font-size: 1rem;
-    }
-
-    .carrusel-descripcio {
-        font-size: 0.82rem;
-    }
 }
 
 
@@ -543,14 +494,14 @@
 }
 
 .bloc-text-titol {
-    font-family: 'Montserrat', sans-serif;
+    font-family: var(--font-principal);
     font-weight: 700;
     line-height: 1.3;
     margin: 0;
 }
 
 .bloc-text-cos {
-    font-family: 'Montserrat', sans-serif;
+    font-family: var(--font-principal);
     font-weight: 400;
     line-height: 1.6;
 }
@@ -559,11 +510,11 @@
     align-self: flex-start;
     margin-top: 0.5rem;
     padding: 0.6rem 1.4rem;
-    background-color: #340094;
-    color: #E3D4FF;
-    border: 1px solid #AC80FF;
+    background-color: var(--color-vivid);
+    color: var(--color-clar);
+    border: 1px solid var(--color-accent);
     border-radius: 4px;
-    font-family: 'Montserrat', sans-serif;
+    font-family: var(--font-principal);
     font-size: 0.95rem;
     font-weight: 600;
     cursor: pointer;
@@ -571,49 +522,68 @@
 }
 
 .boto-cta-bloc-text:hover {
-    background-color: #AC80FF;
-    color: #24153F;
+    background-color: var(--color-accent);
+    color: var(--color-fons-fosc);
 }
 
 
-
 /* ==========================================================================
-   ADAPTACIÓ MÒBIL GENERAL (Forçar 100% d'ample en tots els components)
+   ADAPTACIÓ MÒBIL GENERAL (REVISADA I FORÇADA AL 100%)
    ========================================================================== */
 
 @media (max-width: 768px) {
-    /* 1. Forçar la fila flex a ordenar en columna vertical */
-    .contenidor-fila-flex {
+    /* 1. Forçar contenidors pare a verticalització total */
+    .contenidor-fila-flex,
+    .contenidor-targetes-fila {
         flex-direction: column !important;
         justify-content: flex-start !important;
         align-items: stretch !important;
         gap: 1.5rem !important;
         width: 100% !important;
+        max-width: 100% !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
     }
 
-    /* 2. Forçar que TOTS els components interns ocupin el 100% de l'ample */
-    .contenidor-fila-flex > * {
+    /* 2. Forçar qualsevol fill directe de la fila flex a ocupar el 100% real */
+    .contenidor-fila-flex > *,
+    .contenidor-targetes-fila > * {
         width: 100% !important;
         max-width: 100% !important;
+        min-width: 100% !important;
         flex: 1 1 100% !important;
         box-sizing: border-box !important;
     }
 
-    /* 3. Reajust específic per a targetes d'imatge i text */
+    /* 3. Reajust de les targetes d'imatge i text */
     .targeta-imatge-text {
         width: 100% !important;
         max-width: 100% !important;
-        flex: 1 1 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
     }
 
-    /* 4. Reajust per al carrusel d'imatges i el seu visor */
+    /* 4. Reajust complet per al carrusel i les seves opcions visuals */
     .carrusel-imatges-wrapper {
         width: 100% !important;
         max-width: 100% !important;
+        margin: 1rem 0 !important;
+    }
+
+    .carrusel-caixa-principal {
+        padding: 0.5rem !important;
+        gap: 0.5rem !important;
     }
 
     .carrusel-visor {
-        height: 280px !important; /* Alçada adaptada per no ocupar tota la pantalla vertical */
+        height: 280px !important; /* Proporció adaptable per evitar estiraments */
+        width: 100% !important;
+    }
+
+    .boto-carrusel {
+        width: 36px !important;
+        height: 36px !important;
+        font-size: 0.95rem !important;
     }
 
     /* 5. Reajust per al bloc imatge-text */
@@ -625,9 +595,16 @@
         width: 100% !important;
     }
 
-    .bloc-imatge-text .caixa-imatge {
+    .bloc-imatge-text .caixa-imatge,
+    .bloc-imatge-text .caixa-text {
         flex: 0 0 100% !important;
         max-width: 100% !important;
         width: 100% !important;
+    }
+
+    /* 6. Assegurar que els textos de bloc s'ampliïn a l'ample total */
+    .component-bloc-text {
+        width: 100% !important;
+        max-width: 100% !important;
     }
 }
