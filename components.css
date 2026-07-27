@@ -528,6 +528,97 @@
 
 
 /* ==========================================================================
+   COMPONENT: REPRODUCTOR DE VÍDEO (1:1, 16:9, 9:16)
+   ========================================================================== */
+
+.contenidor-video-wrapper {
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    width: 100%;
+    margin: 1.5rem 0;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: var(--color-fons-fosc);
+    border: 1px solid rgba(172, 128, 255, 0.25);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+    transition: border-color 0.3s ease;
+}
+
+.contenidor-video-wrapper:hover {
+    border-color: var(--color-accent);
+}
+
+/* Caixa del reproductor adaptativa */
+.caixa-reproductor-video {
+    position: relative;
+    width: 100%;
+    background-color: #000000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+/* Ràtios d'aspecte segons configuració de Sheets */
+.caixa-reproductor-video.ratio-16-9 {
+    aspect-ratio: 16 / 9;
+}
+
+.caixa-reproductor-video.ratio-1-1 {
+    aspect-ratio: 1 / 1;
+}
+
+.caixa-reproductor-video.ratio-9-16 {
+    aspect-ratio: 9 / 16;
+    max-height: 650px; /* Evita que en pantalles grans ocupe massa alçada vertical */
+    margin: 0 auto;
+}
+
+/* Estil del vídeo HTML5 integrat */
+.caixa-reproductor-video video,
+.caixa-reproductor-video iframe {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border: none;
+    display: block;
+}
+
+/* Peu de text opcional del vídeo */
+.video-peu-text {
+    padding: 1rem 1.25rem;
+    background-color: var(--color-fons-fosc);
+    border-top: 1px solid rgba(172, 128, 255, 0.15);
+}
+
+.video-peu-text h3 {
+    font-family: var(--font-principal);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-clar);
+    margin: 0 0 0.4rem 0;
+}
+
+.video-peu-text p {
+    font-family: var(--font-principal);
+    font-size: 0.88rem;
+    font-weight: 400;
+    color: var(--color-accent-clar);
+    margin: 0;
+    line-height: 1.45;
+}
+
+/* Modificacions Mòbil específiques per a Vídeo */
+@media (max-width: 768px) {
+    .caixa-reproductor-video.ratio-9-16 {
+        max-height: 500px;
+    }
+}
+
+
+
+/* ==========================================================================
    ADAPTACIÓ MÒBIL GENERAL (REVISADA I FORÇADA AL 100%)
    ========================================================================== */
 
