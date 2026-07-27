@@ -1,15 +1,53 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
 
 /* ==========================================================================
+   COMPONENT: CONTENIDOR DE FILA FLEX (Alineacions des de Sheets)
+   ========================================================================== */
+
+.contenidor-fila-flex {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 2rem;
+    box-sizing: border-box;
+}
+
+/* Alineacions basades en la columna SituacióImatge de Google Sheets */
+.contenidor-fila-flex.posicio-esquerra {
+    justify-content: flex-start;
+}
+
+.contenidor-fila-flex.posicio-centre {
+    justify-content: center;
+}
+
+.contenidor-fila-flex.posicio-dreta {
+    justify-content: flex-end;
+}
+
+/* En mòbils, forcem disposició vertical i alineació a l'esquerra */
+@media (max-width: 768px) {
+    .contenidor-fila-flex {
+        flex-direction: column !important;
+        justify-content: flex-start !important;
+        align-items: stretch !important;
+        gap: 1.5rem !important;
+    }
+}
+
+
+/* ==========================================================================
    COMPONENT: BLOC IMATGE TEXT
    ========================================================================== */
 
 .bloc-imatge-text {
     display: flex !important;
-    flex-direction: row !important; /* Força la posició horitzontal en PC */
+    flex-direction: row !important;
     align-items: center;
     gap: 2.5rem;
-    width: 100%; /* Ocupa tot l'ample disponible del contenidor pare */
+    width: 100%;
     box-sizing: border-box;
     background-color: var(--color-fons-fosc, #24153F);
     border: 1px solid var(--color-accent-clar, #AC80FF);
@@ -18,14 +56,12 @@
     margin: 2rem 0;
 }
 
-/* Invertir la posició quan SituacioImatge és 'Dreta' */
 .bloc-imatge-text.orientacio-dreta {
     flex-direction: row-reverse !important;
 }
 
-/* CONTROLS DE MIDA I ADAPTACIÓ PER A LA IMATGE */
 .bloc-imatge-text .caixa-imatge {
-    flex-shrink: 0; /* Impedeix que la imatge es deformi o es xafi */
+    flex-shrink: 0;
     box-sizing: border-box;
     overflow: hidden;
     border-radius: 8px;
@@ -39,9 +75,8 @@
     object-fit: cover;
 }
 
-/* CONTENIDOR DE TEXT */
 .bloc-imatge-text .caixa-text {
-    flex: 1; /* Ocupa tot l'espai restant al costat de la imatge */
+    flex: 1;
     min-width: 0;
 }
 
@@ -60,11 +95,10 @@
     margin: 0;
 }
 
-/* ADAPTACIÓ MÒBIL (Menys de 768px) */
 @media (max-width: 768px) {
     .bloc-imatge-text,
     .bloc-imatge-text.orientacio-dreta {
-        flex-direction: column !important; /* En mòbil sí que va un sota l'altre */
+        flex-direction: column !important;
         padding: 1.25rem;
         gap: 1.25rem;
     }
@@ -81,7 +115,6 @@
    COMPONENT: BOTÓ CTA (CALL TO ACTION)
    ========================================================================== */
 
-/* Contenidor quan el botó va sol (per controlar alineació) */
 .contenidor-boto-cta {
     display: flex;
     width: 100%;
@@ -92,7 +125,6 @@
 .contenidor-boto-cta.alineacio-centre   { justify-content: center; }
 .contenidor-boto-cta.alineacio-dreta    { justify-content: flex-end; }
 
-/* Estil del botó base */
 .boto-cta {
     display: inline-flex;
     align-items: center;
@@ -108,7 +140,6 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
-/* Estils de color (Per defecte: Fons accent lívid, text clar) */
 .boto-cta.estil-principal {
     background-color: var(--color-vivid, #340094);
     color: #FFFFFF;
@@ -128,10 +159,9 @@
 
 
 /* ==========================================================================
-   COMPONENT: CONTENIDOR I TARGETA IMATGE TEXT (.targeta-imatge-text)
+   COMPONENT: TARGETA IMATGE TEXT (.targeta-imatge-text)
    ========================================================================== */
 
-/* Contenidor de la fila de targetes */
 .contenidor-targetes-fila {
     display: flex;
     flex-wrap: wrap;
@@ -141,10 +171,9 @@
     margin: 2rem 0;
 }
 
-/* Estructura base de la targeta */
 .targeta-imatge-text {
-    background-color: #24153F; /* Color fosc de fons predeterminat */
-    border: 1px solid rgba(172, 128, 255, 0.2); /* Detall fi en #AC80FF */
+    background-color: #24153F;
+    border: 1px solid rgba(172, 128, 255, 0.2);
     border-radius: 12px;
     overflow: hidden;
     display: flex;
@@ -153,7 +182,6 @@
     box-sizing: border-box;
 }
 
-/* --- TARGETES CLICABLES (amb enllaç) --- */
 .targeta-imatge-text.es-clicable {
     cursor: pointer;
     transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
@@ -169,7 +197,6 @@
     transform: scale(1.05);
 }
 
-/* --- TARGETES ESTÀTIQUES (purament informatives, sense enllaç) --- */
 .targeta-imatge-text.es-estatica {
     cursor: default;
     transform: none !important;
@@ -178,10 +205,9 @@
 }
 
 .targeta-imatge-text.es-estatica .caixa-img-targeta img {
-    transform: none !important; /* Desactiva el zoom de la imatge */
+    transform: none !important;
 }
 
-/* Contenidor de la imatge dins la targeta */
 .targeta-imatge-text .caixa-img-targeta {
     width: 100%;
     overflow: hidden;
@@ -197,7 +223,6 @@
     transition: transform 0.4s ease;
 }
 
-/* Caixa de text interna */
 .targeta-imatge-text .caixa-text-targeta {
     padding: 1.25rem;
     display: flex;
@@ -206,7 +231,6 @@
     flex-grow: 1;
 }
 
-/* Títol de la targeta */
 .targeta-imatge-text .caixa-text-targeta h3 {
     font-family: 'Montserrat', sans-serif;
     font-size: 1.15rem;
@@ -216,7 +240,6 @@
     line-height: 1.3;
 }
 
-/* Descripció o text secundari */
 .targeta-imatge-text .caixa-text-targeta p {
     font-family: 'Montserrat', sans-serif;
     font-size: 0.88rem;
@@ -226,7 +249,6 @@
     line-height: 1.5;
 }
 
-/* Adaptabilitat per a pantalles petites (Mòbil) */
 @media (max-width: 768px) {
     .targeta-imatge-text {
         width: 100% !important;
@@ -240,7 +262,6 @@
    COMPONENT: GALERIA ACTIVA
    ========================================================================== */
 
-/* Contenidor extern */
 .galeria-activa-wrapper {
     width: 100%;
     position: relative;
@@ -248,20 +269,17 @@
     margin: 1.5rem 0;
 }
 
-/* Mode bucle continu infinit */
 .galeria-activa-wrapper.mode-bucle {
     overflow: hidden;
 }
 
-/* Mode manual: permet scroll horitzontal */
 .galeria-activa-wrapper.mode-manual {
     overflow-x: auto;
     overflow-y: hidden;
     scroll-behavior: smooth;
-    padding-bottom: 2rem; /* Espai per a la barra de desplaçament */
+    padding-bottom: 2rem;
 }
 
-/* Personalització de la barra de desplaçament (scroll) en mode manual */
 .galeria-activa-wrapper.mode-manual::-webkit-scrollbar {
     height: 8px;
 }
@@ -280,7 +298,6 @@
     background: #C8AAFF;
 }
 
-/* Pista de targetes */
 .galeria-activa-pista {
     display: flex !important;
     flex-direction: row !important;
@@ -298,15 +315,10 @@
 }
 
 @keyframes movimentCarrusel {
-    0% {
-        transform: translateX(0);
-    }
-    100% {
-        transform: translateX(-50%);
-    }
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
 }
 
-/* Targeta de la galeria */
 .galeria-item {
     border: 1px solid rgba(172, 128, 255, 0.25);
     border-radius: 10px;
@@ -377,7 +389,7 @@
 .carrusel-imatges-wrapper {
     width: 100%;
     max-width: 900px;
-    margin: 1.5rem auto;
+    margin: 1.5rem 0;
     border-radius: 12px;
     overflow: hidden;
     border: 1px solid rgba(172, 128, 255, 0.3);
@@ -387,7 +399,6 @@
     box-sizing: border-box;
 }
 
-/* Àrea superior: Visor central flanquejat pels botons d'acció */
 .carrusel-caixa-principal {
     display: flex;
     align-items: center;
@@ -397,7 +408,6 @@
     background-color: #24153F;
 }
 
-/* Visor centrat per a la imatge */
 .carrusel-visor {
     flex: 1;
     position: relative;
@@ -443,7 +453,6 @@
     cursor: pointer;
 }
 
-/* Botons exteriors centrats verticalment respecte a la imatge */
 .boto-carrusel {
     background: rgba(172, 128, 255, 0.12);
     color: #E3D4FF;
@@ -467,7 +476,6 @@
     transform: scale(1.08);
 }
 
-/* Àrea inferior de text */
 .carrusel-peu-text {
     padding: 1rem 1.5rem;
     background-color: #24153F;
@@ -492,7 +500,6 @@
     opacity: 0.92;
 }
 
-/* Adaptació per a pantalles petites/mòbils */
 @media (max-width: 600px) {
     .carrusel-caixa-principal {
         padding: 0.5rem;
@@ -524,21 +531,9 @@
 
 
 /* ==========================================================================
-   COMPONENT: bloc_text
+   COMPONENT: BLOC TEXT
    ========================================================================== */
 
-/* Contenidor de fila flexible per alinear components colze a colze */
-.contenidor-fila-flex {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2rem;
-    align-items: center;
-    justify-content: flex-start;
-    width: 100%;
-    margin-bottom: 2rem;
-}
-
-/* Component bloc_text */
 .component-bloc-text {
     display: flex;
     flex-direction: column;
@@ -560,7 +555,6 @@
     line-height: 1.6;
 }
 
-/* Botó opcional dins del bloc de text */
 .boto-cta-bloc-text {
     align-self: flex-start;
     margin-top: 0.5rem;
@@ -580,5 +574,3 @@
     background-color: #AC80FF;
     color: #24153F;
 }
-
-
