@@ -303,8 +303,8 @@
                     contenidorContinguts.className = 'contenidor-continguts-seccio';
         
                     let contenidorFilaFlex = null;
-                    let grupGaleria = []; // Acumulador per a galeria_activa
-                    let grupCarrusel = []; // Acumulador per a carrusel_imatges
+                    let grupGaleria = []; // Mantingut únicament per a galeries d'ample complet
+                    let grupCarrusel = []; // Acumulador de diapos per al carrusel actual
         
                     const processarGaleriaPendent = () => {
                         if (grupGaleria.length > 0) {
@@ -314,8 +314,8 @@
                     };
         
                     const processarCarruselPendent = () => {
-                        if (grupCarrusel.length > 0) {
-                            contenidorContinguts.appendChild(crearCarruselImatges(grupCarrusel));
+                        if (grupCarrusel.length > 0 && contenidorFilaFlex) {
+                            contenidorFilaFlex.appendChild(crearCarruselImatges(grupCarrusel));
                             grupCarrusel = [];
                         }
                     };
@@ -323,30 +323,33 @@
                     elementsSeccio.forEach(item => {
                         const tipus = item.tipusComponent ? item.tipusComponent.toLowerCase().trim() : '';
         
-                        // Neteja creuada d'acumuladors segons el tipus de component actual
+                        // Neteja de galeria d'ample complet si trobem un altre component
                         if (tipus !== 'galeria_activa') processarGaleriaPendent();
+        
+                        // Si trobem un tipus diferent a carrusel, processem les diapositives acumulades fins ara
                         if (tipus !== 'carrusel_imatges') processarCarruselPendent();
         
-                        // 1. COMPONENTS D'AMPLE COMPLET / ACUMULADORS (Trenquen la fila flex)
+                        // 1. BLOCS D'AMPLE COMPLET QUE TRENCAN LA FILA (com la Galeria Activa)
                         if (tipus === 'galeria_activa') {
                             contenidorFilaFlex = null;
                             grupGaleria.push(item);
         
-                        } else if (tipus === 'carrusel_imatges') {
-                            contenidorFilaFlex = null;
-                            grupCarrusel.push(item);
-        
                         } else {
-                            // 2. COMPONENTS EN FILA (Flex / Grid)
-                            // Si el component demana nova fila o no n'hi ha cap de creada, obrim una de nova
+                            // 2. COMPONENTS FLEXIBLES DE FILA (I.e., Bloc Text, Carrusel, Targetes, CTA...)
                             if (item.novaFila || !contenidorFilaFlex) {
+                                // Abans de canviar de fila, si hi havia un carrusel en construcció, el tanquem
+                                processarCarruselPendent();
+                                
                                 contenidorFilaFlex = document.createElement('div');
                                 contenidorFilaFlex.className = 'contenidor-fila-flex';
                                 contenidorContinguts.appendChild(contenidorFilaFlex);
                             }
         
-                            // Inserim el component corresponent dins la fila activa
-                            if (tipus === 'bloc_text') {
+                            if (tipus === 'carrusel_imatges') {
+                                // Acumulem les imatges del carrusel actual
+                                grupCarrusel.push(item);
+        
+                            } else if (tipus === 'bloc_text') {
                                 contenidorFilaFlex.appendChild(crearBlocText(item));
         
                             } else if (tipus === 'targeta_imatge_text') {
@@ -359,13 +362,12 @@
                                 contenidorFilaFlex.appendChild(crearBotoCTA(item));
         
                             } else {
-                                // Per defecte, si és un altre tipus de targeta o element
                                 contenidorFilaFlex.appendChild(crearTargetaElement(item));
                             }
                         }
                     });
         
-                    // Processar qualsevol grup que hagi quedat pendent a la darrera fila de la secció
+                    // Processar pendents finals
                     processarGaleriaPendent();
                     processarCarruselPendent();
         
@@ -374,8 +376,7 @@
         
                 contenidorPrincipal.appendChild(seccioHTML);
             });
-        }        
-
+        }
         
         function crearTargetaElement(item) {
             const card = document.createElement('div');
