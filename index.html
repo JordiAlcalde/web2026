@@ -354,6 +354,17 @@
                             } else {
                                 contenidorContinguts.appendChild(crearTargetaElement(item));
                             }
+
+                            if (item.novaFila || !contenidorFilaFlex) {
+                                contenidorFilaFlex = document.createElement('div');
+                                contenidorFilaFlex.className = 'contenidor-fila-flex';
+                                contenidorContinguts.appendChild(contenidorFilaFlex);
+                            }
+                            
+                            if (tipus === 'bloc_text') {
+                                contenidorFilaFlex.appendChild(crearBlocText(item));
+                            }
+                            
                         }
                     });
         
@@ -940,6 +951,98 @@
             iniciarAutoplay();
         
             return wrapper;
+        }
+
+
+        function crearBlocText(item = {}) {
+            // 1. CONTENIDOR PRINCIPAL DEL BLOC DE TEXT
+            const bloc = document.createElement('div');
+            bloc.className = 'component-bloc-text';
+        
+            // Gestió d'ample del bloc (p. ex. "400px", "50%", "100%")
+            let ampleVal = item.ample ? item.ample.toString().trim() : '';
+            if (ampleVal && ampleVal !== '#N/A') {
+                bloc.style.maxWidth = !isNaN(ampleVal) ? `${ampleVal}px` : ampleVal;
+                bloc.style.width = '100%';
+            } else {
+                bloc.style.width = '100%';
+            }
+        
+            // Gestió de colors de fons i text
+            const colorFons = obtenirColorHex(item.colorFons, 'transparent');
+            const colorText = obtenirColorHex(item.colorText, '#E3D4FF');
+            
+            bloc.style.backgroundColor = colorFons;
+            bloc.style.color = colorText;
+            
+            // Si té fons personalitzat, afegim un encoixinat (padding) elegant
+            if (colorFons !== 'transparent') {
+                bloc.style.padding = '1.8rem';
+                bloc.style.borderRadius = '8px';
+            }
+        
+            // 2. TÍTOL (Opcional)
+            const teTitol = item.titol && item.titol.trim() !== '' && item.titol.trim() !== '#N/A';
+            if (teTitol) {
+                const elTitol = document.createElement('h3');
+                elTitol.className = 'bloc-text-titol';
+                elTitol.innerText = item.titol.trim();
+                elTitol.style.color = colorText;
+        
+                // Mida de font configurable (si no es defineix, usa un valor per defecte)
+                if (item.midaImatge && item.midaImatge !== '#N/A') { 
+                    // Reutilitzem camp o podem usar midaFont si existeix al CSV
+                    elTitol.style.fontSize = !isNaN(item.midaImatge) ? `${item.midaImatge}px` : item.midaImatge;
+                } else {
+                    elTitol.style.fontSize = '1.6rem';
+                }
+        
+                bloc.appendChild(elTitol);
+            }
+        
+            // 3. COS DE TEXT / DESCRIPCIÓ (Opcional)
+            const teText = item.descripcio && item.descripcio.trim() !== '' && item.descripcio.trim() !== '#N/A';
+            if (teText) {
+                const elText = document.createElement('div');
+                elText.className = 'bloc-text-cos';
+                
+                // Convertim els salts de línia en <br>
+                elText.innerHTML = item.descripcio.trim().replace(/\n/g, '<br>');
+                elText.style.color = colorText;
+        
+                // Mida de font del cos si es requereix un ajust secundari
+                if (item.midaFontText) {
+                    elText.style.fontSize = !isNaN(item.midaFontText) ? `${item.midaFontText}px` : item.midaFontText;
+                } else {
+                    elText.style.fontSize = '1.05rem';
+                }
+        
+                bloc.appendChild(elText);
+            }
+        
+            // 4. BOTO DE CRIDA A L'ACCIÓ / ENLLAÇ (Opcional)
+            const desti = (item.linkBoto || item.link || '').trim();
+            const teEnllac = desti !== '' && desti !== '#' && desti !== '#N/A';
+        
+            if (teEnllac) {
+                const boto = document.createElement('button');
+                boto.className = 'boto-cta-bloc-text';
+                boto.innerText = (item.textBoto && item.textBoto !== '#N/A') ? item.textBoto : 'Saber-ne més';
+                
+                boto.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (typeof navegarA === 'function') {
+                        navegarA(desti, e);
+                    } else {
+                        window.location.href = desti;
+                    }
+                });
+        
+                bloc.appendChild(boto);
+            }
+        
+            return bloc;
         }
         
         
