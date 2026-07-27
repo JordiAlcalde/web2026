@@ -325,6 +325,22 @@
                             contenidorFilaFlex = null;
                             grupGaleria.push(item);
         
+                        } else if (tipus === 'espaiador') {
+                            // L'espaiador tanca la fila flex activa i s'insereix al 100% d'ample
+                            contenidorFilaFlex = null;
+                            const tempDiv = document.createElement('div');
+                            tempDiv.style.width = '100%';
+                            tempDiv.innerHTML = crearEspaiador(item);
+                            contenidorContinguts.appendChild(tempDiv.firstElementChild);
+        
+                        } else if (tipus === 'separador') {
+                            // El separador tanca la fila flex activa i s'insereix al 100% d'ample
+                            contenidorFilaFlex = null;
+                            const tempDiv = document.createElement('div');
+                            tempDiv.style.width = '100%';
+                            tempDiv.innerHTML = crearSeparador(item);
+                            contenidorContinguts.appendChild(tempDiv.firstElementChild);
+        
                         } else {
                             if (item.novaFila || !contenidorFilaFlex) {
                                 processarCarruselPendent();
@@ -332,7 +348,7 @@
                                 contenidorFilaFlex = document.createElement('div');
                                 contenidorFilaFlex.className = 'contenidor-fila-flex';
                                 
-                                // Posicionament dinàmic segons SituacióImatge (Esquerra / Centre / Dreta)
+                                // Posicionament dinàmic segons SituacióImatge
                                 const pos = (item.situacioImatge || '').toLowerCase().trim();
                                 if (pos === 'centre' || pos === 'center') {
                                     contenidorFilaFlex.classList.add('posicio-centre');
@@ -345,7 +361,7 @@
                                 contenidorContinguts.appendChild(contenidorFilaFlex);
                             }
         
-                            // Avaluació i creació de components
+                            // Avaluació i creació dels components estàndard
                             if (tipus === 'carrusel_imatges') {
                                 grupCarrusel.push(item);
                             } else if (tipus === 'bloc_text') {
@@ -356,14 +372,13 @@
                                 contenidorFilaFlex.appendChild(crearBlocImatgeText(item));
                             } else if (tipus === 'boto_cta') {
                                 contenidorFilaFlex.appendChild(crearBotoCTA(item));
-                            } else if (tipus === 'video_1:1' || tipus === 'video_16:9' || tipus === 'video_9:16') {
-                                // Creació integrada dels vídeos HTML5
+                            } else if (tipus === 'video' || tipus === 'video_1:1' || tipus === 'video_16:9' || tipus === 'video_9:16') {
                                 const tempDiv = document.createElement('div');
                                 tempDiv.innerHTML = crearComponentVideo(item);
                                 contenidorFilaFlex.appendChild(tempDiv.firstElementChild);
                             } else {
                                 contenidorFilaFlex.appendChild(crearTargetaElement(item));
-                            }                            
+                            }                    
                         }
                         
                     });
