@@ -211,7 +211,7 @@
                 titol: (fila[2] || '').trim(),
                 descripcio: (fila[3] || '').trim(),
                 imatgeId: (fila[4] || '').trim(),
-                link: (fila[5] || '').trim(),
+                link: (fila[5] || '').trim(), // S'utilitza tambe per a URL general i per al vídeo de Drive
                 destacat: fila[6] ? fila[6].toUpperCase().trim() === 'TRUE' : false,
                 tipusComponent: (fila[7] || '').trim(),
                 situacioImatge: (fila[8] || 'Esquerra').trim(),
@@ -225,7 +225,9 @@
                 ample: (fila[16] || '').trim(),
                 altImatge: (fila[17] || '').trim(),
                 velocitat: (fila[18] || '').trim(),
-                bucle: (fila[19] || '').trim()
+                bucle: (fila[19] || '').trim(),
+                videoAutoStart: fila[20] ? (fila[20].toUpperCase().trim() === 'TRUE' || fila[20].toUpperCase().trim() === 'SI') : false,
+                videoControls: fila[21] ? (fila[21].toUpperCase().trim() !== 'NO' && fila[21].toUpperCase().trim() !== 'FALSE') : true
             })).filter(item => item.id !== '');
         }
 
@@ -241,6 +243,7 @@
             });
         }
 
+        
         function construirPantallesWeb() {
             const contenidorPrincipal = document.getElementById('seccions-contenidor');
             contenidorPrincipal.innerHTML = '';
@@ -329,7 +332,7 @@
                                 contenidorFilaFlex = document.createElement('div');
                                 contenidorFilaFlex.className = 'contenidor-fila-flex';
                                 
-                                // LLEGEIX LA POSICIÓ DINÀMICA DE LA COLUMNA SituacióImatge
+                                // Posicionament dinàmic segons SituacióImatge (Esquerra / Centre / Dreta)
                                 const pos = (item.situacioImatge || '').toLowerCase().trim();
                                 if (pos === 'centre' || pos === 'center') {
                                     contenidorFilaFlex.classList.add('posicio-centre');
@@ -338,10 +341,11 @@
                                 } else {
                                     contenidorFilaFlex.classList.add('posicio-esquerra');
                                 }
-
+        
                                 contenidorContinguts.appendChild(contenidorFilaFlex);
                             }
         
+                            // Avaluació i creació de components
                             if (tipus === 'carrusel_imatges') {
                                 grupCarrusel.push(item);
                             } else if (tipus === 'bloc_text') {
@@ -352,6 +356,11 @@
                                 contenidorFilaFlex.appendChild(crearBlocImatgeText(item));
                             } else if (tipus === 'boto_cta') {
                                 contenidorFilaFlex.appendChild(crearBotoCTA(item));
+                            } else if (tipus === 'video_1:1' || tipus === 'video_16:9' || tipus === 'video_9:16') {
+                                // Creació integrada dels vídeos HTML5
+                                const tempDiv = document.createElement('div');
+                                tempDiv.innerHTML = crearComponentVideo(item);
+                                contenidorFilaFlex.appendChild(tempDiv.firstElementChild);
                             } else {
                                 contenidorFilaFlex.appendChild(crearTargetaElement(item));
                             }
@@ -1008,65 +1017,54 @@
          * @param {string} url - URL de Google Drive (compartida o de cerca)
          * @returns {string} - URL directa de streaming de Drive
          */
+
         function obtenirUrlDirectaDrive(url) {
             if (!url) return '';
-            // Extreu l'ID del fitxer de Drive
             const match = url.match(/(?:id=|\/d\/|\/file\/d\/)([\w-]+)/);
             if (match && match[1]) {
                 return `https://drive.google.com/uc?export=download&id=${match[1]}`;
             }
             return url;
-        }
+        }        
         
         /**
-         * Genera l'HTML del component Vídeo
-         * @param {Object} dades - Dades de la fila de Google Sheets
-         * @returns {string} - Cadena HTML del component
+         * Renderitza els components de vídeo: video_1:1, video_16:9 o video_9:16
          */
-        function crearComponentVideo(dades) {
-            // Tipus: video_1:1, video_16:9, video_9:16
-            const tipus = dades.TipusComponent || 'video_16:9';
-            const urlDrive = dades.UrlMedia || '';
-            const titol = dades.Titol || '';
-            const descripcio = dades.Descripcio || '';
+        function crearComponentVideo(item) {
+            const tipus = item.tipusComponent || 'video_16:9';
+            const srcVideo = obtenirUrlDirectaDrive(item.link);
             
-            // Opcions de configuració (des de columna de Sheets o opcions per defecte)
-            const autoStart = dades.AutoStart === 'SI' || dades.AutoStart === true;
-            const mostrarControls = dades.Controls !== 'NO'; // Per defecte mostrar controls
-            
-            // Determinador de ràtio CSS
-            let ratioClass = 'ratio-16-9';
-            if (tipus === 'video_1:1') ratioClass = 'ratio-1-1';
-            if (tipus === 'video_9:16') ratioClass = 'ratio-9-16';
+            // Ràtios d'aspecte
+            let classeRatio = 'ratio-16-9';
+            if (tipus === 'video_1:1') classeRatio = 'ratio-1-1';
+            if (tipus === 'video_9:16') classeRatio = 'ratio-9-16';
         
-            const srcDirecta = obtenirUrlDirectaDrive(urlDrive);
+            // Configuració de reproductors HTML5
+            // Autoplay requereix silenciar el vídeo (muted) per normativa dels navegadors
+            const atributAutoplay = item.videoAutoStart ? 'autoplay muted loop' : '';
+            const atributControls = item.videoControls ? 'controls' : '';
         
-            // Atributs per al reproductor HTML5
-            const atributAutoplay = autoStart ? 'autoplay muted loop' : '';
-            const atributControls = mostrarControls ? 'controls' : '';
-            const playsInline = 'playsinline'; // Crucial per a una navegació fluïda en iOS/mòbil
-        
-            // Construcció del text inferior si existeix
+            // Blocs de text opcionals
             let htmlPeu = '';
-            if (titol || descripcio) {
+            if (item.titol || item.descripcio) {
                 htmlPeu = `
                     <div class="video-peu-text">
-                        ${titol ? `<h3>${titol}</h3>` : ''}
-                        ${descripcio ? `<p>${descripcio}</p>` : ''}
+                        ${item.titol ? `<h3>${item.titol}</h3>` : ''}
+                        ${item.descripcio ? `<p>${item.descripcio}</p>` : ''}
                     </div>
                 `;
             }
         
             return `
                 <div class="contenidor-video-wrapper">
-                    <div class="caixa-reproductor-video ${ratioClass}">
+                    <div class="caixa-reproductor-video ${classeRatio}">
                         <video 
-                            src="${srcDirecta}" 
+                            src="${srcVideo}" 
                             ${atributControls} 
                             ${atributAutoplay} 
-                            ${playsInline}
+                            playsinline 
                             preload="metadata">
-                            El teu navegador no suporta la reproducció de vídeo HTML5.
+                            El teu navegador no suporta la reproducció de vídeo.
                         </video>
                     </div>
                     ${htmlPeu}
