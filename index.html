@@ -363,8 +363,9 @@
                                 contenidorFilaFlex.appendChild(tempDiv.firstElementChild);
                             } else {
                                 contenidorFilaFlex.appendChild(crearTargetaElement(item));
-                            }
+                            }                            
                         }
+                        
                     });
         
                     processarGaleriaPendent();
@@ -1078,51 +1079,37 @@
             `;
         }
 
-        
+
         /**
-         * Renderitza els components de vídeo: video_1:1, video_16:9 o video_9:16
-        
-        function crearComponentVideo(item) {
-            const tipus = item.tipusComponent || 'video_16:9';
-            const srcVideo = obtenirUrlDirectaDrive(item.link);
-            
-            // Ràtios d'aspecte
-            let classeRatio = 'ratio-16-9';
-            if (tipus === 'video_1:1') classeRatio = 'ratio-1-1';
-            if (tipus === 'video_9:16') classeRatio = 'ratio-9-16';
-        
-            // Configuració de reproductors HTML5
-            // Autoplay requereix silenciar el vídeo (muted) per normativa dels navegadors
-            const atributAutoplay = item.videoAutoStart ? 'autoplay muted loop' : '';
-            const atributControls = item.videoControls ? 'controls' : '';
-        
-            // Blocs de text opcionals
-            let htmlPeu = '';
-            if (item.titol || item.descripcio) {
-                htmlPeu = `
-                    <div class="video-peu-text">
-                        ${item.titol ? `<h3>${item.titol}</h3>` : ''}
-                        ${item.descripcio ? `<p>${item.descripcio}</p>` : ''}
-                    </div>
-                `;
-            }
+         * Crea un espai buit per ajustar l'aire entre blocs.
+         * - Alçada: Columna R (alcadaImatge) -> ex: 40px, 2rem, etc.
+         * - Color de fons: Columna O (colorFons) -> ex: #24153F, #301269 o buit (transparent)
+         */
+        function crearEspaiador(item) {
+            const alcada = item.alcadaImatge && item.alcadaImatge.trim() !== '' ? item.alcadaImatge.trim() : '30px';
+            const color = item.colorFons && item.colorFons.trim() !== '' ? item.colorFons.trim() : 'transparent';
         
             return `
-                <div class="contenidor-video-wrapper">
-                    <div class="caixa-reproductor-video ${classeRatio}">
-                        <video 
-                            src="${srcVideo}" 
-                            ${atributControls} 
-                            ${atributAutoplay} 
-                            playsinline 
-                            preload="metadata">
-                            El teu navegador no suporta la reproducció de vídeo.
-                        </video>
-                    </div>
-                    ${htmlPeu}
+                <div class="component-espaiador" style="height: ${alcada}; background-color: ${color}; width: 100%;"></div>
+            `;
+        }
+        
+        /**
+         * Crea una línia separadora horitzontal.
+         * - Gruix de la línia: Columna R (alcadaImatge) -> ex: 1px, 2px...
+         * - Color de la línia: Columna O (colorFons) -> ex: #AC80FF, rgba(172, 128, 255, 0.3)...
+         */
+        function crearSeparador(item) {
+            const gruix = item.alcadaImatge && item.alcadaImatge.trim() !== '' ? item.alcadaImatge.trim() : '1px';
+            const colorLinia = item.colorFons && item.colorFons.trim() !== '' ? item.colorFons.trim() : 'rgba(172, 128, 255, 0.3)';
+        
+            return `
+                <div class="component-separador-wrapper" style="width: 100%; padding: 0.8rem 0;">
+                    <hr class="linia-separadora" style="border: none; height: ${gruix}; background-color: ${colorLinia}; margin: 0; width: 100%;" />
                 </div>
             `;
-        } */
+        }        
+
         
     </script>
 </body>
