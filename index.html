@@ -786,7 +786,7 @@
             // Funció de suport per validar enllaços (com a la galeria activa)
             const obtenirEnllacValid = (item) => {
                 if (!item) return '';
-                const desti = (item.linkBoto || item.link || '').trim();
+                const desti = (item.linkBoto || '').trim();
                 if (desti === '' || desti === '#' || desti === '#N/A') return '';
                 return desti;
             };
