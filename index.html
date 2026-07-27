@@ -1037,33 +1037,41 @@
         }        
 
 
+        /**
+         * Renderitza un vídeo MP4 allotjat a GitHub Pages adaptant-se a l'ample del contenidor
+         */
         function crearComponentVideo(item) {
-            const tipus = item.tipusComponent || 'video_16:9';
-            const srcVideo = obtenirUrlEmbedDrive(item.link);
+            const srcVideo = item.link || '';
             
-            let classeRatio = 'ratio-16-9';
-            if (tipus === 'video_1:1') classeRatio = 'ratio-1-1';
-            if (tipus === 'video_9:16') classeRatio = 'ratio-9-16';
+            // Si s'ha definit un ample a Sheets (p. ex. "400px", "50%", "600px"), s'aplica. Si no, 100%.
+            const ampleContenidor = item.ample && item.ample.trim() !== '' ? item.ample.trim() : '100%';
         
+            // Configuració d'Autoplay i Controls des de les columnes U i V
+            const atributAutoplay = item.videoAutoStart ? 'autoplay muted loop' : '';
+            const atributControls = item.videoControls ? 'controls' : '';
+        
+            // Peu de text opcional
             let htmlPeu = '';
             if (item.titol || item.descripcio) {
                 htmlPeu = `
-                    <div class="video-peu-text" style="color: #E3D4FF; margin-top: 0.5rem;">
-                        ${item.titol ? `<h3 style="color: #AC80FF; font-family: 'Montserrat', sans-serif;">${item.titol}</h3>` : ''}
-                        ${item.descripcio ? `<p style="font-family: 'Montserrat', sans-serif;">${item.descripcio}</p>` : ''}
+                    <div class="video-peu-text">
+                        ${item.titol ? `<h3>${item.titol}</h3>` : ''}
+                        ${item.descripcio ? `<p>${item.descripcio}</p>` : ''}
                     </div>
                 `;
             }
         
             return `
-                <div class="contenidor-video-wrapper" style="width: 100%; max-width: 100%;">
-                    <div class="caixa-reproductor-video ${classeRatio}" style="position: relative; width: 100%; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 8px;">
-                        <iframe 
+                <div class="contenidor-video-wrapper" style="max-width: ${ampleContenidor};">
+                    <div class="caixa-reproductor-video-adaptable">
+                        <video 
                             src="${srcVideo}" 
-                            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
-                            allow="autoplay"
-                            allowfullscreen>
-                        </iframe>
+                            ${atributControls} 
+                            ${atributAutoplay} 
+                            playsinline 
+                            preload="metadata">
+                            El teu navegador no permet la reproducció de vídeo HTML5.
+                        </video>
                     </div>
                     ${htmlPeu}
                 </div>
