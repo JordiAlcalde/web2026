@@ -574,3 +574,60 @@
     background-color: #AC80FF;
     color: #24153F;
 }
+
+
+
+/* ==========================================================================
+   ADAPTACIÓ MÒBIL GENERAL (Forçar 100% d'ample en tots els components)
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    /* 1. Forçar la fila flex a ordenar en columna vertical */
+    .contenidor-fila-flex {
+        flex-direction: column !important;
+        justify-content: flex-start !important;
+        align-items: stretch !important;
+        gap: 1.5rem !important;
+        width: 100% !important;
+    }
+
+    /* 2. Forçar que TOTS els components interns ocupin el 100% de l'ample */
+    .contenidor-fila-flex > * {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: 1 1 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    /* 3. Reajust específic per a targetes d'imatge i text */
+    .targeta-imatge-text {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: 1 1 100% !important;
+    }
+
+    /* 4. Reajust per al carrusel d'imatges i el seu visor */
+    .carrusel-imatges-wrapper {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .carrusel-visor {
+        height: 280px !important; /* Alçada adaptada per no ocupar tota la pantalla vertical */
+    }
+
+    /* 5. Reajust per al bloc imatge-text */
+    .bloc-imatge-text,
+    .bloc-imatge-text.orientacio-dreta {
+        flex-direction: column !important;
+        padding: 1.25rem !important;
+        gap: 1.25rem !important;
+        width: 100% !important;
+    }
+
+    .bloc-imatge-text .caixa-imatge {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+}
