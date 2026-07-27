@@ -1097,13 +1097,13 @@
 
 
         /**
-         * Crea un espai buit per ajustar l'aire entre blocs.
-         * - Alçada: Columna R (alcadaImatge) -> ex: 40px, 2rem, etc.
-         * - Color de fons: Columna O (colorFons) -> ex: #24153F, #301269 o buit (transparent)
+         * Crea un espaiador d'ample complet (100%).
+         * - Alçada: Columna R (alcadaImatge), per defecte 30px.
+         * - Color de fons: Columna O (colorFons), resolt amb obtenirColorHex().
          */
         function crearEspaiador(item) {
             const alcada = item.alcadaImatge && item.alcadaImatge.trim() !== '' ? item.alcadaImatge.trim() : '30px';
-            const color = item.colorFons && item.colorFons.trim() !== '' ? item.colorFons.trim() : 'transparent';
+            const color = obtenirColorHex(item.colorFons, 'transparent');
         
             return `
                 <div class="component-espaiador" style="height: ${alcada}; background-color: ${color}; width: 100%;"></div>
@@ -1111,20 +1111,21 @@
         }
         
         /**
-         * Crea una línia separadora horitzontal.
-         * - Gruix de la línia: Columna R (alcadaImatge) -> ex: 1px, 2px...
-         * - Color de la línia: Columna O (colorFons) -> ex: #AC80FF, rgba(172, 128, 255, 0.3)...
+         * Crea un separador horitzontal d'ample complet (100%).
+         * - Gruix: Columna R (alcadaImatge), per defecte 1px.
+         * - Color de la línia: Columna O (colorFons), resolt amb obtenirColorHex().
          */
         function crearSeparador(item) {
             const gruix = item.alcadaImatge && item.alcadaImatge.trim() !== '' ? item.alcadaImatge.trim() : '1px';
-            const colorLinia = item.colorFons && item.colorFons.trim() !== '' ? item.colorFons.trim() : 'rgba(172, 128, 255, 0.3)';
+            // Si no s'especifica color, fem servir el lila Accent (#AC80FF)
+            const colorLinia = obtenirColorHex(item.colorFons, MAPA_COLORS['Accent'] || '#AC80FF');
         
             return `
                 <div class="component-separador-wrapper" style="width: 100%; padding: 0.8rem 0;">
                     <hr class="linia-separadora" style="border: none; height: ${gruix}; background-color: ${colorLinia}; margin: 0; width: 100%;" />
                 </div>
             `;
-        }        
+        }      
 
         
     </script>
