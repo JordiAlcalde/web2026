@@ -528,94 +528,75 @@
 
 
 /* ==========================================================================
-   COMPONENT: REPRODUCTOR DE VÍDEO (1:1, 16:9, 9:16)
+   COMPONENT: REPRODUCTOR DE VÍDEO ADAPTABLE (GitHub Pages)
    ========================================================================== */
 
 .contenidor-video-wrapper {
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
-    width: 100%;
-    margin: 1.5rem 0;
+    width: 100%; /* S'ajusta al max-width definit inline des de Sheets */
+    margin: 1rem 0;
     border-radius: 12px;
     overflow: hidden;
-    background-color: var(--color-fons-fosc);
+    background-color: var(--color-fons-fosc, #24153F);
     border: 1px solid rgba(172, 128, 255, 0.25);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
     transition: border-color 0.3s ease;
 }
 
 .contenidor-video-wrapper:hover {
-    border-color: var(--color-accent);
+    border-color: var(--color-accent, #AC80FF);
 }
 
-/* Caixa del reproductor adaptativa */
-.caixa-reproductor-video {
-    position: relative;
+/* Caixa que permet al vídeo no-estandarditzat mantenir la seva proporció real */
+.caixa-reproductor-video-adaptable {
     width: 100%;
-    background-color: #000000;
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
+    background-color: #000000;
 }
 
-/* Ràtios d'aspecte segons configuració de Sheets */
-.caixa-reproductor-video.ratio-16-9 {
-    aspect-ratio: 16 / 9;
-}
-
-.caixa-reproductor-video.ratio-1-1 {
-    aspect-ratio: 1 / 1;
-}
-
-.caixa-reproductor-video.ratio-9-16 {
-    aspect-ratio: 9 / 16;
-    max-height: 650px; /* Evita que en pantalles grans ocupe massa alçada vertical */
-    margin: 0 auto;
-}
-
-/* Estil del vídeo HTML5 integrat */
-.caixa-reproductor-video video,
-.caixa-reproductor-video iframe {
+.caixa-reproductor-video-adaptable video {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border: none;
+    height: auto; /* Garanteix que mides no estandarditzades no es distorsionin */
+    max-height: 75vh; /* Evita que vídeos verticals molt llargs dOcean la pantalla */
     display: block;
+    object-fit: contain;
 }
 
-/* Peu de text opcional del vídeo */
 .video-peu-text {
-    padding: 1rem 1.25rem;
-    background-color: var(--color-fons-fosc);
+    padding: 0.9rem 1.2rem;
+    background-color: var(--color-fons-fosc, #24153F);
     border-top: 1px solid rgba(172, 128, 255, 0.15);
 }
 
 .video-peu-text h3 {
-    font-family: var(--font-principal);
-    font-size: 1.1rem;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.05rem;
     font-weight: 600;
-    color: var(--color-clar);
-    margin: 0 0 0.4rem 0;
+    color: var(--color-clar, #E3D4FF);
+    margin: 0 0 0.3rem 0;
 }
 
 .video-peu-text p {
-    font-family: var(--font-principal);
+    font-family: 'Montserrat', sans-serif;
     font-size: 0.88rem;
     font-weight: 400;
-    color: var(--color-accent-clar);
+    color: var(--color-accent-clar, #C8AAFF);
     margin: 0;
-    line-height: 1.45;
+    line-height: 1.4;
 }
 
-/* Modificacions Mòbil específiques per a Vídeo */
+/* Adaptació preceptiva per a Mòbils */
 @media (max-width: 768px) {
-    .caixa-reproductor-video.ratio-9-16 {
-        max-height: 500px;
+    .contenidor-video-wrapper {
+        max-width: 100% !important; /* Força el 100% d'ample en mòbil independentment de Sheets */
+        width: 100% !important;
+        margin: 0.8rem 0 !important;
     }
 }
-
 
 
 /* ==========================================================================
