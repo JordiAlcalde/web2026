@@ -1198,31 +1198,73 @@
             `;
         }
         
-        function enviarFormulariMinimMon(event, formId) {
+        // Substitueix aquesta URL per la que t'oferirà Google Apps Script (veure pas 2)
+        const URL_GOOGLE_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbwUuqy0X4UdDPNqrzKgA9Pp1eve2n27Vji8yjbkXHmYHTOaUWdVoo0fLGcKOunzw-fe3w/exec";
+        
+        async function enviarFormulariMinimMon(event, formId) {
             event.preventDefault();
             const formulari = document.getElementById(formId);
             if (!formulari) return;
         
+            const botoSubmit = formulari.querySelector('button[type="submit"]');
+            if (botoSubmit) {
+                botoSubmit.disabled = true;
+                botoSubmit.innerText = "Enviant...";
+            }
+        
             const formData = new FormData(formulari);
-            let cosCorreu = "Sol·licitud rebuda des de la web Mínim Món:\n\n";
+            const dadesForm = {};
+            let fitxerAdjunt = null;
         
-            formData.forEach((valor, clau) => {
-                if (valor instanceof File) {
-                    if (valor.name) {
-                        cosCorreu += `${clau}: Fitxer adjuntat (${valor.name})\n`;
-                    }
-                } else if (valor) {
-                    cosCorreu += `${clau}: ${valor}\n`;
+            // Processar camps i fitxers
+            for (let [clau, valor] of formData.entries()) {
+                if (valor instanceof File && valor.name && valor.size > 0) {
+                    // Convertim el fitxer a Base64 per poder-lo enviar per correu
+                    fitxerAdjunt = await convertirFitxerABase64(valor);
+                } else if (!(valor instanceof File)) {
+                    dadesForm[clau] = valor;
                 }
+            }
+        
+            const payload = {
+                camps: dadesForm,
+                fitxer: fitxerAdjunt
+            };
+        
+            try {
+                // Enviament en segon pla (sense obrir client de correu)
+                await fetch(URL_GOOGLE_APPS_SCRIPT, {
+                    method: 'POST',
+                    mode: 'no-cors', // Evita bloquejos de CORS amb Google Apps Script
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+        
+                alert("Moltes gràcies! La teva sol·licitud s'ha enviat correctament a Mínim Món.");
+                formulari.reset();
+            } catch (error) {
+                console.error("Error en l'enviament:", error);
+                alert("S'ha produït un error en enviar el formulari. Si us plau, contacta directament a info@minimmon.cat");
+            } finally {
+                if (botoSubmit) {
+                    botoSubmit.disabled = false;
+                    botoSubmit.innerText = "Enviar sol·licitud";
+                }
+            }
+        }
+        
+        // Funció auxiliar per llegir el fitxer com a Base64
+        function convertirFitxerABase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve({
+                    nom: file.name,
+                    tipus: file.type,
+                    base64: reader.result.split(',')[1]
+                });
+                reader.onerror = error => reject(error);
             });
-        
-            const assumpte = encodeURIComponent("Nova sol·licitud de contacte - Mínim Món");
-            const cosEncodat = encodeURIComponent(cosCorreu);
-            
-            // Obre el client de correu predeterminat adreçat a info@minimmon.cat
-            window.location.href = `mailto:info@minimmon.cat?subject=${assumpte}&body=${cosEncodat}`;
-        
-            alert("S'ha obert el teu gestor de correu per finalitzar l'enviament cap a info@minimmon.cat.");
         }
         
     </script>
