@@ -318,6 +318,11 @@
                     elementsSeccio.forEach(item => {
                         
                         const tipus = item.tipusComponent ? item.tipusComponent.toLowerCase().trim() : '';
+
+                        // LOG DE CONTROL: Veure quin component s'està avaluant
+                        if (tipus === 'peu_de_pagina') {
+                            console.log("Detectat peu_de_pagina a les dades:", item);
+                        }
                     
                         if (tipus !== 'galeria_activa') processarGaleriaPendent();
                         if (tipus !== 'carrusel_imatges') processarCarruselPendent();
