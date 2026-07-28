@@ -1105,6 +1105,7 @@
             `;
         }
 
+        
         function crearFormulari(item, campsFormulari = []) {
             const titol = item.titol || 'Formulari de Contacte';
             const descripcio = item.descripcio || '';
@@ -1112,20 +1113,23 @@
         
             let campsHTML = '';
         
-            campsFormulari.forEach(camp => {
-                // Mapeig flexible adaptat a les teves columnes de Google Sheets
-                const idCamp = camp.id || camp.ID_camp || '';
-                if (!idCamp) return;
+            // Filtrar les files buides del full de Google Sheets
+            const campsValids = campsFormulari.filter(camp => {
+                const id = (camp.id || camp.ID_camp || '').trim();
+                const etiqueta = (camp.seccio || camp.Etiqueta || '').trim();
+                const tipus = (camp.titol || camp.TipusCamp || '').trim();
+                return id !== '' && (etiqueta !== '' || tipus !== '');
+            });
         
+            campsValids.forEach(camp => {
+                const idCamp = camp.id || camp.ID_camp || '';
                 const etiqueta = camp.seccio || camp.Etiqueta || '';
                 const tipus = (camp.titol || camp.TipusCamp || 'text').toLowerCase().trim();
                 const infoAddicional = camp.infoAddicional || camp['Info addicional'] || '';
                 
-                // Les opcions vénen a la columna 'descripcio' separades per ';'
                 const rawOpcions = camp.descripcio || camp.Opcions || '';
                 const llistaOpcions = rawOpcions ? rawOpcions.split(';').map(o => o.trim()).filter(o => o !== '') : [];
         
-                // Comprovació de camp obligatori (a través de la columna imatgeId o Obligatori)
                 const valObligatori = (camp.imatgeId || camp.Obligatori || '').toString().toUpperCase().trim();
                 const esObligatori = valObligatori === 'SI' || valObligatori === 'TRUE';
                 
@@ -1138,10 +1142,10 @@
                 }
         
                 if (tipus === 'textarea') {
-                    campsHTML += `<textarea id="${idCamp}" name="${idCamp}" class="camp-textarea" ${reqAttr} style="width: 100%; padding: 0.8rem; border-radius: 6px; border: 1px solid #AC80FF; background: #301269; color: #FFF; min-height: 100px;"></textarea>`;
+                    campsHTML += `<textarea id="${idCamp}" name="${etiqueta || idCamp}" class="camp-textarea" ${reqAttr} style="width: 100%; padding: 0.8rem; border-radius: 6px; border: 1px solid #AC80FF; background: #301269; color: #FFF; min-height: 100px; font-family: 'Montserrat', sans-serif;"></textarea>`;
                 } else if (tipus === 'select') {
                     campsHTML += `
-                        <select id="${idCamp}" name="${idCamp}" class="camp-select" ${reqAttr} style="width: 100%; padding: 0.8rem; border-radius: 6px; border: 1px solid #AC80FF; background: #301269; color: #FFF;">
+                        <select id="${idCamp}" name="${etiqueta || idCamp}" class="camp-select" ${reqAttr} style="width: 100%; padding: 0.8rem; border-radius: 6px; border: 1px solid #AC80FF; background: #301269; color: #FFF; font-family: 'Montserrat', sans-serif;">
                             <option value="" disabled selected>Selecciona una opció...</option>
                             ${llistaOpcions.map(op => `<option value="${op}">${op}</option>`).join('')}
                         </select>
@@ -1151,7 +1155,7 @@
                     llistaOpcions.forEach((op, idx) => {
                         campsHTML += `
                             <label class="opcio-inline" style="color: #E3D4FF; cursor: pointer;">
-                                <input type="radio" name="${idCamp}" value="${op}" ${idx === 0 && esObligatori ? 'required' : ''} />
+                                <input type="radio" name="${etiqueta || idCamp}" value="${op}" ${idx === 0 && esObligatori ? 'required' : ''} />
                                 <span style="margin-left: 0.3rem;">${op}</span>
                             </label>
                         `;
@@ -1162,16 +1166,16 @@
                     llistaOpcions.forEach(op => {
                         campsHTML += `
                             <label class="opcio-inline" style="color: #E3D4FF; cursor: pointer;">
-                                <input type="checkbox" name="${idCamp}" value="${op}" />
+                                <input type="checkbox" name="${etiqueta || idCamp}" value="${op}" />
                                 <span style="margin-left: 0.3rem;">${op}</span>
                             </label>
                         `;
                     });
                     campsHTML += `</div>`;
                 } else if (tipus === 'file') {
-                    campsHTML += `<input type="file" id="${idCamp}" name="${idCamp}" class="camp-file" accept="image/*,.pdf" ${reqAttr} style="color: #E3D4FF;" />`;
+                    campsHTML += `<input type="file" id="${idCamp}" name="${etiqueta || idCamp}" class="camp-file" accept="image/*,.pdf" ${reqAttr} style="color: #E3D4FF;" />`;
                 } else {
-                    campsHTML += `<input type="${tipus}" id="${idCamp}" name="${idCamp}" class="camp-input" ${reqAttr} style="width: 100%; padding: 0.8rem; border-radius: 6px; border: 1px solid #AC80FF; background: #301269; color: #FFF;" />`;
+                    campsHTML += `<input type="${tipus}" id="${idCamp}" name="${etiqueta || idCamp}" class="camp-input" ${reqAttr} style="width: 100%; padding: 0.8rem; border-radius: 6px; border: 1px solid #AC80FF; background: #301269; color: #FFF; font-family: 'Montserrat', sans-serif;" />`;
                 }
         
                 if (infoAddicional) {
@@ -1182,18 +1186,44 @@
         
             return `
                 <div class="formulari-minim-mon" id="wrapper-${formId}" style="background: #24153F; padding: 2rem; border-radius: 10px; border: 1px solid #340094; max-width: 650px; margin: 0 auto;">
-                    ${titol ? `<h3 class="formulari-titol" style="color: #FFF; font-size: 1.5rem; margin-bottom: 0.5rem;">${titol}</h3>` : ''}
-                    ${descripcio ? `<p class="formulari-descripcio" style="color: #C8AAFF; margin-bottom: 1.5rem;">${descripcio}</p>` : ''}
-                    <form id="${formId}" enctype="multipart/form-data" onsubmit="enviarFormulariMinimMon(event, '${formId}')">
+                    ${titol ? `<h3 class="formulari-titol" style="color: #FFF; font-size: 1.5rem; margin-bottom: 0.5rem; font-family: 'Montserrat', sans-serif;">${titol}</h3>` : ''}
+                    ${descripcio ? `<p class="formulari-descripcio" style="color: #C8AAFF; margin-bottom: 1.5rem; font-family: 'Montserrat', sans-serif;">${descripcio}</p>` : ''}
+                    <form id="${formId}" onsubmit="enviarFormulariMinimMon(event, '${formId}')">
                         ${campsHTML}
                         <div class="boto-enviar-container" style="margin-top: 1.5rem; text-align: center;">
-                            <button type="submit" class="boto-enviar" style="background: #340094; color: #FFF; padding: 0.8rem 2rem; border: 1px solid #AC80FF; border-radius: 6px; font-weight: 600; cursor: pointer;">Enviar sol·licitud</button>
+                            <button type="submit" class="boto-enviar" style="background: #340094; color: #FFF; padding: 0.8rem 2rem; border: 1px solid #AC80FF; border-radius: 6px; font-weight: 600; cursor: pointer; font-family: 'Montserrat', sans-serif;">Enviar sol·licitud</button>
                         </div>
                     </form>
                 </div>
             `;
         }
-
+        
+        function enviarFormulariMinimMon(event, formId) {
+            event.preventDefault();
+            const formulari = document.getElementById(formId);
+            if (!formulari) return;
+        
+            const formData = new FormData(formulari);
+            let cosCorreu = "Sol·licitud rebuda des de la web Mínim Món:\n\n";
+        
+            formData.forEach((valor, clau) => {
+                if (valor instanceof File) {
+                    if (valor.name) {
+                        cosCorreu += `${clau}: Fitxer adjuntat (${valor.name})\n`;
+                    }
+                } else if (valor) {
+                    cosCorreu += `${clau}: ${valor}\n`;
+                }
+            });
+        
+            const assumpte = encodeURIComponent("Nova sol·licitud de contacte - Mínim Món");
+            const cosEncodat = encodeURIComponent(cosCorreu);
+            
+            // Obre el client de correu predeterminat adreçat a info@minimmon.cat
+            window.location.href = `mailto:info@minimmon.cat?subject=${assumpte}&body=${cosEncodat}`;
+        
+            alert("S'ha obert el teu gestor de correu per finalitzar l'enviament cap a info@minimmon.cat.");
+        }
         
     </script>
 </body>
