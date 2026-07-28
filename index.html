@@ -1113,23 +1113,27 @@
         
             let campsHTML = '';
         
-            // Filtrar les files buides del full de Google Sheets
+            // Filtrar files buides de Google Sheets
             const campsValids = campsFormulari.filter(camp => {
-                const id = (camp.id || camp.ID_camp || '').trim();
-                const etiqueta = (camp.seccio || camp.Etiqueta || '').trim();
-                const tipus = (camp.titol || camp.TipusCamp || '').trim();
+                const id = (camp.id || '').trim();
+                const etiqueta = (camp.seccio || '').trim();
+                const tipus = (camp.titol || '').trim();
                 return id !== '' && (etiqueta !== '' || tipus !== '');
             });
         
             campsValids.forEach(camp => {
-                const idCamp = camp.id || camp.ID_camp || '';
-                const etiqueta = camp.seccio || camp.Etiqueta || '';
-                const tipus = (camp.titol || camp.TipusCamp || 'text').toLowerCase().trim();
-                const infoAddicional = camp.infoAddicional || camp['Info addicional'] || '';
+                const idCamp = camp.id || '';
+                const etiqueta = camp.seccio || '';
+                const tipus = (camp.titol || 'text').toLowerCase().trim();
                 
-                const rawOpcions = camp.descripcio || camp.Opcions || '';
+                // Mapeig de les opcions des de 'descripcio'
+                const rawOpcions = camp.descripcio || '';
                 const llistaOpcions = rawOpcions ? rawOpcions.split(';').map(o => o.trim()).filter(o => o !== '') : [];
         
+                // Mapeig d'InfoAddicional des de la columna 'link' (o 'infoAddicional')
+                const infoAddicional = camp.link || camp.infoAddicional || camp['Info addicional'] || '';
+        
+                // Mapeig de Camp Obligatori des de la columna 'imatgeId'
                 const valObligatori = (camp.imatgeId || camp.Obligatori || '').toString().toUpperCase().trim();
                 const esObligatori = valObligatori === 'SI' || valObligatori === 'TRUE';
                 
@@ -1178,8 +1182,9 @@
                     campsHTML += `<input type="${tipus}" id="${idCamp}" name="${etiqueta || idCamp}" class="camp-input" ${reqAttr} style="width: 100%; padding: 0.8rem; border-radius: 6px; border: 1px solid #AC80FF; background: #301269; color: #FFF; font-family: 'Montserrat', sans-serif;" />`;
                 }
         
-                if (infoAddicional) {
-                    campsHTML += `<span class="text-auxiliar" style="display: block; font-size: 0.8rem; color: #C8AAFF; margin-top: 0.2rem;">${infoAddicional}</span>`;
+                // Ara sí es renderitza el text d'InfoAddicional si conté informació
+                if (infoAddicional && infoAddicional !== '#N/A') {
+                    campsHTML += `<span class="text-auxiliar" style="display: block; font-size: 0.85rem; color: #C8AAFF; margin-top: 0.3rem;">${infoAddicional}</span>`;
                 }
                 campsHTML += `</div>`;
             });
