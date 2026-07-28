@@ -274,19 +274,20 @@
                 const teImatge = pagina.heroImatge && pagina.heroImatge.trim() !== '' && pagina.heroImatge.trim() !== '#N/A';
                 const urlHeroImatge = teImatge ? `https://drive.google.com/thumbnail?sz=w1600&id=${pagina.heroImatge.trim()}` : '';
         
+                // Definició de la imatge de fons amb el degradat progressiu
                 const estilFons = teImatge 
-                    ? `background-image: linear-gradient(to right, rgba(36, 21, 63, 0.85) 0%, rgba(36, 21, 63, 0.45) 60%, rgba(36, 21, 63, 0.1) 100%), url('${urlHeroImatge}'); background-size: cover; background-position: center;` 
+                    ? `background-image: linear-gradient(to right, rgba(36, 21, 63, 0.95) 0%, rgba(36, 21, 63, 0.6) 50%, rgba(36, 21, 63, 0.15) 100%), url('${urlHeroImatge}'); background-size: cover; background-position: center;` 
                     : `background-color: var(--color-fons-fosc, #24153F);`;
         
-                // CONSTRUCCIÓ DE LA SECCIÓ HERO
+                // CONSTRUCCIÓ DE LA SECCIÓ HERO (Només amb el bloc de text i la imatge de fons)
                 const htmlHero = `
-                    <div class="hero-pagina" style="${estilFons} padding: 4rem 2rem; display: flex; align-items: center; justify-content: center;">
-                        <div class="hero-contenedor-flex" style="max-width: 1200px; width: 100%; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 2rem;">
+                    <div class="hero-pagina" style="${estilFons} padding: 5rem 2rem; display: flex; align-items: center; justify-content: flex-start; min-height: 450px;">
+                        <div class="hero-contenedor-flex" style="max-width: 1200px; width: 100%; margin: 0 auto; display: flex; align-items: center;">
                             
                             <!-- BLOC DE TEXT -->
                             <div class="hero-caixa-contingut" style="
                                 flex: 1 1 ${pagina.heroAmple || '600px'};
-                                max-width: ${pagina.heroAmple || '600px'}; 
+                                max-width: ${pagina.heroAmple || '650px'}; 
                                 transform: translateX(${pagina.heroLeftSpan || '0px'}); 
                                 text-align: ${pagina.heroAlign || 'left'};
                                 color: ${pagina.heroFontColor || '#FFFFFF'};">
@@ -305,23 +306,6 @@
                                         ${pagina.heroDestacat}
                                     </div>` : ''}
                             </div>
-        
-                            <!-- BLOC DE LA IMATGE HERO -->
-                            ${(pagina.heroImatge && String(pagina.heroImatge).trim() !== '' && String(pagina.heroImatge).toLowerCase() !== 'undefined' && String(pagina.heroImatge).toLowerCase() !== 'null') ? `
-                                <div class="hero-caixa-imatge" style="flex: 0 0 auto; display: flex; align-items: center; justify-content: center;">
-                                    <img 
-                                        src="${pagina.heroImatge.startsWith('http') ? pagina.heroImatge : `https://drive.google.com/thumbnail?sz=w800&id=${pagina.heroImatge}`}" 
-                                        alt="Mínim Món" 
-                                        style="
-                                            height: ${pagina.heroMidaImatge || 'auto'} !important; 
-                                            max-height: ${pagina.heroMidaImatge || 'none'} !important; 
-                                            min-height: ${pagina.heroMidaImatge || 'auto'} !important; 
-                                            width: auto; 
-                                            object-fit: contain; 
-                                            display: block;
-                                        " 
-                                    />
-                                </div>` : ''}
         
                         </div>
                     </div>
