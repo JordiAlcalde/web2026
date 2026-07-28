@@ -306,16 +306,16 @@
                                     </div>` : ''}
                             </div>
                 
-                            <!-- BLOC DE LA IMATGE HERO (S'imprimeix només si hi ha una URL d'imatge vàlida) -->
-                            ${(pagina.heroImatge && pagina.heroImatge.trim() !== '') ? `
+                            <!-- BLOC DE LA IMATGE HERO -->
+                            ${(pagina.heroImatge && pagina.heroImatge.trim() !== '' && pagina.heroImatge.startsWith('http')) ? `
                                 <div class="hero-caixa-imatge" style="flex: 0 0 auto; display: flex; align-items: center; justify-content: center;">
                                     <img 
                                         src="${pagina.heroImatge}" 
                                         alt="Mínim Món" 
                                         style="
-                                            height: ${pagina.heroMidaImatge || 'auto'} !important; 
-                                            max-height: ${pagina.heroMidaImatge || 'none'} !important; 
-                                            min-height: ${pagina.heroMidaImatge || 'auto'} !important; 
+                                            height: ${pagina.heroMidaImatge || '400px'} !important; 
+                                            max-height: ${pagina.heroMidaImatge || '400px'} !important; 
+                                            min-height: ${pagina.heroMidaImatge || '400px'} !important; 
                                             width: auto; 
                                             object-fit: contain; 
                                             display: block;
