@@ -1108,88 +1108,93 @@
         function crearFormulari(item, campsFormulari = []) {
             const titol = item.titol || 'Formulari de Contacte';
             const descripcio = item.descripcio || '';
-            const formId = item.link || 'formulari-general';
+            const formId = item.link || 'FORM_CONTACTE';
         
             let campsHTML = '';
         
             campsFormulari.forEach(camp => {
-                const idCamp = camp.ID_camp ? camp.ID_camp.trim() : '';
+                // Mapeig flexible adaptat a les teves columnes de Google Sheets
+                const idCamp = camp.id || camp.ID_camp || '';
                 if (!idCamp) return;
         
-                const etiqueta = camp.Etiqueta || '';
-                const tipus = (camp.TipusCamp || 'text').toLowerCase().trim();
-                const infoAddicional = camp['Info addicional'] || camp.InfoAddicional || '';
+                const etiqueta = camp.seccio || camp.Etiqueta || '';
+                const tipus = (camp.titol || camp.TipusCamp || 'text').toLowerCase().trim();
+                const infoAddicional = camp.infoAddicional || camp['Info addicional'] || '';
                 
-                const rawOpcions = camp.Opcions || '';
+                // Les opcions vénen a la columna 'descripcio' separades per ';'
+                const rawOpcions = camp.descripcio || camp.Opcions || '';
                 const llistaOpcions = rawOpcions ? rawOpcions.split(';').map(o => o.trim()).filter(o => o !== '') : [];
         
-                const valObligatori = (camp.Obligatori || '').toString().toUpperCase().trim();
+                // Comprovació de camp obligatori (a través de la columna imatgeId o Obligatori)
+                const valObligatori = (camp.imatgeId || camp.Obligatori || '').toString().toUpperCase().trim();
                 const esObligatori = valObligatori === 'SI' || valObligatori === 'TRUE';
                 
                 const reqAttr = esObligatori ? 'required' : '';
                 const astil = esObligatori ? '<span style="color: #AC80FF;"> *</span>' : '';
         
-                campsHTML += `<div class="camp-grup">`;
+                campsHTML += `<div class="camp-grup" style="margin-bottom: 1.2rem; text-align: left;">`;
                 if (etiqueta) {
-                    campsHTML += `<label class="camp-etiqueta" for="${idCamp}">${etiqueta}${astil}</label>`;
+                    campsHTML += `<label class="camp-etiqueta" for="${idCamp}" style="display: block; color: var(--color-clar, #E3D4FF); font-weight: 500; margin-bottom: 0.4rem;">${etiqueta}${astil}</label>`;
                 }
-
+        
                 if (tipus === 'textarea') {
-                    campsHTML += `<textarea id="${idCamp}" name="${idCamp}" class="camp-textarea" ${reqAttr}></textarea>`;
+                    campsHTML += `<textarea id="${idCamp}" name="${idCamp}" class="camp-textarea" ${reqAttr} style="width: 100%; padding: 0.8rem; border-radius: 6px; border: 1px solid #AC80FF; background: #301269; color: #FFF; min-height: 100px;"></textarea>`;
                 } else if (tipus === 'select') {
                     campsHTML += `
-                        <select id="${idCamp}" name="${idCamp}" class="camp-select" ${reqAttr}>
+                        <select id="${idCamp}" name="${idCamp}" class="camp-select" ${reqAttr} style="width: 100%; padding: 0.8rem; border-radius: 6px; border: 1px solid #AC80FF; background: #301269; color: #FFF;">
                             <option value="" disabled selected>Selecciona una opció...</option>
                             ${llistaOpcions.map(op => `<option value="${op}">${op}</option>`).join('')}
                         </select>
                     `;
                 } else if (tipus === 'radio') {
-                    campsHTML += `<div class="grup-opcions-multiples">`;
+                    campsHTML += `<div class="grup-opcions-multiples" style="display: flex; gap: 1rem; flex-wrap: wrap;">`;
                     llistaOpcions.forEach((op, idx) => {
                         campsHTML += `
-                            <label class="opcio-inline">
+                            <label class="opcio-inline" style="color: #E3D4FF; cursor: pointer;">
                                 <input type="radio" name="${idCamp}" value="${op}" ${idx === 0 && esObligatori ? 'required' : ''} />
-                                <span>${op}</span>
+                                <span style="margin-left: 0.3rem;">${op}</span>
                             </label>
                         `;
                     });
                     campsHTML += `</div>`;
                 } else if (tipus === 'checkbox') {
-                    campsHTML += `<div class="grup-opcions-multiples">`;
+                    campsHTML += `<div class="grup-opcions-multiples" style="display: flex; gap: 1rem; flex-wrap: wrap;">`;
                     llistaOpcions.forEach(op => {
                         campsHTML += `
-                            <label class="opcio-inline">
+                            <label class="opcio-inline" style="color: #E3D4FF; cursor: pointer;">
                                 <input type="checkbox" name="${idCamp}" value="${op}" />
-                                <span>${op}</span>
+                                <span style="margin-left: 0.3rem;">${op}</span>
                             </label>
                         `;
                     });
                     campsHTML += `</div>`;
                 } else if (tipus === 'file') {
-                    campsHTML += `<input type="file" id="${idCamp}" name="${idCamp}" class="camp-file" accept="image/*,.pdf" ${reqAttr} />`;
+                    campsHTML += `<input type="file" id="${idCamp}" name="${idCamp}" class="camp-file" accept="image/*,.pdf" ${reqAttr} style="color: #E3D4FF;" />`;
                 } else {
-                    campsHTML += `<input type="${tipus}" id="${idCamp}" name="${idCamp}" class="camp-input" ${reqAttr} />`;
+                    campsHTML += `<input type="${tipus}" id="${idCamp}" name="${idCamp}" class="camp-input" ${reqAttr} style="width: 100%; padding: 0.8rem; border-radius: 6px; border: 1px solid #AC80FF; background: #301269; color: #FFF;" />`;
                 }
         
                 if (infoAddicional) {
-                    campsHTML += `<span class="text-auxiliar">${infoAddicional}</span>`;
+                    campsHTML += `<span class="text-auxiliar" style="display: block; font-size: 0.8rem; color: #C8AAFF; margin-top: 0.2rem;">${infoAddicional}</span>`;
                 }
                 campsHTML += `</div>`;
             });
         
             return `
-                <div class="formulari-minim-mon" id="wrapper-${formId}">
-                    ${titol ? `<h3 class="formulari-titol">${titol}</h3>` : ''}
-                    ${descripcio ? `<p class="formulari-descripcio">${descripcio}</p>` : ''}
+                <div class="formulari-minim-mon" id="wrapper-${formId}" style="background: #24153F; padding: 2rem; border-radius: 10px; border: 1px solid #340094; max-width: 650px; margin: 0 auto;">
+                    ${titol ? `<h3 class="formulari-titol" style="color: #FFF; font-size: 1.5rem; margin-bottom: 0.5rem;">${titol}</h3>` : ''}
+                    ${descripcio ? `<p class="formulari-descripcio" style="color: #C8AAFF; margin-bottom: 1.5rem;">${descripcio}</p>` : ''}
                     <form id="${formId}" enctype="multipart/form-data" onsubmit="enviarFormulariMinimMon(event, '${formId}')">
                         ${campsHTML}
-                        <div class="boto-enviar-container">
-                            <button type="submit" class="boto-enviar">Enviar sol·licitud</button>
+                        <div class="boto-enviar-container" style="margin-top: 1.5rem; text-align: center;">
+                            <button type="submit" class="boto-enviar" style="background: #340094; color: #FFF; padding: 0.8rem 2rem; border: 1px solid #AC80FF; border-radius: 6px; font-weight: 600; cursor: pointer;">Enviar sol·licitud</button>
                         </div>
                     </form>
                 </div>
             `;
         }
+
+        
     </script>
 </body>
 </html>
