@@ -306,16 +306,16 @@
                                     </div>` : ''}
                             </div>
                 
-                            <!-- BLOC DE LA IMATGE HERO (Amb mida fixa forçada des de Sheets) -->
-                            ${pagina.heroImatge ? `
+                            <!-- BLOC DE LA IMATGE HERO (S'imprimeix només si hi ha una URL d'imatge vàlida) -->
+                            ${(pagina.heroImatge && pagina.heroImatge.trim() !== '') ? `
                                 <div class="hero-caixa-imatge" style="flex: 0 0 auto; display: flex; align-items: center; justify-content: center;">
                                     <img 
                                         src="${pagina.heroImatge}" 
-                                        alt="${pagina.heroTitol || 'Mínim Món'}" 
+                                        alt="Mínim Món" 
                                         style="
-                                            height: ${pagina.heroMidaImatge} !important; 
-                                            max-height: ${pagina.heroMidaImatge} !important; 
-                                            min-height: ${pagina.heroMidaImatge} !important; 
+                                            height: ${pagina.heroMidaImatge || 'auto'} !important; 
+                                            max-height: ${pagina.heroMidaImatge || 'none'} !important; 
+                                            min-height: ${pagina.heroMidaImatge || 'auto'} !important; 
                                             width: auto; 
                                             object-fit: contain; 
                                             display: block;
