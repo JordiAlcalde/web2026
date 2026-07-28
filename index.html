@@ -322,6 +322,8 @@
                         // LOG DE CONTROL: Veure quin component s'està avaluant
                         if (tipus === 'peu_de_pagina') {
                             console.log("Detectat peu_de_pagina a les dades:", item);
+                        }else{
+                            console.log("Component: ", item);
                         }
                     
                         if (tipus !== 'galeria_activa') processarGaleriaPendent();
