@@ -1126,23 +1126,28 @@
                 const etiqueta = camp.seccio || '';
                 const tipus = (camp.titol || 'text').toLowerCase().trim();
                 
-                // Mapeig de les opcions des de 'descripcio'
                 const rawOpcions = camp.descripcio || '';
                 const llistaOpcions = rawOpcions ? rawOpcions.split(';').map(o => o.trim()).filter(o => o !== '') : [];
         
-                // Mapeig d'InfoAddicional des de la columna 'link' (o 'infoAddicional')
-                const infoAddicional = camp.link || camp.infoAddicional || camp['Info addicional'] || '';
+                // Lectura de la informació addicional
+                const infoAddicional = (camp.link || camp.infoAddicional || camp['Info addicional'] || '').trim();
         
-                // Mapeig de Camp Obligatori des de la columna 'imatgeId'
+                // Verificació de camp obligatori
                 const valObligatori = (camp.imatgeId || camp.Obligatori || '').toString().toUpperCase().trim();
                 const esObligatori = valObligatori === 'SI' || valObligatori === 'TRUE';
                 
                 const reqAttr = esObligatori ? 'required' : '';
                 const astil = esObligatori ? '<span style="color: #AC80FF;"> *</span>' : '';
         
+                // Construcció de la línia de l'etiqueta amb la InfoAddicional integrada
+                let textEtiqueta = etiqueta ? `${etiqueta}${astil}` : '';
+                if (infoAddicional && infoAddicional !== '#N/A') {
+                    textEtiqueta += `<span style="color: #C8AAFF; font-weight: 400; font-size: 0.85em; margin-left: 0.5rem;"> · ${infoAddicional}</span>`;
+                }
+        
                 campsHTML += `<div class="camp-grup" style="margin-bottom: 1.2rem; text-align: left;">`;
-                if (etiqueta) {
-                    campsHTML += `<label class="camp-etiqueta" for="${idCamp}" style="display: block; color: var(--color-clar, #E3D4FF); font-weight: 500; margin-bottom: 0.4rem;">${etiqueta}${astil}</label>`;
+                if (textEtiqueta) {
+                    campsHTML += `<label class="camp-etiqueta" for="${idCamp}" style="display: block; color: #E3D4FF; font-weight: 500; margin-bottom: 0.4rem; font-family: 'Montserrat', sans-serif;">${textEtiqueta}</label>`;
                 }
         
                 if (tipus === 'textarea') {
@@ -1158,7 +1163,7 @@
                     campsHTML += `<div class="grup-opcions-multiples" style="display: flex; gap: 1rem; flex-wrap: wrap;">`;
                     llistaOpcions.forEach((op, idx) => {
                         campsHTML += `
-                            <label class="opcio-inline" style="color: #E3D4FF; cursor: pointer;">
+                            <label class="opcio-inline" style="color: #E3D4FF; cursor: pointer; font-family: 'Montserrat', sans-serif;">
                                 <input type="radio" name="${etiqueta || idCamp}" value="${op}" ${idx === 0 && esObligatori ? 'required' : ''} />
                                 <span style="margin-left: 0.3rem;">${op}</span>
                             </label>
@@ -1169,7 +1174,7 @@
                     campsHTML += `<div class="grup-opcions-multiples" style="display: flex; gap: 1rem; flex-wrap: wrap;">`;
                     llistaOpcions.forEach(op => {
                         campsHTML += `
-                            <label class="opcio-inline" style="color: #E3D4FF; cursor: pointer;">
+                            <label class="opcio-inline" style="color: #E3D4FF; cursor: pointer; font-family: 'Montserrat', sans-serif;">
                                 <input type="checkbox" name="${etiqueta || idCamp}" value="${op}" />
                                 <span style="margin-left: 0.3rem;">${op}</span>
                             </label>
@@ -1177,15 +1182,11 @@
                     });
                     campsHTML += `</div>`;
                 } else if (tipus === 'file') {
-                    campsHTML += `<input type="file" id="${idCamp}" name="${etiqueta || idCamp}" class="camp-file" accept="image/*,.pdf" ${reqAttr} style="color: #E3D4FF;" />`;
+                    campsHTML += `<input type="file" id="${idCamp}" name="${etiqueta || idCamp}" class="camp-file" accept="image/*,.pdf" ${reqAttr} style="color: #E3D4FF; font-family: 'Montserrat', sans-serif;" />`;
                 } else {
                     campsHTML += `<input type="${tipus}" id="${idCamp}" name="${etiqueta || idCamp}" class="camp-input" ${reqAttr} style="width: 100%; padding: 0.8rem; border-radius: 6px; border: 1px solid #AC80FF; background: #301269; color: #FFF; font-family: 'Montserrat', sans-serif;" />`;
                 }
         
-                // Ara sí es renderitza el text d'InfoAddicional si conté informació
-                if (infoAddicional && infoAddicional !== '#N/A') {
-                    campsHTML += `<span class="text-auxiliar" style="display: block; font-size: 0.85rem; color: #C8AAFF; margin-top: 0.3rem;">${infoAddicional}</span>`;
-                }
                 campsHTML += `</div>`;
             });
         
