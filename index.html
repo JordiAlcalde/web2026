@@ -377,6 +377,12 @@
                                 const tempDiv = document.createElement('div');
                                 tempDiv.innerHTML = crearComponentVideo(item);
                                 contenidorFilaFlex.appendChild(tempDiv.firstElementChild);
+                            } else if (tipus === 'peu_de_pagina') {
+                                contenidorFilaFlex = null; // Tanca la fila flex per ocupar el 100%
+                                const tempDiv = document.createElement('div');
+                                tempDiv.style.width = '100%';
+                                tempDiv.innerHTML = crearPeuPagina(item);
+                                contenidorContinguts.appendChild(tempDiv.firstElementChild);                              
                             } else {
                                 contenidorFilaFlex.appendChild(crearTargetaElement(item));
                             }                    
@@ -1127,6 +1133,73 @@
             `;
         }      
 
+
+        /**
+         * Crea el peu de pàgina configurable.
+         * - Color de fons: Columna O (colorFons) -> per defecte #24153F (Fons fosc)
+         * - Mida de font: Columna R (alcadaImatge/midaFont) -> per defecte 0.9rem
+         * - Color de text: Resolut amb obtenirColorHex() -> per defecte #E3D4FF (Clar)
+         */
+        function crearPeuPagina(item) {
+            const colorFons = obtenirColorHex(item.colorFons, MAPA_COLORS['Fons fosc'] || '#24153F');
+            const colorText = obtenirColorHex(item.colorFont, MAPA_COLORS['Clar'] || '#E3D4FF');
+            const colorAccent = MAPA_COLORS['Accent'] || '#AC80FF';
+            const midaFont = item.alcadaImatge && item.alcadaImatge.trim() !== '' ? item.alcadaImatge.trim() : '0.9rem';
+        
+            return `
+                <footer class="component-peu-pagina" style="
+                    background-color: ${colorFons}; 
+                    color: ${colorText}; 
+                    font-size: ${midaFont}; 
+                    padding: 2.5rem 1.5rem 1.5rem 1.5rem; 
+                    margin-top: 3rem; 
+                    border-top: 1px solid rgba(172, 128, 255, 0.2); 
+                    width: 100%;">
+                    
+                    <div style="max-width: 1100px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2rem;">
+                        
+                        <!-- Columna 1: Branding / Filosofia -->
+                        <div style="flex: 1 1 250px; min-width: 240px;">
+                            <h3 style="font-size: 1.2rem; font-weight: 700; color: #FFFFFF; margin-bottom: 0.6rem; letter-spacing: 0.5px;">
+                                Mínim Món
+                            </h3>
+                            <p style="line-height: 1.5; opacity: 0.9; margin: 0;">
+                                Recreacions en fusta, tallades amb precisió i carregades de simbolisme. Peça a peça, món a món.
+                            </p>
+                        </div>
+        
+                        <!-- Columna 2: Enllaços Destacats -->
+                        <div style="flex: 1 1 200px; min-width: 180px;">
+                            <h4 style="font-size: 1rem; font-weight: 600; color: ${colorAccent}; margin-bottom: 0.6rem;">
+                                Explora
+                            </h4>
+                            <ul style="list-style: none; padding: 0; margin: 0; line-height: 1.8;">
+                                <li><a href="#pantalla-recreacions" style="color: ${colorText}; text-decoration: none; opacity: 0.85;">Móns Personalitzats</a></li>
+                                <li><a href="#pantalla-cataleg" style="color: ${colorText}; text-decoration: none; opacity: 0.85;">Peces de Disseny</a></li>
+                                <li><a href="#pantalla-contacte" style="color: ${colorText}; text-decoration: none; opacity: 0.85;">Encarregar o Contactar</a></li>
+                            </ul>
+                        </div>
+        
+                        <!-- Columna 3: Contacte / Taller -->
+                        <div style="flex: 1 1 200px; min-width: 180px;">
+                            <h4 style="font-size: 1rem; font-weight: 600; color: ${colorAccent}; margin-bottom: 0.6rem;">
+                                El Taller
+                            </h4>
+                            <p style="line-height: 1.6; margin: 0; opacity: 0.9;">
+                                Disseny tècnic i producció d'autor.<br>
+                                <span style="color: ${colorAccent};">info@minimmon.cat</span>
+                            </p>
+                        </div>
+        
+                    </div>
+        
+                    <!-- Línia inferior de Copyright -->
+                    <div style="max-width: 1100px; margin: 2rem auto 0 auto; padding-top: 1rem; border-top: 1px solid rgba(227, 212, 255, 0.1); text-align: center; font-size: 0.8rem; opacity: 0.6;">
+                        © 2026 Mínim Món — Tots els drets reservats.
+                    </div>
+                </footer>
+            `;
+        }
         
     </script>
 </body>
