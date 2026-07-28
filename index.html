@@ -318,14 +318,14 @@
                     elementsSeccio.forEach(item => {
                         
                         const tipus = item.tipusComponent ? item.tipusComponent.toLowerCase().trim() : '';
-        
+                    
                         if (tipus !== 'galeria_activa') processarGaleriaPendent();
                         if (tipus !== 'carrusel_imatges') processarCarruselPendent();
-        
+                    
                         if (tipus === 'galeria_activa') {
                             contenidorFilaFlex = null;
                             grupGaleria.push(item);
-        
+                    
                         } else if (tipus === 'espaiador') {
                             // L'espaiador tanca la fila flex activa i s'insereix al 100% d'ample
                             contenidorFilaFlex = null;
@@ -333,7 +333,7 @@
                             tempDiv.style.width = '100%';
                             tempDiv.innerHTML = crearEspaiador(item);
                             contenidorContinguts.appendChild(tempDiv.firstElementChild);
-        
+                    
                         } else if (tipus === 'separador') {
                             // El separador tanca la fila flex activa i s'insereix al 100% d'ample
                             contenidorFilaFlex = null;
@@ -341,8 +341,17 @@
                             tempDiv.style.width = '100%';
                             tempDiv.innerHTML = crearSeparador(item);
                             contenidorContinguts.appendChild(tempDiv.firstElementChild);
-        
+                    
+                        } else if (tipus === 'peu_de_pagina') {
+                            // El peu de pàgina tanca qualsevol fila i s'insereix directament al contenidor de secció
+                            contenidorFilaFlex = null;
+                            const tempDiv = document.createElement('div');
+                            tempDiv.style.width = '100%';
+                            tempDiv.innerHTML = crearPeuPagina(item);
+                            contenidorContinguts.appendChild(tempDiv.firstElementChild);
+                    
                         } else {
+                            // Només crea una nova fila flex si és un component de contingut estàndard (targetes, text, CTA, vídeo, etc.)
                             if (item.novaFila || !contenidorFilaFlex) {
                                 processarCarruselPendent();
                                 
@@ -358,10 +367,10 @@
                                 } else {
                                     contenidorFilaFlex.classList.add('posicio-esquerra');
                                 }
-        
+                    
                                 contenidorContinguts.appendChild(contenidorFilaFlex);
                             }
-        
+                    
                             // Avaluació i creació dels components estàndard
                             if (tipus === 'carrusel_imatges') {
                                 grupCarrusel.push(item);
@@ -377,12 +386,6 @@
                                 const tempDiv = document.createElement('div');
                                 tempDiv.innerHTML = crearComponentVideo(item);
                                 contenidorFilaFlex.appendChild(tempDiv.firstElementChild);
-                            } else if (tipus === 'peu_de_pagina') {
-                                contenidorFilaFlex = null; // Tanca la fila flex per ocupar el 100%
-                                const tempDiv = document.createElement('div');
-                                tempDiv.style.width = '100%';
-                                tempDiv.innerHTML = crearPeuPagina(item);
-                                contenidorContinguts.appendChild(tempDiv.firstElementChild);                              
                             } else {
                                 contenidorFilaFlex.appendChild(crearTargetaElement(item));
                             }                    
