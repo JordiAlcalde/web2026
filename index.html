@@ -85,26 +85,44 @@
             return valorPerDefecte;
         }
                 
-        function carregarDadesPàgina() {
-            const t = Date.now();
-            Promise.all([
-                fetch(`${URL_CSV_CONFIG}&_t=${t}`).then(r => r.text()),
-                fetch(`${URL_CSV_ESTRUCTURA}&_t=${t}`).then(r => r.text()),
-                fetch(`${URL_CSV_COMPONENTS}&_t=${t}`).then(r => r.text()),
-                fetch(`${URL_CSV_CONTINGUTS}&_t=${t}`).then(r => r.text())
-            ])
-            .then(([csvConfig, csvEstructura, csvComponents, csvContinguts]) => {
-                dadesWeb.config = parsejarCSVConfig(csvConfig);
-                dadesWeb.estructura = parsejarCSVEstructura(csvEstructura);
-                dadesWeb.components = parsejarCSVComponents(csvComponents);
-                dadesWeb.continguts = parsejarCSVContinguts(csvContinguts);
+        async function carregarDadesPagina() {
+            try {
+                // Enllaços dels CSVs (amb el seu &gid= corresponent a cada pestanya de Sheets)
+                const URLS = {
+                    CONFIG: URL_CSV_CONFIG,
+                    ESTRUCTURA: URL_CSV_ESTRUCTURA,
+                    COMPONENTS: URL_CSV_COMPONENTS,
+                    CONTINGUTS: URL_CSV_CONTINGUTS,
+                    FORM_CONTACTE: URL_CSV_FORM_CONTACTE // Afegeix aquí altres formularis si en crees més
+                };
         
-                actualitzarLogo();
-                construirMenuNavegacio();
+                // Realitzem les peticions HTTP en paral·lel
+                const respostes = await Promise.all([
+                    fetch(URLS.CONFIG).then(res => res.text()),
+                    fetch(URLS.ESTRUCTURA).then(res => res.text()),
+                    fetch(URLS.COMPONENTS).then(res => res.text()),
+                    fetch(URLS.CONTINGUTS).then(res => res.text()),
+                    fetch(URLS.FORM_CONTACTE).then(res => res.text())
+                ]);
+        
+                // Parsejem les estructures estàndard
+                dadesWeb.config = parsejarCSVGeneri(respostes[0]);
+                dadesWeb.estructura = parsejarCSVGeneri(respostes[1]);
+                dadesWeb.components = parsejarCSVGeneri(respostes[2]);
+                dadesWeb.continguts = parsejarCSVGeneri(respostes[3]);
+        
+                // Parsejem els formularis amb la funció genèrica
+                // El nom de la propietat ("FORM_CONTACTE") ha de coincidir amb el que posis a la columna 'link' de Continguts
+                dadesWeb['FORM_CONTACTE'] = parsejarCSVFormulari(respostes[4]);
+        
+                console.log('Dades carregades correctament:', dadesWeb);
+        
+                // Renderitzem la web
                 construirPantallesWeb();
-                activarSeccioInicial();
-            })
-            .catch(error => console.error("Error carregant les dades CSV:", error));
+        
+            } catch (error) {
+                console.error('Error en la càrrega de dades dels CSVs:', error);
+            }
         }
 
         function actualitzarLogo() {
