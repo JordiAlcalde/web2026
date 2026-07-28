@@ -317,12 +317,12 @@
                     
                     elementsSeccio.forEach(item => {
                         
-                        // const tipus = item.tipusComponent ? item.tipusComponent.toLowerCase().trim() : '';
+                        const tipus = item.tipusComponent ? item.tipusComponent.toLowerCase().trim() : '';
 
-                        const elementsSeccio = dadesWeb.continguts.filter(item => {
-                            const tipus = item.tipusComponent ? item.tipusComponent.toLowerCase().trim() : '';
-                            return item.seccio === pagina.id || tipus === 'peu_de_pagina';
-                        });
+                        //const elementsSeccio = dadesWeb.continguts.filter(item => {
+                          //  const tipus = item.tipusComponent ? item.tipusComponent.toLowerCase().trim() : '';
+                          //  return item.seccio === pagina.id || tipus === 'peu_de_pagina';
+                        //});
                         
                         // LOG DE CONTROL: Veure quin component s'està avaluant
                         if (tipus === 'peu_de_pagina') {
