@@ -164,7 +164,7 @@
                     components[nomComponent] = {
                         layoutDefecte: (fila[1] || '').trim(),
                         colorFonsDefecte: (fila[2] || '#FFFFFF').trim(),
-                        colorTextDefecte: (fila[3] || '#24153F').trim()
+                        colorTextDefecte: (fila[3] || '#24153F').trim(),
                     };
                 }
             });
@@ -180,14 +180,22 @@
                     const rawHeroTitol = (fila[5] || '').trim();
                     const rawHeroText = (fila[6] || '').trim();
                     const rawHeroDestacat = (fila[7] || '').trim();
-
+        
                     let valSpan = (fila[13] || '').trim();
                     let leftSpanCss = '0px';
                     if (valSpan !== '') {
                         let numSpan = parseInt(valSpan);
                         if (!isNaN(numSpan)) leftSpanCss = `${numSpan}px`;
                     }
-
+        
+                    // Lectura i formatat de la columna O (índex 14) per a MidaImatge
+                    let valMidaImatge = (fila[14] || '').trim();
+                    let midaImatgeCss = '400px'; // Valor per defecte homogeni
+                    if (valMidaImatge !== '') {
+                        // Si s'escriu només un número (ex: 450), hi afegim 'px' automàticament
+                        midaImatgeCss = /^\d+$/.test(valMidaImatge) ? `${valMidaImatge}px` : valMidaImatge;
+                    }
+        
                     return {
                         id: (fila[0] || '').trim(),
                         titol: titolPagina,
@@ -201,7 +209,8 @@
                         heroAmple: fila[10] && fila[10].trim() !== '' ? `${parseInt(fila[10])}px` : '550px',
                         heroAlign: fila[11] ? fila[11].toLowerCase().trim() : 'left',
                         heroFontColor: (fila[12] && fila[12].trim() !== '') ? fila[12].trim() : '#E3D4FF',
-                        heroLeftSpan: leftSpanCss
+                        heroLeftSpan: leftSpanCss,
+                        heroMidaImatge: midaImatgeCss // <--- Nova propietat disponible per al component Hero
                     };
                 }).sort((a, b) => a.ordre - b.ordre);
         }
