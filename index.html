@@ -1206,11 +1206,26 @@
         
         // Substitueix aquesta URL per la que t'oferirà Google Apps Script (veure pas 2)
         const URL_GOOGLE_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbwUuqy0X4UdDPNqrzKgA9Pp1eve2n27Vji8yjbkXHmYHTOaUWdVoo0fLGcKOunzw-fe3w/exec";
+        const MAX_FILE_SIZE_MB = 20;
+        const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
         
         async function enviarFormulariMinimMon(event, formId) {
             event.preventDefault();
             const formulari = document.getElementById(formId);
             if (!formulari) return;
+        
+            // 1. Validació prèvia de la mida dels fitxers adjunts
+            const inputsFitxer = formulari.querySelectorAll('input[type="file"]');
+            for (let input of inputsFitxer) {
+                if (input.files && input.files[0]) {
+                    const fitxer = input.files[0];
+                    if (fitxer.size > MAX_FILE_SIZE_BYTES) {
+                        alert(`El fitxer "${fitxer.name}" supera el límit màxim permès de ${MAX_FILE_SIZE_MB} MB. Si us plau, tria un fitxer més lleuger.`);
+                        input.value = ""; // Neteja la selecció
+                        return;
+                    }
+                }
+            }
         
             const botoSubmit = formulari.querySelector('button[type="submit"]');
             if (botoSubmit) {
@@ -1222,40 +1237,40 @@
             const dadesForm = {};
             let fitxerAdjunt = null;
         
-            // Processar camps i fitxers
-            for (let [clau, valor] of formData.entries()) {
-                if (valor instanceof File && valor.name && valor.size > 0) {
-                    // Convertim el fitxer a Base64 per poder-lo enviar per correu
-                    fitxerAdjunt = await convertirFitxerABase64(valor);
-                } else if (!(valor instanceof File)) {
-                    dadesForm[clau] = valor;
-                }
-            }
-        
-            const payload = {
-                camps: dadesForm,
-                fitxer: fitxerAdjunt
-            };
-        
             try {
-                // Enviament en segon pla (sense obrir client de correu)
+                // 2. Processar camps i convertir el fitxer a Base64
+                for (let [clau, valor] of formData.entries()) {
+                    if (valor instanceof File && valor.name && valor.size > 0) {
+                        fitxerAdjunt = await convertirFitxerABase64(valor);
+                    } else if (!(valor instanceof File)) {
+                        dadesForm[clau] = valor;
+                    }
+                }
+        
+                const payload = {
+                    camps: dadesForm,
+                    fitxer: fitxerAdjunt
+                };
+        
+                // 3. Enviament silent en segon pla
                 await fetch(URL_GOOGLE_APPS_SCRIPT, {
                     method: 'POST',
-                    mode: 'no-cors', // Evita bloquejos de CORS amb Google Apps Script
+                    mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
         
                 alert("Moltes gràcies! La teva sol·licitud s'ha enviat correctament a Mínim Món.");
                 formulari.reset();
-                // Després d'enviar el formulari correctament:
+        
+                // Netegem els paràmetres de la URL per mantenir la barra d'adreces neta
                 if (window.history && window.history.replaceState) {
-                    // Esborra els paràmetres ?camp_01=... mantenint la ruta neta
                     window.history.replaceState(null, '', window.location.pathname);
                 }
+        
             } catch (error) {
                 console.error("Error en l'enviament:", error);
-                alert("S'ha produït un error en enviar el formulari. Si us plau, contacta directament a info@minimmon.cat");
+                alert("S'ha produït un error en enviar el formulari. Contacta directament a info@minimmon.cat");
             } finally {
                 if (botoSubmit) {
                     botoSubmit.disabled = false;
@@ -1264,7 +1279,6 @@
             }
         }
         
-        // Funció auxiliar per llegir el fitxer com a Base64
         function convertirFitxerABase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
