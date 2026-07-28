@@ -285,18 +285,18 @@
                             
                             <!-- BLOC DE TEXT -->
                             <div class="hero-caixa-contingut" style="
-                                flex: 1 1 ${pagina.heroAmple};
-                                max-width: ${pagina.heroAmple}; 
-                                transform: translateX(${pagina.heroLeftSpan}); 
-                                text-align: ${pagina.heroAlign};
-                                color: ${pagina.heroFontColor};">
+                                flex: 1 1 ${pagina.heroAmple || '600px'};
+                                max-width: ${pagina.heroAmple || '600px'}; 
+                                transform: translateX(${pagina.heroLeftSpan || '0px'}); 
+                                text-align: ${pagina.heroAlign || 'left'};
+                                color: ${pagina.heroFontColor || '#FFFFFF'};">
                                 
-                                <h1 style="font-size: 2.5rem; font-weight: 700; color: ${pagina.heroFontColor}; line-height: 1.2; margin-bottom: 1rem; font-family: 'Montserrat', sans-serif;">
+                                <h1 style="font-size: 2.5rem; font-weight: 700; color: ${pagina.heroFontColor || '#FFFFFF'}; line-height: 1.2; margin-bottom: 1rem; font-family: 'Montserrat', sans-serif;">
                                     ${pagina.heroTitol}
                                 </h1>
                                 
                                 ${pagina.heroText ? `
-                                    <div class="hero-cos-text" style="font-size: 1.15rem; font-weight: 400; color: ${pagina.heroFontColor}; margin-top: 1rem; line-height: 1.5; font-family: 'Montserrat', sans-serif;">
+                                    <div class="hero-cos-text" style="font-size: 1.15rem; font-weight: 400; color: ${pagina.heroFontColor || '#FFFFFF'}; margin-top: 1rem; line-height: 1.5; font-family: 'Montserrat', sans-serif;">
                                         ${pagina.heroText}
                                     </div>` : ''}
                                 
@@ -305,56 +305,24 @@
                                         ${pagina.heroDestacat}
                                     </div>` : ''}
                             </div>
-                
-// CONSTRUCCIÓ DE LA SECCIÓ HERO
-const htmlHero = `
-    <div class="hero-pagina" style="${estilFons} padding: 4rem 2rem; display: flex; align-items: center; justify-content: center;">
-        <div class="hero-contenedor-flex" style="max-width: 1200px; width: 100%; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 2rem;">
-            
-            <!-- BLOC DE TEXT -->
-            <div class="hero-caixa-contingut" style="
-                flex: 1 1 ${pagina.heroAmple || '600px'};
-                max-width: ${pagina.heroAmple || '600px'}; 
-                transform: translateX(${pagina.heroLeftSpan || '0px'}); 
-                text-align: ${pagina.heroAlign || 'left'};
-                color: ${pagina.heroFontColor || '#FFFFFF'};">
-                
-                <h1 style="font-size: 2.5rem; font-weight: 700; color: ${pagina.heroFontColor || '#FFFFFF'}; line-height: 1.2; margin-bottom: 1rem; font-family: 'Montserrat', sans-serif;">
-                    ${pagina.heroTitol}
-                </h1>
-                
-                ${pagina.heroText ? `
-                    <div class="hero-cos-text" style="font-size: 1.15rem; font-weight: 400; color: ${pagina.heroFontColor || '#FFFFFF'}; margin-top: 1rem; line-height: 1.5; font-family: 'Montserrat', sans-serif;">
-                        ${pagina.heroText}
-                    </div>` : ''}
-                
-                ${pagina.heroDestacat ? `
-                    <div class="destacat-hero" style="font-size: 1.25rem; font-weight: 600; color: #AC80FF; margin-top: 1.2rem; font-family: 'Montserrat', sans-serif;">
-                        ${pagina.heroDestacat}
-                    </div>` : ''}
-            </div>
-
-            <!-- BLOC DE LA IMATGE HERO -->
-            ${(pagina.heroImatge && String(pagina.heroImatge).trim() !== '' && String(pagina.heroImatge).toLowerCase() !== 'undefined' && String(pagina.heroImatge).toLowerCase() !== 'null') ? `
-                <div class="hero-caixa-imatge" style="flex: 0 0 auto; display: flex; align-items: center; justify-content: center;">
-                    <img 
-                        src="${pagina.heroImatge}" 
-                        alt="Mínim Món" 
-                        style="
-                            height: ${pagina.heroMidaImatge || 'auto'} !important; 
-                            max-height: ${pagina.heroMidaImatge || 'none'} !important; 
-                            min-height: ${pagina.heroMidaImatge || 'auto'} !important; 
-                            width: auto; 
-                            object-fit: contain; 
-                            display: block;
-                        " 
-                    />
-                </div>` : ''}
-
-        </div>
-    </div>
-`;
-                
+        
+                            <!-- BLOC DE LA IMATGE HERO -->
+                            ${(pagina.heroImatge && String(pagina.heroImatge).trim() !== '' && String(pagina.heroImatge).toLowerCase() !== 'undefined' && String(pagina.heroImatge).toLowerCase() !== 'null') ? `
+                                <div class="hero-caixa-imatge" style="flex: 0 0 auto; display: flex; align-items: center; justify-content: center;">
+                                    <img 
+                                        src="${pagina.heroImatge.startsWith('http') ? pagina.heroImatge : `https://drive.google.com/thumbnail?sz=w800&id=${pagina.heroImatge}`}" 
+                                        alt="Mínim Món" 
+                                        style="
+                                            height: ${pagina.heroMidaImatge || 'auto'} !important; 
+                                            max-height: ${pagina.heroMidaImatge || 'none'} !important; 
+                                            min-height: ${pagina.heroMidaImatge || 'auto'} !important; 
+                                            width: auto; 
+                                            object-fit: contain; 
+                                            display: block;
+                                        " 
+                                    />
+                                </div>` : ''}
+        
                         </div>
                     </div>
                 `;
