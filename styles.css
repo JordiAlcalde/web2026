@@ -143,8 +143,8 @@ body {
     /* background-image: linear-gradient(to right, rgba(36, 21, 63, 0.90) 30%, rgba(36, 21, 63, 0.30) 100%), url('IMATGE_GOOGLE_DRIVE');  */
     border-bottom: none !important;
     overflow: hidden;
-    /*border-bottom: 2px solid var(--color-accent); */
-    margin-bottom: 2.5rem;
+    /*border-bottom: 2px solid var(--color-accent); 
+    margin-bottom: 2.5rem;*/
 }
 
 .hero-contenedor-flex {
