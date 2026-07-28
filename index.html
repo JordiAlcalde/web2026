@@ -248,6 +248,12 @@
             const contenidorPrincipal = document.getElementById('seccions-contenidor');
             contenidorPrincipal.innerHTML = '';
             
+            // 1. Busquem si existeix una configuració personalitzada de peu de pàgina a les dades
+            const configuracioPeu = dadesWeb.continguts.find(item => {
+                const tipus = item.tipusComponent ? item.tipusComponent.toLowerCase().trim() : '';
+                return tipus === 'peu_de_pagina';
+            }) || {}; // Si no n'hi ha cap a Sheets, utilitza un objecte buit (farà servir valors per defecte)
+        
             dadesWeb.estructura.forEach(pagina => {
                 if (!pagina.visible) return;
         
@@ -291,12 +297,16 @@
         
                 seccioHTML.innerHTML = htmlHero;
         
-                const elementsSeccio = dadesWeb.continguts.filter(item => item.seccio === pagina.id);
+                // Filtrem el contingut d'aquesta secció EXCLOENT el peu de pàgina (ja que s'afegirà al final de tot)
+                const elementsSeccio = dadesWeb.continguts.filter(item => {
+                    const tipus = item.tipusComponent ? item.tipusComponent.toLowerCase().trim() : '';
+                    return item.seccio === pagina.id && tipus !== 'peu_de_pagina';
+                });
                 
-                if (elementsSeccio.length > 0) {
-                    const contenidorContinguts = document.createElement('div');
-                    contenidorContinguts.className = 'contenidor-continguts-seccio';
+                const contenidorContinguts = document.createElement('div');
+                contenidorContinguts.className = 'contenidor-continguts-seccio';
         
+                if (elementsSeccio.length > 0) {
                     let contenidorFilaFlex = null;
                     let grupGaleria = [];
                     let grupCarrusel = [];
@@ -316,61 +326,36 @@
                     };
                     
                     elementsSeccio.forEach(item => {
-                        
                         const tipus = item.tipusComponent ? item.tipusComponent.toLowerCase().trim() : '';
-
-                        //const elementsSeccio = dadesWeb.continguts.filter(item => {
-                          //  const tipus = item.tipusComponent ? item.tipusComponent.toLowerCase().trim() : '';
-                          //  return item.seccio === pagina.id || tipus === 'peu_de_pagina';
-                        //});
-                        
-                        // LOG DE CONTROL: Veure quin component s'està avaluant
-                        if (tipus === 'peu_de_pagina') {
-                            console.log("Detectat peu_de_pagina a les dades:", item);
-                        }else{
-                            console.log("Component: ", item);
-                        }
-                    
+        
                         if (tipus !== 'galeria_activa') processarGaleriaPendent();
                         if (tipus !== 'carrusel_imatges') processarCarruselPendent();
-                    
+        
                         if (tipus === 'galeria_activa') {
                             contenidorFilaFlex = null;
                             grupGaleria.push(item);
-                    
+        
                         } else if (tipus === 'espaiador') {
-                            // L'espaiador tanca la fila flex activa i s'insereix al 100% d'ample
                             contenidorFilaFlex = null;
                             const tempDiv = document.createElement('div');
                             tempDiv.style.width = '100%';
                             tempDiv.innerHTML = crearEspaiador(item);
                             contenidorContinguts.appendChild(tempDiv.firstElementChild);
-                    
+        
                         } else if (tipus === 'separador') {
-                            // El separador tanca la fila flex activa i s'insereix al 100% d'ample
                             contenidorFilaFlex = null;
                             const tempDiv = document.createElement('div');
                             tempDiv.style.width = '100%';
                             tempDiv.innerHTML = crearSeparador(item);
                             contenidorContinguts.appendChild(tempDiv.firstElementChild);
-                    
-                        } else if (tipus === 'peu_de_pagina') {
-                            // El peu de pàgina tanca qualsevol fila i s'insereix directament al contenidor de secció
-                            contenidorFilaFlex = null;
-                            const tempDiv = document.createElement('div');
-                            tempDiv.style.width = '100%';
-                            tempDiv.innerHTML = crearPeuPagina(item);
-                            contenidorContinguts.appendChild(tempDiv.firstElementChild);
-                    
+        
                         } else {
-                            // Només crea una nova fila flex si és un component de contingut estàndard (targetes, text, CTA, vídeo, etc.)
                             if (item.novaFila || !contenidorFilaFlex) {
                                 processarCarruselPendent();
                                 
                                 contenidorFilaFlex = document.createElement('div');
                                 contenidorFilaFlex.className = 'contenidor-fila-flex';
                                 
-                                // Posicionament dinàmic segons SituacióImatge
                                 const pos = (item.situacioImatge || '').toLowerCase().trim();
                                 if (pos === 'centre' || pos === 'center') {
                                     contenidorFilaFlex.classList.add('posicio-centre');
@@ -379,11 +364,10 @@
                                 } else {
                                     contenidorFilaFlex.classList.add('posicio-esquerra');
                                 }
-                    
+        
                                 contenidorContinguts.appendChild(contenidorFilaFlex);
                             }
-                    
-                            // Avaluació i creació dels components estàndard
+        
                             if (tipus === 'carrusel_imatges') {
                                 grupCarrusel.push(item);
                             } else if (tipus === 'bloc_text') {
@@ -402,15 +386,19 @@
                                 contenidorFilaFlex.appendChild(crearTargetaElement(item));
                             }                    
                         }
-                        
                     });
         
                     processarGaleriaPendent();
                     processarCarruselPendent();
-        
-                    seccioHTML.appendChild(contenidorContinguts);
                 }
         
+                // 2. Inserció automàtica del Peu de Pàgina AL FINAL de cada secció visible
+                const wrapperPeu = document.createElement('div');
+                wrapperPeu.style.width = '100%';
+                wrapperPeu.innerHTML = crearPeuPagina(configuracioPeu);
+                contenidorContinguts.appendChild(wrapperPeu.firstElementChild);
+        
+                seccioHTML.appendChild(contenidorContinguts);
                 contenidorPrincipal.appendChild(seccioHTML);
             });
         }
