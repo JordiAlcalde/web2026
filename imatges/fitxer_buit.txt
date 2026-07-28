@@ -1,1 +1,170 @@
+        function construirPantallesWeb() {
+            const contenidorPrincipal = document.getElementById('seccions-contenidor');
+            contenidorPrincipal.innerHTML = '';
+            
+            dadesWeb.estructura.forEach(pagina => {
+                if (!pagina.visible) return;
+        
+                const seccioHTML = document.createElement('section');
+                seccioHTML.id = `pantalla-${pagina.id}`;
+                seccioHTML.className = 'seccio-web';
+                
+                const teImatge = pagina.heroImatge && pagina.heroImatge.trim() !== '' && pagina.heroImatge.trim() !== '#N/A';
+                const urlHeroImatge = teImatge ? `https://drive.google.com/thumbnail?sz=w1600&id=${pagina.heroImatge.trim()}` : '';
+        
+                const estilFons = teImatge 
+                    ? `background-image: linear-gradient(to right, rgba(36, 21, 63, 0.75) 0%, rgba(36, 21, 63, 0.25) 60%, rgba(36, 21, 63, 0) 100%), url('${urlHeroImatge}');` 
+                    : `background-color: var(--color-fons-fosc, #24153F);`;
+        
+                const htmlHero = `
+                    <div class="hero-pagina" style="${estilFons}">
+                        <div class="hero-contenedor-flex">
+                            <div class="hero-caixa-contingut" style="
+                                max-width: ${pagina.heroAmple}; 
+                                transform: translateX(${pagina.heroLeftSpan}); 
+                                text-align: ${pagina.heroAlign};
+                                color: ${pagina.heroFontColor};">
+                                
+                                <h1 style="font-size: 2.2rem; font-weight: 700; color: ${pagina.heroFontColor}; line-height: 1.25; margin-bottom: 0.8rem;">
+                                    ${pagina.heroTitol}
+                                </h1>
+                                
+                                ${pagina.heroText ? `
+                                    <div class="hero-cos-text" style="font-size: 1.1rem; font-weight: 400; color: ${pagina.heroFontColor}; margin-top: 0.8rem;">
+                                        ${pagina.heroText}
+                                    </div>` : ''}
+                                
+                                ${pagina.heroDestacat ? `
+                                    <div class="destacat-hero" style="font-size: 1.2rem; font-weight: 600; color: ${pagina.heroFontColor}; margin-top: 1rem;">
+                                        ${pagina.heroDestacat}
+                                    </div>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+        
+                seccioHTML.innerHTML = htmlHero;
+        
+                const elementsSeccio = dadesWeb.continguts.filter(item => item.seccio === pagina.id);
+                
+                if (elementsSeccio.length > 0) {
+                    const contenidorContinguts = document.createElement('div');
+                    contenidorContinguts.className = 'contenidor-continguts-seccio';
+        
+                    let contenidorFilaFlex = null;
+                    let grupGaleria = [];
+                    let grupCarrusel = [];
+        
+                    const processarGaleriaPendent = () => {
+                        if (grupGaleria.length > 0) {
+                            contenidorContinguts.appendChild(crearGaleriaActiva(grupGaleria));
+                            grupGaleria = [];
+                        }
+                    };
+        
+                    const processarCarruselPendent = () => {
+                        if (grupCarrusel.length > 0 && contenidorFilaFlex) {
+                            contenidorFilaFlex.appendChild(crearCarruselImatges(grupCarrusel));
+                            grupCarrusel = [];
+                        }
+                    };
+                    
+                    elementsSeccio.forEach(item => {
+                        
+                        // const tipus = item.tipusComponent ? item.tipusComponent.toLowerCase().trim() : '';
 
+                        const elementsSeccio = dadesWeb.continguts.filter(item => {
+                            const tipus = item.tipusComponent ? item.tipusComponent.toLowerCase().trim() : '';
+                            return item.seccio === pagina.id || tipus === 'peu_de_pagina';
+                        });
+                        
+                        // LOG DE CONTROL: Veure quin component s'està avaluant
+                        if (tipus === 'peu_de_pagina') {
+                            console.log("Detectat peu_de_pagina a les dades:", item);
+                        }else{
+                            console.log("Component: ", item);
+                        }
+                    
+                        if (tipus !== 'galeria_activa') processarGaleriaPendent();
+                        if (tipus !== 'carrusel_imatges') processarCarruselPendent();
+                    
+                        if (tipus === 'galeria_activa') {
+                            contenidorFilaFlex = null;
+                            grupGaleria.push(item);
+                    
+                        } else if (tipus === 'espaiador') {
+                            // L'espaiador tanca la fila flex activa i s'insereix al 100% d'ample
+                            contenidorFilaFlex = null;
+                            const tempDiv = document.createElement('div');
+                            tempDiv.style.width = '100%';
+                            tempDiv.innerHTML = crearEspaiador(item);
+                            contenidorContinguts.appendChild(tempDiv.firstElementChild);
+                    
+                        } else if (tipus === 'separador') {
+                            // El separador tanca la fila flex activa i s'insereix al 100% d'ample
+                            contenidorFilaFlex = null;
+                            const tempDiv = document.createElement('div');
+                            tempDiv.style.width = '100%';
+                            tempDiv.innerHTML = crearSeparador(item);
+                            contenidorContinguts.appendChild(tempDiv.firstElementChild);
+                    
+                        } else if (tipus === 'peu_de_pagina') {
+                            // El peu de pàgina tanca qualsevol fila i s'insereix directament al contenidor de secció
+                            contenidorFilaFlex = null;
+                            const tempDiv = document.createElement('div');
+                            tempDiv.style.width = '100%';
+                            tempDiv.innerHTML = crearPeuPagina(item);
+                            contenidorContinguts.appendChild(tempDiv.firstElementChild);
+                    
+                        } else {
+                            // Només crea una nova fila flex si és un component de contingut estàndard (targetes, text, CTA, vídeo, etc.)
+                            if (item.novaFila || !contenidorFilaFlex) {
+                                processarCarruselPendent();
+                                
+                                contenidorFilaFlex = document.createElement('div');
+                                contenidorFilaFlex.className = 'contenidor-fila-flex';
+                                
+                                // Posicionament dinàmic segons SituacióImatge
+                                const pos = (item.situacioImatge || '').toLowerCase().trim();
+                                if (pos === 'centre' || pos === 'center') {
+                                    contenidorFilaFlex.classList.add('posicio-centre');
+                                } else if (pos === 'dreta' || pos === 'right') {
+                                    contenidorFilaFlex.classList.add('posicio-dreta');
+                                } else {
+                                    contenidorFilaFlex.classList.add('posicio-esquerra');
+                                }
+                    
+                                contenidorContinguts.appendChild(contenidorFilaFlex);
+                            }
+                    
+                            // Avaluació i creació dels components estàndard
+                            if (tipus === 'carrusel_imatges') {
+                                grupCarrusel.push(item);
+                            } else if (tipus === 'bloc_text') {
+                                contenidorFilaFlex.appendChild(crearBlocText(item));
+                            } else if (tipus === 'targeta_imatge_text') {
+                                contenidorFilaFlex.appendChild(crearTargetaImatgeText(item));
+                            } else if (tipus === 'bloc_imatge_text') {
+                                contenidorFilaFlex.appendChild(crearBlocImatgeText(item));
+                            } else if (tipus === 'boto_cta') {
+                                contenidorFilaFlex.appendChild(crearBotoCTA(item));
+                            } else if (tipus === 'video' || tipus === 'video_1:1' || tipus === 'video_16:9' || tipus === 'video_9:16') {
+                                const tempDiv = document.createElement('div');
+                                tempDiv.innerHTML = crearComponentVideo(item);
+                                contenidorFilaFlex.appendChild(tempDiv.firstElementChild);
+                            } else {
+                                contenidorFilaFlex.appendChild(crearTargetaElement(item));
+                            }                    
+                        }
+                        
+                    });
+        
+                    processarGaleriaPendent();
+                    processarCarruselPendent();
+        
+                    seccioHTML.appendChild(contenidorContinguts);
+                }
+        
+                contenidorPrincipal.appendChild(seccioHTML);
+            });
+        }
