@@ -1142,7 +1142,7 @@
                 // Construcció de la línia de l'etiqueta amb la InfoAddicional integrada
                 let textEtiqueta = etiqueta ? `${etiqueta}${astil}` : '';
                 if (infoAddicional && infoAddicional !== '#N/A') {
-                    textEtiqueta += `<span style="color: #C8AAFF; font-weight: 400; font-size: 0.85em; margin-left: 0.5rem;"> · ${infoAddicional}</span>`;
+                    textEtiqueta += `<span style="color: #C8AAFF; font-weight: 400; font-size: 0.85em; margin-left: 0.5rem; font-style: italic; text-transform: none;"> · ${infoAddicional}</span>`;
                 }
         
                 campsHTML += `<div class="camp-grup" style="margin-bottom: 1.2rem; text-align: left;">`;
@@ -1248,6 +1248,11 @@
         
                 alert("Moltes gràcies! La teva sol·licitud s'ha enviat correctament a Mínim Món.");
                 formulari.reset();
+                // Després d'enviar el formulari correctament:
+                if (window.history && window.history.replaceState) {
+                    // Esborra els paràmetres ?camp_01=... mantenint la ruta neta
+                    window.history.replaceState(null, '', window.location.pathname);
+                }
             } catch (error) {
                 console.error("Error en l'enviament:", error);
                 alert("S'ha produït un error en enviar el formulari. Si us plau, contacta directament a info@minimmon.cat");
