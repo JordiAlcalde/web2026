@@ -100,7 +100,6 @@
         
                 console.log('Dades carregades correctament:', dadesWeb);
 
-                // --- CORRECCIÓ: Construcció i activació inicial de la pàgina ---
                 actualitzarLogo();
                 construirMenuNavegacio();
                 construirPantallesWeb();
@@ -188,11 +187,9 @@
                         if (!isNaN(numSpan)) leftSpanCss = `${numSpan}px`;
                     }
         
-                    // Lectura i formatat de la columna O (índex 14) per a MidaImatge
                     let valMidaImatge = (fila[14] || '').trim();
-                    let midaImatgeCss = '400px'; // Valor per defecte homogeni
+                    let midaImatgeCss = '400px';
                     if (valMidaImatge !== '') {
-                        // Si s'escriu només un número (ex: 450), hi afegim 'px' automàticament
                         midaImatgeCss = /^\d+$/.test(valMidaImatge) ? `${valMidaImatge}px` : valMidaImatge;
                     }
         
@@ -210,7 +207,7 @@
                         heroAlign: fila[11] ? fila[11].toLowerCase().trim() : 'left',
                         heroFontColor: (fila[12] && fila[12].trim() !== '') ? fila[12].trim() : '#E3D4FF',
                         heroLeftSpan: leftSpanCss,
-                        heroMidaImatge: midaImatgeCss // <--- Nova propietat disponible per al component Hero
+                        heroMidaImatge: midaImatgeCss
                     };
                 }).sort((a, b) => a.ordre - b.ordre);
         }
@@ -256,6 +253,7 @@
             });
         }
 
+        // --- CONSTRUCCIÓ PANTALLES WEB I SECCIÓ HERO ---
         function construirPantallesWeb() {
             const contenidorPrincipal = document.getElementById('seccions-contenidor');
             if (!contenidorPrincipal) return;
@@ -277,29 +275,31 @@
                 const urlHeroImatge = teImatge ? `https://drive.google.com/thumbnail?sz=w1600&id=${pagina.heroImatge.trim()}` : '';
         
                 const estilFons = teImatge 
-                    ? `background-image: linear-gradient(to right, rgba(36, 21, 63, 0.75) 0%, rgba(36, 21, 63, 0.25) 60%, rgba(36, 21, 63, 0) 100%), url('${urlHeroImatge}');` 
+                    ? `background-image: linear-gradient(to right, rgba(36, 21, 63, 0.85) 0%, rgba(36, 21, 63, 0.45) 60%, rgba(36, 21, 63, 0.1) 100%), url('${urlHeroImatge}'); background-size: cover; background-position: center;` 
                     : `background-color: var(--color-fons-fosc, #24153F);`;
         
+                // CONSTRUCCIÓ DE LA SECCIÓ HERO
                 const htmlHero = `
-                    <div class="hero-pagina" style="${estilFons}">
-                        <div class="hero-contenedor-flex">
+                    <div class="hero-pagina" style="${estilFons} padding: 4rem 2rem; display: flex; align-items: center; justify-content: center;">
+                        <div class="hero-contenedor-flex" style="max-width: 1200px; width: 100%; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 2rem;">
                             <div class="hero-caixa-contingut" style="
+                                flex: 1 1 ${pagina.heroAmple};
                                 max-width: ${pagina.heroAmple}; 
                                 transform: translateX(${pagina.heroLeftSpan}); 
                                 text-align: ${pagina.heroAlign};
                                 color: ${pagina.heroFontColor};">
                                 
-                                <h1 style="font-size: 2.2rem; font-weight: 700; color: ${pagina.heroFontColor}; line-height: 1.25; margin-bottom: 0.8rem;">
+                                <h1 style="font-size: 2.5rem; font-weight: 700; color: ${pagina.heroFontColor}; line-height: 1.2; margin-bottom: 1rem; font-family: 'Montserrat', sans-serif;">
                                     ${pagina.heroTitol}
                                 </h1>
                                 
                                 ${pagina.heroText ? `
-                                    <div class="hero-cos-text" style="font-size: 1.1rem; font-weight: 400; color: ${pagina.heroFontColor}; margin-top: 0.8rem;">
+                                    <div class="hero-cos-text" style="font-size: 1.15rem; font-weight: 400; color: ${pagina.heroFontColor}; margin-top: 1rem; line-height: 1.5; font-family: 'Montserrat', sans-serif;">
                                         ${pagina.heroText}
                                     </div>` : ''}
                                 
                                 ${pagina.heroDestacat ? `
-                                    <div class="destacat-hero" style="font-size: 1.2rem; font-weight: 600; color: ${pagina.heroFontColor}; margin-top: 1rem;">
+                                    <div class="destacat-hero" style="font-size: 1.25rem; font-weight: 600; color: #AC80FF; margin-top: 1.2rem; font-family: 'Montserrat', sans-serif;">
                                         ${pagina.heroDestacat}
                                     </div>` : ''}
                             </div>
@@ -1114,7 +1114,6 @@
             `;
         }
 
-        
         function crearFormulari(item, campsFormulari = []) {
             const titol = item.titol || 'Formulari de Contacte';
             const descripcio = item.descripcio || '';
@@ -1122,7 +1121,6 @@
         
             let campsHTML = '';
         
-            // Filtrar files buides de Google Sheets
             const campsValids = campsFormulari.filter(camp => {
                 const id = (camp.id || '').trim();
                 const etiqueta = (camp.seccio || '').trim();
@@ -1138,17 +1136,14 @@
                 const rawOpcions = camp.descripcio || '';
                 const llistaOpcions = rawOpcions ? rawOpcions.split(';').map(o => o.trim()).filter(o => o !== '') : [];
         
-                // Lectura de la informació addicional
                 const infoAddicional = (camp.link || camp.infoAddicional || camp['Info addicional'] || '').trim();
         
-                // Verificació de camp obligatori
                 const valObligatori = (camp.imatgeId || camp.Obligatori || '').toString().toUpperCase().trim();
                 const esObligatori = valObligatori === 'SI' || valObligatori === 'TRUE';
                 
                 const reqAttr = esObligatori ? 'required' : '';
                 const astil = esObligatori ? '<span style="color: #AC80FF;"> *</span>' : '';
         
-                // Construcció de la línia de l'etiqueta amb la InfoAddicional integrada
                 let textEtiqueta = etiqueta ? `${etiqueta}${astil}` : '';
                 if (infoAddicional && infoAddicional !== '#N/A') {
                     textEtiqueta += `<span style="color: #C8AAFF; font-weight: 400; font-size: 0.85em; margin-left: 0.5rem; font-style: italic; text-transform: none;"> · ${infoAddicional}</span>`;
@@ -1229,7 +1224,6 @@
             `;
         }
         
-        // Substitueix aquesta URL per la que t'oferirà Google Apps Script (veure pas 2)
         const URL_GOOGLE_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbwUuqy0X4UdDPNqrzKgA9Pp1eve2n27Vji8yjbkXHmYHTOaUWdVoo0fLGcKOunzw-fe3w/exec";
         const MAX_FILE_SIZE_MB = 20;
         const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
@@ -1239,14 +1233,13 @@
             const formulari = document.getElementById(formId);
             if (!formulari) return;
         
-            // 1. Validació prèvia de la mida dels fitxers adjunts
             const inputsFitxer = formulari.querySelectorAll('input[type="file"]');
             for (let input of inputsFitxer) {
                 if (input.files && input.files[0]) {
                     const fitxer = input.files[0];
                     if (fitxer.size > MAX_FILE_SIZE_BYTES) {
                         alert(`El fitxer "${fitxer.name}" supera el límit màxim permès de ${MAX_FILE_SIZE_MB} MB. Si us plau, tria un fitxer més lleuger.`);
-                        input.value = ""; // Neteja la selecció
+                        input.value = "";
                         return;
                     }
                 }
@@ -1263,7 +1256,6 @@
             let fitxerAdjunt = null;
         
             try {
-                // 2. Processar camps i convertir el fitxer a Base64
                 for (let [clau, valor] of formData.entries()) {
                     if (valor instanceof File && valor.name && valor.size > 0) {
                         fitxerAdjunt = await convertirFitxerABase64(valor);
@@ -1277,7 +1269,6 @@
                     fitxer: fitxerAdjunt
                 };
         
-                // 3. Enviament silent en segon pla
                 await fetch(URL_GOOGLE_APPS_SCRIPT, {
                     method: 'POST',
                     mode: 'no-cors',
@@ -1288,7 +1279,6 @@
                 alert("Moltes gràcies! La teva sol·licitud s'ha enviat correctament a Mínim Món.");
                 formulari.reset();
         
-                // Netegem els paràmetres de la URL per mantenir la barra d'adreces neta
                 if (window.history && window.history.replaceState) {
                     window.history.replaceState(null, '', window.location.pathname);
                 }
@@ -1317,15 +1307,12 @@
             });
         }
 
-        // Mostra la paperera només quan hi ha un fitxer seleccionat
         function gestionarCanviFitxer(input, idCamp) {
             const botoPaperera = document.getElementById(`boto-netejar-${idCamp}`);
             if (!botoPaperera) return;
         
             if (input.files && input.files.length > 0) {
                 botoPaperera.style.display = 'inline-flex';
-                
-                // Verificació immediata dels 20 MB en seleccionar
                 if (input.files[0].size > MAX_FILE_SIZE_BYTES) {
                     alert(`El fitxer "${input.files[0].name}" supera el límit de ${MAX_FILE_SIZE_MB} MB.`);
                     netejarCampFitxer(idCamp);
@@ -1335,19 +1322,17 @@
             }
         }
         
-        // Bueda el camp i amaga la paperera
         function netejarCampFitxer(idCamp) {
             const input = document.getElementById(idCamp);
             const botoPaperera = document.getElementById(`boto-netejar-${idCamp}`);
             
             if (input) {
-                input.value = ''; // Elimina el fitxer seleccionat
+                input.value = '';
             }
             if (botoPaperera) {
-                botoPaperera.style.display = 'none'; // Amaga la paperera
+                botoPaperera.style.display = 'none';
             }
         }        
-        
     </script>
 </body>
 </html>
