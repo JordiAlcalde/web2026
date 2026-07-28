@@ -274,14 +274,20 @@
                 const teImatge = pagina.heroImatge && pagina.heroImatge.trim() !== '' && pagina.heroImatge.trim() !== '#N/A';
                 const urlHeroImatge = teImatge ? `https://drive.google.com/thumbnail?sz=w1600&id=${pagina.heroImatge.trim()}` : '';
         
+                // Comprovar si hi ha una mida definida al Sheets (ex: '450px', '60vh', etc.) o posar un valor per defecte
+                const alçadaHero = (pagina.heroMidaImatge && pagina.heroImatge.trim() !== '' && pagina.heroMidaImatge.trim() !== '#N/A') 
+                    ? pagina.heroMidaImatge.trim() 
+                    : '450px';
+        
                 // Definició de la imatge de fons amb el degradat progressiu
                 const estilFons = teImatge 
                     ? `background-image: linear-gradient(to right, rgba(36, 21, 63, 0.95) 0%, rgba(36, 21, 63, 0.6) 50%, rgba(36, 21, 63, 0.15) 100%), url('${urlHeroImatge}'); background-size: cover; background-position: center;` 
                     : `background-color: var(--color-fons-fosc, #24153F);`;
         
-                // CONSTRUCCIÓ DE LA SECCIÓ HERO (Només amb el bloc de text i la imatge de fons)
+                // CONSTRUCCIÓ DE LA SECCIÓ HERO
+                // S'aplica 'alçadaHero' directament a l'estil de la caixa
                 const htmlHero = `
-                    <div class="hero-pagina" style="${estilFons} padding: 5rem 2rem; display: flex; align-items: center; justify-content: flex-start; min-height: 450px;">
+                    <div class="hero-pagina" style="${estilFons} min-height: ${alçadaHero}; padding: 3rem 2rem; display: flex; align-items: center; justify-content: flex-start; box-sizing: border-box;">
                         <div class="hero-contenedor-flex" style="max-width: 1200px; width: 100%; margin: 0 auto; display: flex; align-items: center;">
                             
                             <!-- BLOC DE TEXT -->
@@ -426,6 +432,7 @@
                 contenidorPrincipal.appendChild(seccioHTML);
             });
         }
+        
         
         function crearTargetaElement(item) {
             const card = document.createElement('div');
