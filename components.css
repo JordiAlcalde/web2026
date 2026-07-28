@@ -624,6 +624,235 @@
 
 
 /* ==========================================================================
+   FORMULARI ELEGANT MÍNIM MÓN
+   ========================================================================== */
+
+/* Contenidor principal del formulari */
+.formulari-minim-mon {
+    background-color: rgba(36, 21, 63, 0.75); /* #24153F amb translucidesa */
+    border: 1px solid rgba(172, 128, 255, 0.3); /* Accent #AC80FF */
+    border-radius: 12px;
+    padding: 2.5rem;
+    max-width: 680px;
+    margin: 2rem auto;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    font-family: 'Montserrat', sans-serif;
+    color: #E3D4FF;
+    box-sizing: border-box;
+}
+
+/* Capçaleres internes del formulari */
+.formulari-titol {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #FFFFFF;
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    text-align: center;
+    letter-spacing: -0.3px;
+}
+
+.formulari-descripcio {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.95rem;
+    color: #C8AAFF;
+    margin-bottom: 2rem;
+    text-align: center;
+    line-height: 1.5;
+    font-weight: 400;
+}
+
+/* Grups de camps i etiquetes */
+.camp-grup {
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.camp-etiqueta {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #AC80FF;
+    margin-bottom: 0.4rem;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    display: block;
+}
+
+/* Controls d'entrada de text, email, select i textarea */
+.camp-input, 
+.camp-select, 
+.camp-textarea {
+    width: 100%;
+    background: rgba(48, 18, 105, 0.6); /* #301269 */
+    border: 1px solid rgba(172, 128, 255, 0.35);
+    border-radius: 6px;
+    padding: 0.8rem 1rem;
+    color: #FFFFFF;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.95rem;
+    outline: none;
+    transition: all 0.25s ease-in-out;
+    box-sizing: border-box;
+}
+
+.camp-input:focus, 
+.camp-select:focus, 
+.camp-textarea:focus {
+    border-color: #AC80FF;
+    box-shadow: 0 0 10px rgba(172, 128, 255, 0.35);
+    background: rgba(48, 18, 105, 0.95);
+}
+
+.camp-textarea {
+    resize: vertical;
+    min-height: 120px;
+    line-height: 1.4;
+}
+
+.camp-select option {
+    background-color: #24153F;
+    color: #FFFFFF;
+}
+
+/* Controls d'opció múltiple: Radio i Checkbox */
+.grup-opcions-multiples {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    margin-top: 0.3rem;
+}
+
+.opcio-inline {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9rem;
+    color: #E3D4FF;
+    transition: color 0.2s ease;
+    user-select: none;
+}
+
+.opcio-inline:hover {
+    color: #FFFFFF;
+}
+
+.opcio-inline input[type="radio"],
+.opcio-inline input[type="checkbox"] {
+    accent-color: #AC80FF;
+    width: 1.15rem;
+    height: 1.15rem;
+    cursor: pointer;
+    margin: 0;
+}
+
+/* Selector de fitxers (File) */
+.camp-file {
+    background: rgba(48, 18, 105, 0.5);
+    border: 1px dashed rgba(172, 128, 255, 0.4);
+    border-radius: 6px;
+    padding: 0.8rem;
+    color: #E3D4FF;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.camp-file:hover {
+    border-color: #AC80FF;
+    background: rgba(48, 18, 105, 0.8);
+}
+
+.camp-file::file-selector-button {
+    background: #340094;
+    color: #FFFFFF;
+    border: 1px solid #AC80FF;
+    padding: 0.45rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 0.8rem;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.camp-file::file-selector-button:hover {
+    background: #AC80FF;
+    color: #24153F;
+}
+
+/* Text d'aclariment opcional (Info addicional) */
+.text-auxiliar {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.78rem;
+    color: #C8AAFF;
+    margin-top: 0.4rem;
+    line-height: 1.35;
+    display: block;
+    opacity: 0.85;
+    font-style: italic;
+}
+
+/* Botó d'enviament */
+.boto-enviar-container {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.boto-enviar {
+    background-color: #340094;
+    color: #FFFFFF;
+    border: 1px solid #AC80FF;
+    padding: 0.9rem 2.5rem;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 15px rgba(52, 0, 148, 0.4);
+}
+
+.boto-enviar:hover {
+    background-color: #AC80FF;
+    color: #24153F;
+    box-shadow: 0 0 20px rgba(172, 128, 255, 0.6);
+    transform: translateY(-2px);
+}
+
+.boto-enviar:active {
+    transform: translateY(0);
+}
+
+/* Adaptació per a pantalles petites (Mòbils) */
+@media (max-width: 600px) {
+    .formulari-minim-mon {
+        padding: 1.5rem 1.2rem;
+        margin: 1rem auto;
+    }
+    
+    .formulari-titol {
+        font-size: 1.35rem;
+    }
+    
+    .boto-enviar {
+        width: 100%;
+    }
+}
+
+
+
+/* ==========================================================================
    ADAPTACIÓ MÒBIL GENERAL (REVISADA I FORÇADA AL 100%)
    ========================================================================== */
 
