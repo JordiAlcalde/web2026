@@ -68,6 +68,39 @@
             }, 'google_translate_element');
         }      
 
+        function establirIdioma(lang) {
+            // 1. Llista de dominis possibles per netejar la galeta antiga
+            const host = window.location.hostname;
+            const domains = [host, '.' + host];
+            
+            // Si estem en un subdomini o GitHub Pages, esborrem la galeta en tots els nivells
+            if (host.includes('.')) {
+                const parts = host.split('.');
+                if (parts.length > 2) {
+                    domains.push('.' + parts.slice(-2).join('.'));
+                }
+            }
+        
+            // 2. Neteja profunda de la galeta 'googtrans' existent
+            domains.forEach(d => {
+                document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${d}`;
+                document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+            });
+        
+            // 3. Si l'usuari tria 'ca' (Català - idioma base), només necessitem recarregar sense galeta
+            if (lang === 'ca') {
+                window.location.reload();
+                return;
+            }
+        
+            // 4. Assignar la nova galeta de traducció (de 'ca' cap a l'idioma seleccionat)
+            document.cookie = `googtrans=/ca/${lang}; path=/;`;
+            document.cookie = `googtrans=/ca/${lang}; path=/; domain=.${host}`;
+        
+            // 5. Recarregar la pàgina per aplicar el canvi
+            window.location.reload();
+        }        
+
         
         const URL_CSV_CONFIG      = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=0&single=true&output=csv";
         const URL_CSV_ESTRUCTURA  = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=888628017&single=true&output=csv";
