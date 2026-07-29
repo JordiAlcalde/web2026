@@ -32,6 +32,14 @@
             <ul id="menu-navegacio" class="menu-links">
                 <!-- Es construeix des de Google Sheets -->
             </ul>
+
+            <div class="selector-idioma" style="display: flex; gap: 8px; font-family: 'Montserrat', sans-serif;">
+                <button onclick="canviarIdioma('ca')" style="background:transparent; border:1px solid #AC80FF; color:#E3D4FF; cursor:pointer; border-radius:4px; padding:2px 6px;">CA</button>
+                <button onclick="canviarIdioma('es')" style="background:transparent; border:1px solid #AC80FF; color:#E3D4FF; cursor:pointer; border-radius:4px; padding:2px 6px;">ES</button>
+                <button onclick="canviarIdioma('en')" style="background:transparent; border:1px solid #AC80FF; color:#E3D4FF; cursor:pointer; border-radius:4px; padding:2px 6px;">EN</button>
+                <button onclick="canviarIdioma('fr')" style="background:transparent; border:1px solid #AC80FF; color:#E3D4FF; cursor:pointer; border-radius:4px; padding:2px 6px;">FR</button>
+            </div>
+            
         </div>
     </header>
 
@@ -40,6 +48,14 @@
     </main>
 
     <script>
+
+        function canviarIdioma(lang) {
+          // Activa la traducció mitjançant la galeta de Google Translate
+          document.cookie = "googtrans=/ca/" + lang + "; path=/;";
+          location.reload();
+        }
+
+        
         const URL_CSV_CONFIG      = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=0&single=true&output=csv";
         const URL_CSV_ESTRUCTURA  = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=888628017&single=true&output=csv";
         const URL_CSV_COMPONENTS  = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=606337148&single=true&output=csv";
