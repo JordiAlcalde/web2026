@@ -1142,22 +1142,24 @@
                     max-width: 1200px; 
                     margin: 0 auto; 
                     display: grid; 
-                    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
+                    /* Grid personalitzat: Col 1 ampla, Col 2 estreta (fit-content), resta flexibles */
+                    grid-template-columns: 2.2fr auto 1fr 1.2fr 1.3fr; 
                     gap: 1.5rem; 
                     align-items: start; 
                     padding-bottom: 2rem;">
                     
                     <!-- COLUMNA 1: Logo + Text descriptiu -->
-                    <div class="col-peu col-1" style="display: flex; align-items: center; gap: 10px;">                       
-                        <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                        <div>
+                    <div class="col-peu col-1" style="display: flex; align-items: center; gap: 12px; background-color: #FFFFFF; padding: 12px 16px; border-radius: 8px; box-shadow: 0 2px 8px rgba(36, 21, 63, 0.08);">
+                        <div style="background-color: #000000; border-radius: 6px; padding: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <img src="logo_mm_300.jpg" alt="Logo Mínim Món" style="height: 48px; width: auto; object-fit: contain;">
+                        </div>
                             <strong style="font-size: 0.95rem; color: #24153F; display: block; line-height: 1.2;">Mínim Món</strong>
                             <span style="font-size: 0.8rem; color: #301269;">Recreacions simbòliques<br>de petits móns,<br>fetes amb fusta.</span>
                         </div>
                     </div>
         
                     <!-- COLUMNA 2: Selector d'Idiomes -->
-                    <div class="col-peu col-2" style="display: flex; flex-direction: column; gap: 4px;">
+                    <div class="col-peu col-2" style="display: flex; flex-direction: column; gap: 4px; min-width: max-content;">
                         <strong style="color: #301269; margin-bottom: 4px; font-size: 0.85rem;">Idiomes</strong>
                         <a href="javascript:void(0)" onclick="establirIdioma('ca')" style="color: #24153F; text-decoration: none; width: fit-content;">CA</a>
                         <a href="javascript:void(0)" onclick="establirIdioma('es')" style="color: #24153F; text-decoration: none; width: fit-content;">ES</a>
@@ -1184,10 +1186,10 @@
         
                     <!-- COLUMNA 5: Dades personals de contacte -->
                     <div class="col-peu col-5" style="color: #24153F; font-size: 0.8rem; line-height: 1.4;">
-                        <div style="font-weight: 600; color: #24153F;">Jordi Alcalde Casalta</div>
-                        <div><a href="mailto:info@minimmon.cat" style="color: #24153F; text-decoration: none;">info@minimmon.cat</a></div>
-                        <div><a href="mailto:jordi.alcalde@outlook.com" style="color: #24153F; text-decoration: none;">jordi.alcalde@outlook.com</a></div>
-                        <div><a href="tel:+34699592326" style="color: #24153F; text-decoration: none;">+34 699 592 326</a></div>
+                        <strong style="color: #301269; margin-bottom: 4px; font-size: 0.85rem; display: block;">Jordi Alcalde Casalta</strong>
+                        <a href="mailto:info@minimmon.cat" style="color: #24153F; text-decoration: none;">info@minimmon.cat</a>
+                        <a href="mailto:jordi.alcalde@outlook.com" style="color: #24153F; text-decoration: none;">jordi.alcalde@outlook.com</a>
+                        <a href="tel:+34699592326" style="color: #24153F; text-decoration: none;">+34 699 592 326</a>
                     </div>
         
                 </div>
