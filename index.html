@@ -263,8 +263,11 @@
                         heroAlign: fila[11] ? fila[11].toLowerCase().trim() : 'left',
                         heroFontColor: (fila[12] && fila[12].trim() !== '') ? fila[12].trim() : '#E3D4FF',
                         heroLeftSpan: leftSpanCss,
-                        heroMidaImatge: midaImatgeCss
+                        heroMidaImatge: midaImatgeCss,
+                        navegacio: fila[15] ? fila[15].toUpperCase().trim() === 'TRUE' : true,
+                        grupPagina: (fila[16] || 'principal').toLowerCase().trim()
                     };
+                    
                 }).sort((a, b) => a.ordre - b.ordre);
         }
 
@@ -1444,6 +1447,44 @@
                 botoPaperera.style.display = 'none';
             }
         }        
+
+
+        // ***************************************************
+        // Pàgines LEGAL
+        // ***************************************************
+        function crearPaginaLegal(paginaData, continguts) {
+            return `
+            <div class="pantalla-legal" style="
+                background-color: #24153F; 
+                color: #E3D4FF; 
+                font-family: 'Montserrat', sans-serif; 
+                min-height: 80vh; 
+                padding: 3rem 1.5rem 5rem 1.5rem;
+                box-sizing: border-box;">
+                
+                <div style="max-width: 800px; margin: 0 auto;">
+                    <!-- Capçalera Sobria -->
+                    <header style="border-bottom: 1px solid #AC80FF; padding-bottom: 1.5rem; margin-bottom: 2.5rem;">
+                        <h1 style="color: #FFFFFF; font-size: 2.2rem; font-weight: 700; margin: 0 0 0.5rem 0;">
+                            ${paginaData.nomPagina}
+                        </h1>
+                        <p style="color: #C8AAFF; font-size: 0.9rem; margin: 0;">
+                            Mínim Món &middot; Informació legal i transparència
+                        </p>
+                    </header>
+        
+                    <!-- Cos del text legal -->
+                    <article class="contingut-legal" style="
+                        font-size: 0.95rem; 
+                        line-height: 1.7; 
+                        color: #E3D4FF;">
+                        ${continguts}
+                    </article>
+                </div>
+            </div>
+            `;
+        }
+        
     </script>
 </body>
 </html>
