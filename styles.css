@@ -124,6 +124,30 @@ body {
     display: block;
 }
 
+
+/* ==========================================================================
+   Google Translate
+   ========================================================================== */
+/* Amaga la barra superior de Google Translate */
+.goog-te-banner-frame.skiptranslate {
+    display: none !important;
+}
+
+body {
+    top: 0px !important;
+}
+
+/* Amaga el pop-up que apareix en fer hoover sobre els textos */
+#goog-gt-tt, .goog-te-balloon-frame {
+    display: none !important;
+}
+
+.goog-text-highlight {
+    background-color: transparent !important;
+    box-shadow: none !important;
+}
+
+
 /* ==========================================================================
    MÍNIM MÓN - ESTILS HERO OPTIMITZATS
    ========================================================================== */
