@@ -49,11 +49,24 @@
 
     <script>
 
-        function canviarIdioma(lang) {
-          // Activa la traducció mitjançant la galeta de Google Translate
-          document.cookie = "googtrans=/ca/" + lang + "; path=/;";
-          location.reload();
+        // Funció auxiliara per injectar l'script un cop el DOM està completat
+        function carregarScriptTraduccio() {
+            if (!document.getElementById('google-translate-script')) {
+                const script = document.createElement('script');
+                script.id = 'google-translate-script';
+                script.src = '//translate.google.com/translate_a/element.js?cb=inicialitzarGoogleTranslate';
+                document.body.appendChild(script);
+            }
         }
+        
+        function inicialitzarGoogleTranslate() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'ca',
+                includedLanguages: 'es,en,fr',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                autoDisplay: false
+            }, 'google_translate_element');
+        }      
 
         
         const URL_CSV_CONFIG      = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=0&single=true&output=csv";
@@ -120,6 +133,7 @@
                 construirMenuNavegacio();
                 construirPantallesWeb();
                 activarSeccioInicial();
+                carregarScriptTraduccio();
 
             } catch (error) {
                 console.error('Error en la càrrega de dades dels CSVs:', error);
