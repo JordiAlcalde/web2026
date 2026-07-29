@@ -128,28 +128,26 @@ body {
 /* ==========================================================================
    Google Translate
    ========================================================================== */
-/* 1. Amagar l'iframe de la barra superior de Google Translate */
-iframe.goog-te-banner-frame, 
+/* 1. Amagar i col·lapsar completament l'iframe de la barra de Google Translate */
+iframe.goog-te-banner-frame,
 .goog-te-banner-frame,
-iframe[id=":1.container"],
-iframe[id=":2.container"] {
+iframe[id^=":"] {
     display: none !important;
     visibility: hidden !important;
     height: 0 !important;
     width: 0 !important;
+    margin-top: -100px !important;
 }
 
-/* 2. Evitar que Google desplaci la web cap avall (forçar posició superior) */
-body {
+/* 2. Forçar que el body i html no es desplacin cap avall */
+body, html {
     top: 0px !important;
     position: static !important;
+    margin-top: 0px !important;
+    padding-top: 0px !important;
 }
 
-html {
-    top: 0px !important;
-}
-
-/* 3. Ocultar les bafarades/popups que apareixen en passar el ratolí sobre el text */
+/* 3. Ocultar les bafarades/popups al passar el ratolí sobre el text */
 #goog-gt-tt, 
 .goog-te-balloon-frame,
 .goog-tooltip,
@@ -158,7 +156,7 @@ html {
     visibility: hidden !important;
 }
 
-/* 4. Treure el fons groc/destacat que posa Google al text traduït */
+/* 4. Mantenir el fons de les lletres sense el groc per defecte de Google */
 .goog-text-highlight {
     background-color: transparent !important;
     box-shadow: none !important;
