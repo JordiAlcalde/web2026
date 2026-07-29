@@ -555,6 +555,37 @@
             }
         }
 
+
+        // Funció per carregar dinàmicament qualsevol hash de l'URL
+        function carregarPaginaPerHash() {
+          // 1. Obtenim el hash i normalitzem el guió mitjà '-' a guió baix '_'
+          let hash = window.location.hash.replace('#', '').trim().replace(/-/g, '_');
+          
+          if (!hash) return; // Si no hi ha hash, manté la vista per defecte
+        
+          // 2. Busquem la secció a dadesContinguts (Google Sheets)
+          const contingut = dadesContinguts.filter(item => item.Seccio === hash);
+        
+          if (contingut.length > 0) {
+            // Si la secció pertany al grup 'legal', executem la funció legal
+            if (['avis_legal', 'privacitat', 'cookies'].includes(hash)) {
+              crearPaginaLegal(hash); // <--- Ara sí que la cridem!
+            } else {
+              // Si és del grup principal (botiga, laboratori, etc.)
+              construirPantallesWeb(hash);
+            }
+          }
+        }
+        
+        // Escoltadors d'esdeveniments per activar la navegació fluida
+        window.addEventListener('hashchange', carregarPaginaPerHash);
+        window.addEventListener('DOMContentLoaded', carregarPaginaPerHash);
+
+
+        
+        // *****************************************
+        // COMPONENTS
+        // *****************************************
         function crearBlocImatgeText(item) {
             const bloc = document.createElement('div');
             bloc.className = 'bloc-imatge-text';
