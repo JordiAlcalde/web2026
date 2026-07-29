@@ -33,12 +33,14 @@
                 <!-- Es construeix des de Google Sheets -->
             </ul>
 
-            <div class="selector-idioma" style="display: flex; gap: 8px; font-family: 'Montserrat', sans-serif;">
-                <button onclick="canviarIdioma('ca')" style="background:transparent; border:1px solid #AC80FF; color:#E3D4FF; cursor:pointer; border-radius:4px; padding:2px 6px;">CA</button>
-                <button onclick="canviarIdioma('es')" style="background:transparent; border:1px solid #AC80FF; color:#E3D4FF; cursor:pointer; border-radius:4px; padding:2px 6px;">ES</button>
-                <button onclick="canviarIdioma('en')" style="background:transparent; border:1px solid #AC80FF; color:#E3D4FF; cursor:pointer; border-radius:4px; padding:2px 6px;">EN</button>
-                <button onclick="canviarIdioma('fr')" style="background:transparent; border:1px solid #AC80FF; color:#E3D4FF; cursor:pointer; border-radius:4px; padding:2px 6px;">FR</button>
-            </div>
+            const htmlSelectorIdiomes = `
+                <div class="selector-idioma" style="display: flex; gap: 6px; align-items: center; margin-left: auto;">
+                    <button onclick="establirIdioma('ca')" style="background: transparent; border: 1px solid #AC80FF; color: #E3D4FF; cursor: pointer; padding: 2px 8px; border-radius: 4px; font-family: 'Montserrat', sans-serif; font-weight: 600;">CA</button>
+                    <button onclick="establirIdioma('es')" style="background: transparent; border: 1px solid #AC80FF; color: #E3D4FF; cursor: pointer; padding: 2px 8px; border-radius: 4px; font-family: 'Montserrat', sans-serif; font-weight: 600;">ES</button>
+                    <button onclick="establirIdioma('en')" style="background: transparent; border: 1px solid #AC80FF; color: #E3D4FF; cursor: pointer; padding: 2px 8px; border-radius: 4px; font-family: 'Montserrat', sans-serif; font-weight: 600;">EN</button>
+                    <button onclick="establirIdioma('fr')" style="background: transparent; border: 1px solid #AC80FF; color: #E3D4FF; cursor: pointer; padding: 2px 8px; border-radius: 4px; font-family: 'Montserrat', sans-serif; font-weight: 600;">FR</button>
+                </div>
+            `;
             
         </div>
     </header>
