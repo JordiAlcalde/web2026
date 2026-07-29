@@ -504,29 +504,29 @@
         }
 
         function canviarSeccio(idSeccio) {
-            const menu = document.getElementById('menu-navegacio');
-            if (menu) menu.classList.remove('obert');
+            const contenidor = document.getElementById('seccions-contenidor');
+            
+            // Si el contenidor té contingut legal (o li falta l'estructura principal),
+            // reconstruïm l'estructura estàndard de la web primer.
+            if (!document.getElementById('heroi-seccio') && typeof renderitzarEstructuraWeb === 'function') {
+                renderitzarEstructuraWeb(); 
+            }
         
-            const idNetejat = idSeccio.replace('#', '').replace('pantalla-', '').trim();
-            const seccions = document.querySelectorAll('.seccio-web');
-            
-            seccions.forEach(s => s.classList.remove('activa'));
-            
-            const seccioDesti = document.getElementById(`pantalla-${idNetejat}`) || document.getElementById(idNetejat);
+            // Un cop restablerta l'estructura (o si ja hi era), apliquem la visibilitat/desplaçament
+            document.querySelectorAll('.seccio-pagina').forEach(sec => {
+                sec.style.display = 'none';
+            });
+        
+            const seccioDesti = document.getElementById(idSeccio) || document.getElementById(idSeccio.replace(/_/g, '-'));
             if (seccioDesti) {
-                seccioDesti.classList.add('activa');
+                seccioDesti.style.display = 'block';
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         
-            const linksMenu = document.querySelectorAll('#menu-navegacio a');
-            linksMenu.forEach(a => {
-                const href = a.getAttribute('href') || '';
-                if (href.replace('#', '') === idNetejat) {
-                    a.classList.add('actiu');
-                } else {
-                    a.classList.remove('actiu');
-                }
-            });
+            // Actualitzem el hash de la URL sense trencar l'historial
+            if (window.location.hash !== '#' + idSeccio) {
+                history.pushState(null, null, '#' + idSeccio);
+            }
         }
 
         function activarSeccioInicial() {
@@ -581,7 +581,19 @@
         }
         
         // Escoltadors d'esdeveniments per activar la navegació fluida
-        window.addEventListener('hashchange', carregarPaginaPerHash);
+        // window.addEventListener('hashchange', carregarPaginaPerHash);
+        window.addEventListener('hashchange', () => {
+            const hash = window.location.hash.replace('#', '').trim();
+            
+            if (['avis_legal', 'privacitat', 'cookies'].includes(hash)) {
+                carregarPaginaLegal(hash);
+            } else {
+                // Per a qualsevol altra secció, re-executem el canvi de secció
+                canviarSeccio(hash || 'inici');
+            }
+        });
+
+        
         window.addEventListener('DOMContentLoaded', carregarPaginaPerHash);
 
 
