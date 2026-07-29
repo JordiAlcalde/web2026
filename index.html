@@ -512,20 +512,40 @@
 
         function carregarPaginaLegal(idLegal) {
             const idNormalitzat = idLegal.replace(/-/g, '_');
-            const paginaData = { nomPagina: idNormalitzat.replace('_', ' ').toUpperCase() };
-            const contingutLegal = dadesWeb.continguts.filter(item => item.seccio === idNormalitzat || item.seccio === idLegal);
             
+            // Mapa de títols amb accents i format correcte per a la capçalera
+            const titolsLegals = {
+                'avis_legal': 'AVÍS LEGAL',
+                'privacitat': 'POLÍTICA DE PRIVACITAT',
+                'cookies': 'POLÍTICA DE COOKIES'
+            };
+        
+            // Si tenim el títol definit al mapa, el fem servir; si no, fem servir el nom per defecte
+            const nomTitol = titolsLegals[idNormalitzat] || idNormalitzat.replace('_', ' ').toUpperCase();
+            const paginaData = { nomPagina: nomTitol };
+        
+            const contingutLegal = dadesWeb.continguts.filter(item => 
+                item.seccio === idNormalitzat || item.seccio === idLegal
+            );
+            
+            // Recuperem la configuració del peu de pàgina si existeix al CSV
+            const configuracioPeu = dadesWeb.continguts.find(item => {
+                const tipus = item.tipusComponent ? item.tipusComponent.toLowerCase().trim() : '';
+                return tipus === 'peu_de_pagina';
+            }) || {};
+        
             let htmlText = contingutLegal.map(c => `<p>${c.descripcio || ''}</p>`).join('');
             if (!htmlText) {
                 htmlText = `<p>Contingut legal en procés d'actualització.</p>`;
             }
-
+        
             const main = document.getElementById('seccions-contenidor');
             if (main) {
-                main.innerHTML = crearPaginaLegal(paginaData, htmlText);
+                // Generem la pàgina legal amb el títol accentuat i el peu de pàgina
+                main.innerHTML = crearPaginaLegal(paginaData, htmlText) + crearPeuPagina(configuracioPeu);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
-
+        
             if (window.location.hash !== '#' + idLegal) {
                 history.pushState(null, null, '#' + idLegal);
             }
