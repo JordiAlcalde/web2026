@@ -1135,61 +1135,101 @@
             `;
         }      
 
-        function crearPeuPagina(item) {
-            const colorFons = obtenirColorHex(item.colorFons, MAPA_COLORS['Fons fosc'] || '#24153F');
-            const colorText = obtenirColorHex(item.colorFont, MAPA_COLORS['Clar'] || '#E3D4FF');
-            const colorAccent = MAPA_COLORS['Accent'] || '#AC80FF';
-            const midaFont = item.alcadaImatge && item.alcadaImatge.trim() !== '' ? item.alcadaImatge.trim() : '0.9rem';
         
+        function crearPeuPagina(config) {
             return `
-                <footer class="component-peu-pagina" style="
-                    background-color: ${colorFons}; 
-                    color: ${colorText}; 
-                    font-size: ${midaFont}; 
-                    padding: 2.5rem 1.5rem 1.5rem 1.5rem; 
-                    margin-top: 3rem; 
-                    border-top: 1px solid rgba(172, 128, 255, 0.2); 
-                    width: 100%;">
+            <footer class="peu-pagina" style="
+                background-color: #E3D4FF; 
+                color: #24153F; 
+                font-family: 'Montserrat', sans-serif; 
+                font-size: 0.85rem; 
+                padding: 2.5rem 1.5rem 1rem 1.5rem; 
+                border-top: 1px solid #C8AAFF; 
+                line-height: 1.4;">
+                
+                <div class="contenidor-peu-5-columnes" style="
+                    max-width: 1200px; 
+                    margin: 0 auto; 
+                    display: grid; 
+                    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
+                    gap: 1.5rem; 
+                    align-items: start; 
+                    padding-bottom: 2rem;">
                     
-                    <div style="max-width: 1100px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2rem;">
-                        <div style="flex: 1 1 250px; min-width: 240px;">
-                            <h3 style="font-size: 1.2rem; font-weight: 700; color: #FFFFFF; margin-bottom: 0.6rem; letter-spacing: 0.5px;">
-                                Mínim Món
-                            </h3>
-                            <p style="line-height: 1.5; opacity: 0.9; margin: 0;">
-                                Recreacions en fusta, tallades amb precisió i carregades de simbolisme. Peça a peça, món a món.
-                            </p>
-                        </div>
-        
-                        <div style="flex: 1 1 200px; min-width: 180px;">
-                            <h4 style="font-size: 1rem; font-weight: 600; color: ${colorAccent}; margin-bottom: 0.6rem;">
-                                Explora
-                            </h4>
-                            <ul style="list-style: none; padding: 0; margin: 0; line-height: 1.8;">
-                                <li><a href="#pantalla-recreacions" style="color: ${colorText}; text-decoration: none; opacity: 0.85;">Móns Personalitzats</a></li>
-                                <li><a href="#pantalla-cataleg" style="color: ${colorText}; text-decoration: none; opacity: 0.85;">Peces de Disseny</a></li>
-                                <li><a href="#pantalla-contacte" style="color: ${colorText}; text-decoration: none; opacity: 0.85;">Encarregar o Contactar</a></li>
-                            </ul>
-                        </div>
-        
-                        <div style="flex: 1 1 200px; min-width: 180px;">
-                            <h4 style="font-size: 1rem; font-weight: 600; color: ${colorAccent}; margin-bottom: 0.6rem;">
-                                El Taller
-                            </h4>
-                            <p style="line-height: 1.6; margin: 0; opacity: 0.9;">
-                                Disseny tècnic i producció d'autor.<br>
-                                <span style="color: ${colorAccent};">info@minimmon.cat</span>
-                            </p>
+                    <!-- COLUMNA 1: Logo + Text descriptiu -->
+                    <div class="col-peu col-1" style="display: flex; align-items: center; gap: 10px;">
+                        <img src="logo_mm_600.jpg" alt="Logo Mínim Món" style="height: 48px; width: auto; object-fit: contain;">
+                        <div>
+                            <strong style="font-size: 0.95rem; color: #24153F; display: block; line-height: 1.2;">Mínim Món</strong>
+                            <span style="font-size: 0.8rem; color: #301269;">Recreacions simbòliques<br>de petits móns.</span>
                         </div>
                     </div>
         
-                    <div style="max-width: 1100px; margin: 2rem auto 0 auto; padding-top: 1rem; border-top: 1px solid rgba(227, 212, 255, 0.1); text-align: center; font-size: 0.8rem; opacity: 0.6;">
-                        © 2026 Mínim Món — Tots els drets reservats.
+                    <!-- COLUMNA 2: Selector d'Idiomes -->
+                    <div class="col-peu col-2" style="display: flex; flex-direction: column; gap: 4px;">
+                        <strong style="color: #301269; margin-bottom: 4px; font-size: 0.85rem;">Idiomes</strong>
+                        <a href="javascript:void(0)" onclick="establirIdioma('ca')" style="color: #24153F; text-decoration: none; width: fit-content;">CA</a>
+                        <a href="javascript:void(0)" onclick="establirIdioma('es')" style="color: #24153F; text-decoration: none; width: fit-content;">ES</a>
+                        <a href="javascript:void(0)" onclick="establirIdioma('en')" style="color: #24153F; text-decoration: none; width: fit-content;">EN</a>
+                        <a href="javascript:void(0)" onclick="establirIdioma('fr')" style="color: #24153F; text-decoration: none; width: fit-content;">FR</a>
                     </div>
-                </footer>
+        
+                    <!-- COLUMNA 3: Enllaços principals -->
+                    <div class="col-peu col-3" style="display: flex; flex-direction: column; gap: 4px;">
+                        <strong style="color: #301269; margin-bottom: 4px; font-size: 0.85rem;">Navegació</strong>
+                        <a href="#pantalla-univers-minim" style="color: #24153F; text-decoration: none;">Univers Mínim</a>
+                        <a href="#pantalla-minims-mons" style="color: #24153F; text-decoration: none;">Mínims Móns</a>
+                        <a href="#pantalla-la-botiga" style="color: #24153F; text-decoration: none;">La botiga</a>
+                        <a href="#pantalla-el-laboratori" style="color: #24153F; text-decoration: none;">El laboratori</a>
+                    </div>
+        
+                    <!-- COLUMNA 4: Enllaç d'acció / Contacte -->
+                    <div class="col-peu col-4">
+                        <strong style="color: #301269; margin-bottom: 4px; font-size: 0.85rem; display: block;">Començar</strong>
+                        <a href="#connecta" style="color: #340094; font-weight: 600; text-decoration: underline; line-height: 1.3; display: inline-block;">
+                            Encarrega una feina<br>o contacta amb nosaltres.
+                        </a>
+                    </div>
+        
+                    <!-- COLUMNA 5: Dades personals de contacte -->
+                    <div class="col-peu col-5" style="color: #24153F; font-size: 0.8rem; line-height: 1.4;">
+                        <div style="font-weight: 600; color: #24153F;">Jordi Alcalde Casalta</div>
+                        <div><a href="mailto:info@minimmon.cat" style="color: #24153F; text-decoration: none;">info@minimmon.cat</a></div>
+                        <div><a href="mailto:jordi.alcalde@outlook.com" style="color: #24153F; text-decoration: none;">jordi.alcalde@outlook.com</a></div>
+                        <div><a href="tel:+34699592326" style="color: #24153F; text-decoration: none;">+34 699 592 326</a></div>
+                    </div>
+        
+                </div>
+        
+                <!-- FILA INFERIOR: Copyright i textos legals -->
+                <div class="fila-inferior-peu" style="
+                    max-width: 1200px; 
+                    margin: 0 auto; 
+                    padding-top: 1rem; 
+                    border-top: 1px solid #C8AAFF; 
+                    display: flex; 
+                    flex-wrap: wrap; 
+                    justify-content: space-between; 
+                    align-items: center; 
+                    gap: 1rem; 
+                    font-size: 0.75rem; 
+                    color: #301269;">
+                    
+                    <div class="copyright-text">
+                        &copy; Mínim Món de Jordi Alcalde &nbsp;&middot;&nbsp; Tots els drets reservats
+                    </div>
+        
+                    <div class="links-legals" style="display: flex; gap: 8px;">
+                        <a href="#avis-legal" style="color: #301269; text-decoration: none;">Avís legal</a> &middot;
+                        <a href="#privacitat" style="color: #301269; text-decoration: none;">Privacitat</a> &middot;
+                        <a href="#cookies" style="color: #301269; text-decoration: none;">Cookies</a>
+                    </div>
+                </div>
+            </footer>
             `;
         }
 
+        
         function crearFormulari(item, campsFormulari = []) {
             const titol = item.titol || 'Formulari de Contacte';
             const descripcio = item.descripcio || '';
