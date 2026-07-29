@@ -30,19 +30,19 @@
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
-                <!-- Es construeix des de Google Sheets -->
+                <!-- Es construeix des de Google Sheets segons la navegació principal -->
             </ul>
 
         </div>
     </header>
 
     <main id="seccions-contenidor">
-        <!-- Contingut dinàmic -->
+        <!-- Contingut dinàmic integrat per grups de pàgina -->
     </main>
 
     <script>
 
-        // Funció auxiliara per injectar l'script un cop el DOM està completat
+        // Funció auxiliar per injectar l'script un cop el DOM està completat
         function carregarScriptTraduccio() {
             if (!document.getElementById('google-translate-script')) {
                 const script = document.createElement('script');
@@ -62,11 +62,9 @@
         }      
 
         function establirIdioma(lang) {
-            // 1. Llista de dominis possibles per netejar la galeta antiga
             const host = window.location.hostname;
             const domains = [host, '.' + host];
             
-            // Si estem en un subdomini o GitHub Pages, esborrem la galeta en tots els nivells
             if (host.includes('.')) {
                 const parts = host.split('.');
                 if (parts.length > 2) {
@@ -74,32 +72,26 @@
                 }
             }
         
-            // 2. Neteja profunda de la galeta 'googtrans' existent
             domains.forEach(d => {
                 document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${d}`;
                 document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
             });
         
-            // 3. Si l'usuari tria 'ca' (Català - idioma base), només necessitem recarregar sense galeta
             if (lang === 'ca') {
                 window.location.reload();
                 return;
             }
         
-            // 4. Assignar la nova galeta de traducció (de 'ca' cap a l'idioma seleccionat)
             document.cookie = `googtrans=/ca/${lang}; path=/;`;
             document.cookie = `googtrans=/ca/${lang}; path=/; domain=.${host}`;
-        
-            // 5. Recarregar la pàgina per aplicar el canvi
             window.location.reload();
         }        
 
-        
-        const URL_CSV_CONFIG      = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=0&single=true&output=csv";
-        const URL_CSV_ESTRUCTURA  = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=888628017&single=true&output=csv";
-        const URL_CSV_COMPONENTS  = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=606337148&single=true&output=csv";
-        const URL_CSV_CONTINGUTS  = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=819396845&single=true&output=csv";
-        const URL_CSV_FORM_CONTACTE  = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=348010806&single=true&output=csv";
+        const URL_CSV_CONFIG        = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=0&single=true&output=csv";
+        const URL_CSV_ESTRUCTURA    = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=888628017&single=true&output=csv";
+        const URL_CSV_COMPONENTS    = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=606337148&single=true&output=csv";
+        const URL_CSV_CONTINGUTS    = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=819396845&single=true&output=csv";
+        const URL_CSV_FORM_CONTACTE = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=348010806&single=true&output=csv";
 
         let dadesWeb = { config: {}, estructura: [], components: {}, continguts: [] };
 
@@ -299,13 +291,21 @@
             })).filter(item => item.id !== '');
         }
 
+        // Funció per filtrar pàgines segons el grup de pàgina
+        function obtenirPaginesPerGrup(nomGrup) {
+            const grupBuscat = (nomGrup || 'principal').toLowerCase().trim();
+            return dadesWeb.estructura.filter(p => p.visible && (p.grupPagina || 'principal').toLowerCase().trim() === grupBuscat);
+        }
+
         function construirMenuNavegacio() {
             const menuUL = document.getElementById('menu-navegacio');
             if (!menuUL) return;
             menuUL.innerHTML = '';
             
-            dadesWeb.estructura.forEach(pagina => {
-                if (!pagina.visible) return;
+            // Només mostrem al menú principal aquelles pàgines visibles configurades per a la navegació principal
+            const paginesNavegacio = dadesWeb.estructura.filter(pagina => pagina.visible && pagina.navegacio);
+            
+            paginesNavegacio.forEach(pagina => {
                 const li = document.createElement('li');
                 li.innerHTML = `<a href="#${pagina.id}" onclick="navegarA('${pagina.id}', event); return false;">${pagina.titol}</a>`;
                 menuUL.appendChild(li);
@@ -323,28 +323,26 @@
                 return tipus === 'peu_de_pagina';
             }) || {};
         
+            // Construcció iterativa de totes les pàgines estructurades
             dadesWeb.estructura.forEach(pagina => {
                 if (!pagina.visible) return;
         
                 const seccioHTML = document.createElement('section');
                 seccioHTML.id = `pantalla-${pagina.id}`;
-                seccioHTML.className = 'seccio-web';
+                seccioHTML.className = `seccio-web grup-${pagina.grupPagina || 'principal'}`;
                 
                 const teImatge = pagina.heroImatge && pagina.heroImatge.trim() !== '' && pagina.heroImatge.trim() !== '#N/A';
                 const urlHeroImatge = teImatge ? `https://drive.google.com/thumbnail?sz=w1600&id=${pagina.heroImatge.trim()}` : '';
         
-                // Comprovar si hi ha una mida definida al Sheets (ex: '450px', '60vh', etc.) o posar un valor per defecte
                 const alçadaHero = (pagina.heroMidaImatge && pagina.heroImatge.trim() !== '' && pagina.heroMidaImatge.trim() !== '#N/A') 
                     ? pagina.heroMidaImatge.trim() 
                     : '450px';
         
-                // Definició de la imatge de fons amb el degradat progressiu
                 const estilFons = teImatge 
                     ? `background-image: linear-gradient(to right, rgba(36, 21, 63, 0.95) 0%, rgba(36, 21, 63, 0.6) 50%, rgba(36, 21, 63, 0.15) 100%), url('${urlHeroImatge}'); background-size: cover; background-position: center;` 
                     : `background-color: var(--color-fons-fosc, #24153F);`;
         
                 // CONSTRUCCIÓ DE LA SECCIÓ HERO
-                // S'aplica 'alçadaHero' directament a l'estil de la caixa
                 const htmlHero = `
                     <div class="hero-pagina" style="${estilFons} min-height: ${alçadaHero}; padding: 3rem 2rem; display: flex; align-items: center; justify-content: flex-start; box-sizing: border-box;">
                         <div class="hero-contenedor-flex" style="max-width: 1200px; width: 100%; margin: 0 auto; display: flex; align-items: center;">
@@ -491,7 +489,6 @@
                 contenidorPrincipal.appendChild(seccioHTML);
             });
         }
-        
         
         function crearTargetaElement(item) {
             const card = document.createElement('div');
@@ -1129,7 +1126,6 @@
             `;
         }      
 
-        
         function crearPeuPagina(config) {
             return `
             <footer class="peu-pagina" style="
@@ -1145,7 +1141,6 @@
                     max-width: 1200px; 
                     margin: 0 auto; 
                     display: grid; 
-                    /* Grid personalitzat: Col 1 ampla, Col 2 estreta (fit-content), resta flexibles */
                     grid-template-columns: 1.8fr 1fr 1fr 1.2fr 1.3fr; 
                     gap: 1.5rem; 
                     align-items: start; 
@@ -1153,11 +1148,9 @@
                     
                     <!-- COLUMNA 1: Logo + Text descriptiu -->
                     <div class="col-peu col-1" style="display: flex; align-items: center; gap: 12px; background-color: #FFFFFF; padding: 12px 16px; border-radius: 8px; box-shadow: 0 2px 8px rgba(36, 21, 63, 0.08);">
-                        <!-- Logo directament sense marc ni contenidor negre -->
                         <img id="logo-img-peu" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge" style="height: 48px; width: auto; object-fit: contain;">
                         
                         <div>
-                            <!-- Text de titol net, sense background-color: #000000 -->
                             <strong style="font-size: 0.95rem; color: #24153F; display: block; line-height: 1.2;">Mínim Món</strong>
                             <span style="font-size: 0.8rem; color: #301269;">Recreacions de petits móns,<br>fetes amb fusta.</span>
                         </div>
@@ -1227,7 +1220,6 @@
             `;
         }
 
-        
         function crearFormulari(item, campsFormulari = []) {
             const titol = item.titol || 'Formulari de Contacte';
             const descripcio = item.descripcio || '';
@@ -1448,10 +1440,7 @@
             }
         }        
 
-
-        // ***************************************************
         // Pàgines LEGAL
-        // ***************************************************
         function crearPaginaLegal(paginaData, continguts) {
             return `
             <div class="pantalla-legal" style="
@@ -1463,7 +1452,6 @@
                 box-sizing: border-box;">
                 
                 <div style="max-width: 800px; margin: 0 auto;">
-                    <!-- Capçalera Sobria -->
                     <header style="border-bottom: 1px solid #AC80FF; padding-bottom: 1.5rem; margin-bottom: 2.5rem;">
                         <h1 style="color: #FFFFFF; font-size: 2.2rem; font-weight: 700; margin: 0 0 0.5rem 0;">
                             ${paginaData.nomPagina}
@@ -1473,7 +1461,6 @@
                         </p>
                     </header>
         
-                    <!-- Cos del text legal -->
                     <article class="contingut-legal" style="
                         font-size: 0.95rem; 
                         line-height: 1.7; 
