@@ -600,6 +600,125 @@
 
 
 /* ==========================================================================
+   COMPONENT peu de pàgina
+   ========================================================================== */
+
+/* Contenidor principal del peu de pàgina */
+  .footer-container {
+    background-color: #E3D4FF; /* Fons lavanda clar de la paleta */
+    color: #301269; /* Text lila fosc profund */
+    font-family: 'Montserrat', sans-serif;
+    padding: 30px 20px;
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  /* Disposició flexible responsiva (Flexbox) */
+  .footer-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 30px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* Targeta destacada amb el logo i la descripció */
+  .brand-card {
+    background-color: #FFFFFF;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(48, 18, 105, 0.08);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex: 1 1 300px; /* S'adapta: mínim 300px, creix si cal */
+    max-width: 420px;
+  }
+
+  .brand-card img {
+    width: 70px;
+    height: auto;
+  }
+
+  .brand-text h3 {
+    margin: 0 0 5px 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #301269;
+  }
+
+  .brand-text p {
+    margin: 0;
+    font-size: 0.88rem;
+    line-height: 1.35;
+    color: #340094;
+  }
+
+  /* Seccions d'enllaços (Idiomes / Navegació) */
+  .footer-column {
+    flex: 1 1 150px;
+  }
+
+  .footer-column h4 {
+    margin: 0 0 12px 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #301269;
+  }
+
+  .footer-column ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .footer-column li {
+    margin-bottom: 6px;
+  }
+
+  .footer-column a {
+    color: #301269;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.2s ease;
+  }
+
+  .footer-column a:hover {
+    color: #AC80FF;
+  }
+
+  /* Línia de separació */
+  .footer-divider {
+    border: 0;
+    height: 1px;
+    background-color: #C8AAFF;
+    margin: 25px auto 15px auto;
+    max-width: 1100px;
+  }
+
+  /* Secció inferior de Drets i Legals */
+  .footer-bottom {
+    text-align: center;
+    font-size: 0.82rem;
+    color: #301269;
+    max-width: 1100px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  .footer-bottom a {
+    color: #301269;
+    text-decoration: none;
+  }
+
+  .footer-bottom a:hover {
+    text-decoration: underline;
+  }
+
+
+/* ==========================================================================
    COMPONENTS ESTRUCTURALS: ESPAIADOR I SEPARADOR
    ========================================================================== */
 
