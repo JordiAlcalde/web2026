@@ -1159,56 +1159,69 @@
 
         function crearPeuPagina(config) {
             return `
-                <div class="footer-container">
-                  <div class="footer-content">
-                    
-                    <!-- Blocs Marca + Logo -->
-                    <div class="brand-card">
-                      <img src="logo_mm_600.jpg" alt="Mínim Món Logo">
-                      <div class="brand-text">
-                        <h3><span translate="no" class="notranslate">Mínim Món</span></h3>
-                        <p>Recreacions d'espais i memòries en fusta esculpida.</p>
-                      </div>
-                    </div>
+                <footer class="peu-pagina">
+                        <div class="contenidor-peu-5-columnes">
+                            
+                            <!-- COLUMNA 1: Logo + Text descriptiu -->
+                            <div class="col-peu col-1" style="display: flex; align-items: center; gap: 12px; background-color: #FFFFFF; padding: 12px 16px; border-radius: 8px; box-shadow: 0 2px 8px rgba(36, 21, 63, 0.08);">
+                                <img id="logo-img-peu" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge" style="height: 48px; width: auto; object-fit: contain;">
+                                <div>
+                                    <strong style="font-size: 0.95rem; color: #24153F; display: block; line-height: 1.2;">
+                                        <span translate="no" class="notranslate">Mínim Món</span>
+                                    </strong>
+                                    <span style="font-size: 0.8rem; color: #301269;">Recreacions de petits móns,<br>fetes amb fusta.</span>
+                                </div>
+                            </div>
                 
-                    <!-- Secció Idiomes -->
-                    <div class="footer-column">
-                      <h4>Idiomes</h4>
-                      <ul>
-                        <li><a href="#ca">CA</a></li>
-                        <li><a href="#es">ES</a></li>
-                        <li><a href="#en">EN</a></li>
-                        <li><a href="#fr">FR</a></li>
-                      </ul>
-                    </div>
+                            <!-- COLUMNA 2: Selector d'Idiomes -->
+                            <div class="col-peu col-2" style="display: flex; flex-direction: column; gap: 4px; min-width: max-content;">
+                                <strong style="color: #301269; margin-bottom: 4px; font-size: 0.85rem;">Idiomes</strong>
+                                <a href="javascript:void(0)" onclick="establirIdioma('ca')" title="Català" style="color: #24153F; text-decoration: none; width: fit-content;">CA</a>
+                                <a href="javascript:void(0)" onclick="establirIdioma('es')" title="Español" style="color: #24153F; text-decoration: none; width: fit-content;">ES</a>
+                                <a href="javascript:void(0)" onclick="establirIdioma('en')" title="English" style="color: #24153F; text-decoration: none; width: fit-content;">EN</a>
+                                <a href="javascript:void(0)" onclick="establirIdioma('fr')" title="Français" style="color: #24153F; text-decoration: none; width: fit-content;">FR</a>
+                            </div>
                 
-                    <!-- Secció Navegació -->
-                    <div class="footer-column">
-                      <h4>Navegació</h4>
-                      <ul>
-                        <li><a href="#">Inici</a></li>
-                        <li><a href="#mons-unics">Móns Únics</a></li>
-                        <li><a href="#disseny">Peces de Disseny</a></li>
-                        <li><a href="#contacte">Contacte</a></li>
-                      </ul>
-                    </div>
+                            <!-- COLUMNA 3: Enllaços principals -->
+                            <div class="col-peu col-3" style="display: flex; flex-direction: column; gap: 4px;">
+                                <strong style="color: #301269; margin-bottom: 4px; font-size: 0.85rem;">Navegació</strong>
+                                <a href="#pantalla-univers-minim" title="Coneix l'essència de Mínim Món" style="color: #24153F; text-decoration: none;">Univers Mínim</a>
+                                <a href="#pantalla-minims-mons" title="Descobreix els projectes" style="color: #24153F; text-decoration: none;">Mínims Móns</a>
+                                <a href="#pantalla-la-botiga" title="Tria i remena" style="color: #24153F; text-decoration: none;">La botiga</a>
+                                <a href="#pantalla-el-laboratori" title="El lloc d'on tot sorgeix" style="color: #24153F; text-decoration: none;">El laboratori</a>
+                            </div>
                 
-                  </div>
+                            <!-- COLUMNA 4: Enllaç d'acció / Contacte -->
+                            <div class="col-peu col-4">
+                                <strong style="color: #301269; margin-bottom: 4px; font-size: 0.85rem; display: block;">Començar</strong>
+                                <a href="#connecta" title="Formulari de contacte" style="color: #24153F; text-decoration: none; line-height: 1.3; display: inline-block;">
+                                    Encarrega una feina<br>o contacta amb nosaltres.
+                                </a>
+                            </div>
                 
-                  <hr class="footer-divider">
+                            <!-- COLUMNA 5: Dades personals de contacte -->
+                            <div class="col-peu col-5" style="color: #24153F; font-size: 0.8rem; line-height: 1.4;">
+                                <strong style="color: #301269; margin-bottom: 4px; font-size: 0.85rem; display: block;">Jordi Alcalde Casalta</strong>
+                                <a href="mailto:info@minimmon.cat" title="Escriu-nos un correu" style="color: #24153F; text-decoration: none; display: block;">info@minimmon.cat</a>
+                                <a href="mailto:jordi.alcalde@outlook.com" title="Escriu-nos un correu" style="color: #24153F; text-decoration: none; display: block;">jordi.alcalde@outlook.com</a>
+                                <a href="tel:+34699592326" style="color: #24153F; text-decoration: none; display: block;">+34 699 592 326</a>
+                            </div>
                 
-                  <!-- Drets i Legals -->
-                  <div class="footer-bottom">
-                    <div>
-                      &copy; <span translate="no" class="notranslate">Mínim Món</span> de Jordi Alcalde &nbsp;&middot;&nbsp; 2026 &nbsp;&middot;&nbsp; Tots els drets reservats
-                    </div>
-                    <div style="margin-top: 5px;">
-                      <a href="#avis-legal">Avís legal</a> &nbsp;&middot;&nbsp; 
-                      <a href="#privacitat">Privacitat</a> &nbsp;&middot;&nbsp; 
-                      <a href="#cookies">Cookies</a>
-                    </div>
-                  </div>
-                </div>
+                        </div>
+                
+                        <!-- FILA INFERIOR: Copyright i textos legals -->
+                        <div class="fila-inferior-peu">
+                            <div class="copyright-text">
+                                &copy; <span translate="no" class="notranslate">Mínim Món</span> de Jordi Alcalde &nbsp;&middot;&nbsp; 2026 &nbsp;&middot;&nbsp; Tots els drets reservats
+                            </div>
+                
+                            <div class="links-legals" style="display: flex; gap: 8px;">
+                                <a href="#avis-legal" style="color: #301269; text-decoration: none;">Avís legal</a> &middot;
+                                <a href="#privacitat" style="color: #301269; text-decoration: none;">Privacitat</a> &middot;
+                                <a href="#cookies" style="color: #301269; text-decoration: none;">Cookies</a>
+                            </div>
+                        </div>
+                    </footer>
             `;
         }
 
