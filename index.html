@@ -504,12 +504,12 @@
             });
         }
 
-        function canviarSeccio(idSeccio) {
-            const netId = idSeccio.replace('#', '').trim();
-            const esLegal = ['avis_legal', 'privacitat', 'cookies', 'avis-legal'].includes(netId);
+        function canviarSeccio(nomNovaSeccio) {
+            const seccioActual = nomNovaSeccio.replace('#', '').trim();
+            const esLegal = ['avis_legal', 'privacitat', 'cookies', 'avis-legal'].includes(seccioActual);
 
             if (esLegal) {
-                carregarPaginaLegal(netId);
+                carregarPaginaLegal(seccioActual);
                 return;
             }
 
@@ -521,18 +521,36 @@
             const seccions = document.querySelectorAll('.seccio-web');
             seccions.forEach(sec => sec.style.display = 'none');
 
-            const targetId = netId.startsWith('pantalla-') ? netId : `pantalla-${netId}`;
+            const targetId = seccioActual.startsWith('pantalla-') ? seccioActual : `pantalla-${seccioActual}`;
             const seccioDesti = document.getElementById(targetId);
 
             if (seccioDesti) {
                 seccioDesti.style.display = 'block';
+                
+                // Filtrem dinàmicament els continguts abans de pintar si hi ha contenidors actius
+                const contenidor = seccioDesti.querySelector('.contenidor-fila-flex') || seccioDesti.querySelector('.contenidor-continguts-seccio');
+                if (contenidor && dadesWeb.continguts && dadesWeb.continguts.length > 0) {
+                    const itemsSeccio = dadesWeb.continguts.filter(item => 
+                        item.seccio && item.seccio.toLowerCase() === seccioActual.toLowerCase()
+                    );
+                    
+                    // Si volem repintar dinàmicament segons secció activa sense sobresriure tot el DOM:
+                    if (seccioDesti.dataset.dinamic === "true") {
+                        contenidor.innerHTML = '';
+                        itemsSeccio.forEach(item => {
+                            const targeta = crearTargetaImatgeText(item);
+                            contenidor.appendChild(targeta);
+                        });
+                    }
+                }
+
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             } else if (seccions.length > 0) {
                 seccions[0].style.display = 'block';
             }
 
-            if (window.location.hash !== '#' + netId) {
-                history.pushState(null, null, '#' + netId);
+            if (window.location.hash !== '#' + seccioActual) {
+                history.pushState(null, null, '#' + seccioActual);
             }
         }
 
@@ -620,80 +638,55 @@
         function crearTargetaElement(item) {
             const card = document.createElement('div');
             
-                const configDefecte = dadesWeb.components['targeta_imatge_text'] || {
-                    colorFonsDefecte: '#24153F',
-                    colorTextDefecte: '#E3D4FF'
-                };
-                const fons = obtenirColorHex(item.colorFons, configDefecte.colorFonsDefecte);
-                const text = obtenirColorHex(item.colorText, configDefecte.colorTextDefecte);
-            
-                let ampleCard = '280px';
-                if (item.ample && item.ample.trim() !== '' && item.ample.trim() !== '#N/A') {
-                    const v = item.ample.trim();
-                    ampleCard = (!isNaN(v)) ? `${v}px` : v;
-                }
-            
-                let alcadaImg = '200px';
-                if (item.altImatge && item.altImatge.trim() !== '' && item.altImatge.trim() !== '#N/A') {
-                    const v = item.altImatge.trim();
-                    alcadaImg = (!isNaN(v)) ? `${v}px` : v;
-                }
-            
-                card.style.backgroundColor = fons;
-                card.style.width = ampleCard;
-                card.style.flex = `0 1 ${ampleCard}`;
-            
-                const urlImatge = item.imatgeId && item.imatgeId !== '#N/A' && item.imatgeId.trim() !== ''
-                    ? `https://drive.google.com/thumbnail?sz=w800&id=${item.imatgeId.trim()}`
-                    : 'logo_mm_600.jpg';
-            
-                // -------------------------------------------------------------
-                // PUNTS DE CONTROL (CONSOLE.LOG)
-                // -------------------------------------------------------------
-                const enllac = item.linkBoto ? item.linkBoto.trim() : '';
-                const teEnllac = enllac !== '' && enllac !== '#';
-            
-                console.group(`🔍 Targeta: "${item.titol || 'Sense títol'}"`);
-                console.log(`▸ Valor brut de item.linkBoto:`, `"${item.linkBoto}"`);
-                console.log(`▸ Té enllaç vàlid?:`, teEnllac);
-            
-                if (teEnllac) {
-                    card.className = 'targeta-imatge-text es-clicable';
-                    card.onclick = (e) => navegarA(enllac, e);
-                    console.log(`▸ Classe assignada:`, 'targeta-imatge-text es-clicable');
-                } else {
-                    card.className = 'targeta-imatge-text es-estatica';
-                    card.onclick = null;
-                    console.log(`▸ Classe assignada:`, 'targeta-imatge-text es-estatica');
-                }
-                console.groupEnd();
-                // -------------------------------------------------------------
-            
-                card.innerHTML = `
-                    <div class="caixa-img-targeta" style="height: ${alcadaImg};">
-                        <img src="${urlImatge}" alt="${item.titol || 'Mínim Món'}">
-                    </div>
-                    <div class="caixa-text-targeta">
-                        ${item.titol ? `<h3 style="color: ${text};">${item.titol}</h3>` : ''}
-                        ${item.descripcio ? `<p style="color: ${text};">${item.descripcio.replace(/\n/g, '<br>')}</p>` : ''}
-                    </div>
-                `;
-            
-                return card;
-
-
-
-            /*
-            const card = document.createElement('div');
-            card.className = 'targeta-element';
-            const urlImatge = item.imatgeId ? `https://drive.google.com/thumbnail?sz=w800&id=${item.imatgeId}` : 'logo_mm_600.jpg';
-
+            const configDefecte = dadesWeb.components['targeta_imatge_text'] || {
+                colorFonsDefecte: '#24153F',
+                colorTextDefecte: '#E3D4FF'
+            };
+            const fons = obtenirColorHex(item.colorFons, configDefecte.colorFonsDefecte);
+            const text = obtenirColorHex(item.colorText, configDefecte.colorTextDefecte);
+        
+            let ampleCard = '280px';
+            if (item.ample && item.ample.trim() !== '' && item.ample.trim() !== '#N/A') {
+                const v = item.ample.trim();
+                ampleCard = (!isNaN(v)) ? `${v}px` : v;
+            }
+        
+            let alcadaImg = '200px';
+            if (item.altImatge && item.altImatge.trim() !== '' && item.altImatge.trim() !== '#N/A') {
+                const v = item.altImatge.trim();
+                alcadaImg = (!isNaN(v)) ? `${v}px` : v;
+            }
+        
+            card.style.backgroundColor = fons;
+            card.style.width = ampleCard;
+            card.style.flex = `0 1 ${ampleCard}`;
+        
+            const urlImatge = item.imatgeId && item.imatgeId !== '#N/A' && item.imatgeId.trim() !== ''
+                ? `https://drive.google.com/thumbnail?sz=w800&id=${item.imatgeId.trim()}`
+                : 'logo_mm_600.jpg';
+        
+            const enllac = item.linkBoto ? item.linkBoto.trim() : '';
+            const teEnllac = enllac !== '' && enllac !== '#';
+        
+            if (teEnllac) {
+                card.className = 'targeta-imatge-text es-clicable';
+                card.onclick = (e) => navegarA(enllac, e);
+            } else {
+                card.className = 'targeta-imatge-text es-estatica';
+                card.onclick = null;
+            }
+        
             card.innerHTML = `
-                <img src="${urlImatge}" alt="${item.titol}">
-                <h3 style="color: var(--color-clar, #E3D4FF); font-size: 1.1rem; margin-bottom: 0.5rem;">${item.titol}</h3>
-                <p style="color: var(--color-suau, #C8AAFF); font-size: 0.85rem;">${item.descripcio || ''}</p>
+                <div class="caixa-img-targeta" style="height: ${alcadaImg};">
+                    <img src="${urlImatge}" alt="${item.titol || 'Mínim Món'}">
+                </div>
+                <div class="caixa-text-targeta">
+                    ${item.titol ? `<h3 style="color: ${text};">${item.titol}</h3>` : ''}
+                    ${item.descripcio ? `<p style="color: ${text};">${item.descripcio.replace(/\n/g, '<br>')}</p>` : ''}
+                </div>
             `;
-            return card; */
+        
+            return card;
         }
 
         function crearBlocImatgeText(item) {
@@ -793,65 +786,12 @@
         function crearTargetaImatgeText(item) {
             const card = document.createElement('div');
                 
-                // 1. Llegim directament el camp LinkBoto (o link)
-                const enllac = (item.LinkBoto || item.linkBoto || item.link || '').toString().trim();
-                const teEnllac = enllac !== '' && enllac !== '#';
-            
-                // 2. Assignem ÚNICAMENT la classe que correspon
-                card.className = teEnllac ? 'targeta-imatge-text es-clicable' : 'targeta-imatge-text es-estatica';
-            
-                const configDefecte = dadesWeb.components['targeta_imatge_text'] || {
-                    colorFonsDefecte: '#24153F',
-                    colorTextDefecte: '#E3D4FF'
-                };
-                const fons = obtenirColorHex(item.colorFons, configDefecte.colorFonsDefecte);
-                const text = obtenirColorHex(item.colorText, configDefecte.colorTextDefecte);
-            
-                let ampleCard = '280px';
-                if (item.ample && item.ample.trim() !== '' && item.ample.trim() !== '#N/A') {
-                    const v = item.ample.trim();
-                    ampleCard = (!isNaN(v)) ? `${v}px` : v;
-                }
-            
-                let alcadaImg = '200px';
-                if (item.altImatge && item.altImatge.trim() !== '' && item.altImatge.trim() !== '#N/A') {
-                    const v = item.altImatge.trim();
-                    alcadaImg = (!isNaN(v)) ? `${v}px` : v;
-                }
-            
-                card.style.backgroundColor = fons;
-                card.style.width = ampleCard;
-                card.style.flex = `0 1 ${ampleCard}`;
-            
-                const urlImatge = item.imatgeId && item.imatgeId !== '#N/A' && item.imatgeId.trim() !== ''
-                    ? `https://drive.google.com/thumbnail?sz=w800&id=${item.imatgeId.trim()}`
-                    : 'logo_mm_600.jpg';
-            
-                // 3. Comportament d'esdeveniment i punter NORMALS
-                if (teEnllac) {
-                    card.onclick = (e) => navegarA(enllac, e);
-                } else {
-                    card.onclick = null;
-                }
-            
-                card.innerHTML = `
-                    <div class="caixa-img-targeta" style="height: ${alcadaImg};">
-                        <img src="${urlImatge}" alt="${item.titol || 'Mínim Món'}">
-                    </div>
-                    <div class="caixa-text-targeta">
-                        ${item.titol ? `<h3 style="color: ${text};">${item.titol}</h3>` : ''}
-                        ${item.descripcio ? `<p style="color: ${text};">${item.descripcio.replace(/\n/g, '<br>')}</p>` : ''}
-                    </div>
-                `;
-                
-                return card;          
-            
-            
-            
-            
-            
-            /*const card = document.createElement('div');
-            card.className = 'targeta-imatge-text';
+            // Llegim directament la propietat corresponent de l'objecte item
+            const enllac = (item.LinkBoto || item.linkBoto || item.link || '').toString().trim();
+            const teEnllac = enllac !== '' && enllac !== '#';
+        
+            // Assignem la classe en funció de si té enllaç actiu o no
+            card.className = teEnllac ? 'targeta-imatge-text es-clicable' : 'targeta-imatge-text es-estatica';
         
             const configDefecte = dadesWeb.components['targeta_imatge_text'] || {
                 colorFonsDefecte: '#24153F',
@@ -875,21 +815,16 @@
             card.style.backgroundColor = fons;
             card.style.width = ampleCard;
             card.style.flex = `0 1 ${ampleCard}`;
-
+        
             const urlImatge = item.imatgeId && item.imatgeId !== '#N/A' && item.imatgeId.trim() !== ''
                 ? `https://drive.google.com/thumbnail?sz=w800&id=${item.imatgeId.trim()}`
                 : 'logo_mm_600.jpg';
-
-            const enllac = item.linkBoto || item.link || '';
-            const teEnllac = enllac !== '' && enllac !== '#' && enllac !== '#N/A';
         
             if (teEnllac) {
-                card.classList.add('es-clicable');
                 card.onclick = (e) => navegarA(enllac, e);
             } else {
-                card.classList.add('es-estatica');
                 card.onclick = null;
-            }             
+            }
         
             card.innerHTML = `
                 <div class="caixa-img-targeta" style="height: ${alcadaImg};">
@@ -900,7 +835,8 @@
                     ${item.descripcio ? `<p style="color: ${text};">${item.descripcio.replace(/\n/g, '<br>')}</p>` : ''}
                 </div>
             `;
-            return card; */
+            
+            return card;          
         }    
 
         function crearGaleriaActiva(items, opcions = {}) {
