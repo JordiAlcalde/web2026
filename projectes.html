@@ -37,19 +37,19 @@
     /* Contenidor Principal */
     #project-container {
       width: 100%;
-      max-width: 1100px;
+      max-width: 1000px;
       margin: 0 auto;
-      padding: 20px;
+      padding: 30px 20px;
     }
 
-    /* 1. Component Hero (Capçalera compacta) */
+    /* Component 1: Hero (Capçalera del projecte) */
     .component-hero {
       position: relative;
       background-color: var(--bg-card);
       border-radius: 12px;
       overflow: hidden;
       margin-bottom: 40px;
-      min-height: 250px;
+      min-height: 280px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -62,29 +62,29 @@
     .hero-overlay {
       position: absolute;
       inset: 0;
-      background: linear-gradient(180deg, rgba(36,21,63,0.4) 0%, rgba(36,21,63,0.85) 100%);
+      background: linear-gradient(180deg, rgba(36,21,63,0.5) 0%, rgba(36,21,63,0.9) 100%);
     }
 
     .hero-content {
       position: relative;
       z-index: 1;
-      padding: 30px;
+      padding: 40px 20px;
     }
 
     .hero-content h1 {
-      font-size: 2.2rem;
+      font-size: 2.4rem;
       font-weight: 700;
       color: var(--text-white);
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
 
     .hero-content p {
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       color: var(--soft-lilac);
       font-weight: 400;
     }
 
-    /* 2. Component Video + Text */
+    /* Component 2 & 5: Video + Text */
     .component-video-text {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -94,9 +94,10 @@
       padding: 30px;
       border-radius: 12px;
       margin-bottom: 40px;
+      border: 1px solid rgba(172, 128, 255, 0.15);
     }
 
-    .video-wrapper video, .video-wrapper iframe {
+    .video-wrapper iframe, .video-wrapper video {
       width: 100%;
       border-radius: 8px;
       aspect-ratio: 16/9;
@@ -109,13 +110,13 @@
       margin-bottom: 12px;
     }
 
-    /* 3. Component Imatge + Text */
+    /* Component 3 & 4: Imatge + Text */
     .component-imatge-text {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 30px;
       align-items: center;
-      padding: 30px;
+      padding: 20px 0;
       margin-bottom: 40px;
     }
 
@@ -132,7 +133,7 @@
       height: auto;
       border-radius: 8px;
       object-fit: cover;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
     }
 
     .text-content h3 {
@@ -141,9 +142,9 @@
       margin-bottom: 12px;
     }
 
-    /* 4. Component Bloc de Text Pur */
+    /* Component 6 & 7: Bloc de Text Pur */
     .component-bloc-text {
-      background: rgba(48, 18, 105, 0.4);
+      background: rgba(48, 18, 105, 0.5);
       border-left: 4px solid var(--accent);
       padding: 25px 30px;
       border-radius: 0 8px 8px 0;
@@ -156,12 +157,13 @@
       margin-bottom: 10px;
     }
 
-    /* 5. Peu de Pàgina Estàndard */
+    /* Peu de pàgina estàndard */
     footer {
       text-align: center;
-      padding: 40px 20px 20px;
-      border-top: 1px solid rgba(200, 170, 255, 0.1);
+      padding: 40px 20px 30px;
+      border-top: 1px solid rgba(200, 170, 255, 0.15);
       margin-top: 60px;
+      background-color: #1a0e30;
     }
 
     footer p {
@@ -169,7 +171,7 @@
       color: var(--soft-lilac);
     }
 
-    /* Responsive per a mòbils */
+    /* Responsive */
     @media (max-width: 768px) {
       .component-video-text, .component-imatge-text {
         grid-template-columns: 1fr;
@@ -178,7 +180,7 @@
         direction: ltr;
       }
       .hero-content h1 {
-        font-size: 1.7rem;
+        font-size: 1.8rem;
       }
     }
   </style>
@@ -186,7 +188,7 @@
 <body>
 
   <div id="project-container">
-    <!-- Els components es carregaran dinàmicament aquí segons el camp 'Ordre' -->
+    <p style="text-align: center; padding: 50px; color: var(--soft-lilac);">Carregant projecte Mínim Món...</p>
   </div>
 
   <footer>
@@ -194,64 +196,88 @@
   </footer>
 
   <script>
-    // URL de l'API / Web App d'Apps Script que retorna el JSON del full 'Projectes'
-    const APPS_SCRIPT_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=405305768&single=true&output=csv';
-    
-    // Obtenir l'ID del projecte de la URL (per defecte pr_0001 si no n'hi ha cap)
+    // Ruta del fitxer CSV exportat dins del repositori de GitHub
+    const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=405305768&single=true&output=csv'; 
+
+    // Llegim l'ID de la URL (per defecte pr_0001)
     const urlParams = new URLSearchParams(window.location.search);
-    const projectId = urlParams.get('id') || 'pr_0001';
+    const idParam = urlParams.get('id') || 'pr_0001';
+    
+    // Normalitzem l'ID per coincidir amb el full (pr-0001 -> pr_0001)
+    const targetId = idParam.replace('-', '_');
 
     async function carregarProjecte() {
       try {
-        // En una implementació real es fa el fetch a Apps Script:
-        // const response = await fetch(`${APPS_SCRIPT_URL}?id=${projectId}`);
-        // const data = await response.json();
-        
-        // Simulació amb les dades que estàs omplint per al testeig de pr_0001:
-        const data = {
-          ID_Projecte: "pr_0001",
-          Nom_Projecte: "La casa del poble",
-          Estat: "Actiu",
-          Ordre: "Hero;Video_1;ImatgeText_1;BlocText_1;ImatgeText_2;Video_2;BlocText_2",
-          Hero_Titol: "Un record d'infantesa immortalitzat en fusta",
-          Hero_Imatge_Link: "https://via.placeholder.com/1200x400/301269/E3D4FF?text=M%C3%ADnim+M%C3%B3n+Hero",
-          Video_1_Titol: "Procés de gravat i tall",
-          Video_1_Link: "",
-          Video_1_Text: "Cada teula i cada finestra està dissenyada per capturar l'essència exacta de la façana original.",
-          Video_2_Titol: "",
-          Video_2_Link: "",
-          Video_2_Text: "",
-          ImatgeText_1_Titol: "Detalls que parlen",
-          ImatgeText1_Link: "https://via.placeholder.com/600x400/24153F/AC80FF?text=Detall+Fusta",
-          ImatgeText_1_Text: "La fusta de vern aporta una textura càlida i suau que ressalta els volums físics de la peça.",
-          ImatgeText_2_Titol: "",
-          ImatgeText_2_Link: "",
-          ImatgeText_2_Text: "",
-          BlocText_1_Titol: "El concepte darrere la peça",
-          BlocText_1_Text: "Aquest projecte neix de la voluntat de condensar en pocs centímetres els valors i la memòria d'una llar familiar.",
-          BlocText_2_Titol: "",
-          BlocText_2_Text: ""
-        };
+        const response = await fetch(CSV_URL);
+        const csvText = await response.text();
+        const projecte = parseCSV(csvText, targetId);
 
-        renderitzarProjecte(data);
+        if (projecte) {
+          renderitzarProjecte(projecte);
+        } else {
+          document.getElementById('project-container').innerHTML = 
+            `<p style="text-align:center; padding: 50px; color: var(--accent);">No s'ha trobat cap projecte amb l'ID: ${targetId}</p>`;
+        }
       } catch (error) {
-        console.error("Error carregant el projecte:", error);
+        console.error("Error en carregar el CSV:", error);
       }
+    }
+
+    // Parser manual de CSV per gestionar cometes i salts de línia
+    function parseCSV(text, searchId) {
+      const lines = text.split(/\r?\n/);
+      if (lines.length < 2) return null;
+
+      const headers = parseCSVLine(lines[0]);
+
+      for (let i = 1; i < lines.length; i++) {
+        if (!lines[i].trim()) continue;
+        const row = parseCSVLine(lines[i]);
+        
+        if (row[0] === searchId) {
+          const obj = {};
+          headers.forEach((header, index) => {
+            obj[header.trim()] = row[index] ? row[index].trim() : '';
+          });
+          return obj;
+        }
+      }
+      return null;
+    }
+
+    function parseCSVLine(text) {
+      const result = [];
+      let cur = '';
+      let inQuotes = false;
+      for (let i = 0; i < text.length; i++) {
+        const c = text[i];
+        if (c === '"') {
+          inQuotes = !inQuotes;
+        } else if (c === ',' && !inQuotes) {
+          result.push(cur);
+          cur = '';
+        } else {
+          cur += c;
+        }
+      }
+      result.push(cur);
+      return result;
     }
 
     function renderitzarProjecte(p) {
       const container = document.getElementById('project-container');
       container.innerHTML = '';
 
-      // Convertim el text del camp 'Ordre' en una llista
-      const ordreComponents = p.Ordre.split(';').map(c => c.trim());
+      if (!p.Ordre) return;
 
-      ordreComponents.forEach(comp => {
+      const ordre = p.Ordre.split(';').map(c => c.trim());
+
+      ordre.forEach(comp => {
         switch (comp) {
           case 'Hero':
             if (p.Nom_Projecte) {
               container.innerHTML += `
-                <section class="component-hero" style="background-image: url('${p.Hero_Imatge_Link}');">
+                <section class="component-hero" style="${p.Hero_Imatge_Link ? `background-image: url('${p.Hero_Imatge_Link}')` : ''}">
                   <div class="hero-overlay"></div>
                   <div class="hero-content">
                     <h1>${p.Nom_Projecte}</h1>
@@ -267,11 +293,27 @@
               container.innerHTML += `
                 <section class="component-video-text">
                   <div class="video-wrapper">
-                    ${p.Video_1_Link ? `<iframe src="${p.Video_1_Link}" allowfullscreen></iframe>` : '<div style="background:#110826;height:200px;display:flex;align-items:center;justify-content:center;border-radius:8px;">[Vídeo de mostra]</div>'}
+                    ${p.Video_1_Link ? `<iframe src="${p.Video_1_Link}" allowfullscreen></iframe>` : '<div style="background:#110826;height:200px;display:flex;align-items:center;justify-content:center;border-radius:8px;color:var(--accent);">[Vídeo 1]</div>'}
                   </div>
                   <div class="video-text">
                     ${p.Video_1_Titol ? `<h3>${p.Video_1_Titol}</h3>` : ''}
                     <p>${p.Video_1_Text}</p>
+                  </div>
+                </section>
+              `;
+            }
+            break;
+
+          case 'Video_2':
+            if (p.Video_2_Link || p.Video_2_Text) {
+              container.innerHTML += `
+                <section class="component-video-text">
+                  <div class="video-wrapper">
+                    ${p.Video_2_Link ? `<iframe src="${p.Video_2_Link}" allowfullscreen></iframe>` : '<div style="background:#110826;height:200px;display:flex;align-items:center;justify-content:center;border-radius:8px;color:var(--accent);">[Vídeo 2]</div>'}
+                  </div>
+                  <div class="video-text">
+                    ${p.Video_2_Titol ? `<h3>${p.Video_2_Titol}</h3>` : ''}
+                    <p>${p.Video_2_Text}</p>
                   </div>
                 </section>
               `;
@@ -283,7 +325,7 @@
               container.innerHTML += `
                 <section class="component-imatge-text">
                   <div class="image-wrapper">
-                    <img src="${p.ImatgeText1_Link}" alt="${p.ImatgeText_1_Titol || 'Imatge projecte'}">
+                    ${p.ImatgeText1_Link ? `<img src="${p.ImatgeText1_Link}" alt="${p.ImatgeText_1_Titol}">` : ''}
                   </div>
                   <div class="text-content">
                     ${p.ImatgeText_1_Titol ? `<h3>${p.ImatgeText_1_Titol}</h3>` : ''}
@@ -299,7 +341,7 @@
               container.innerHTML += `
                 <section class="component-imatge-text reverse">
                   <div class="image-wrapper">
-                    <img src="${p.ImatgeText_2_Link}" alt="${p.ImatgeText_2_Titol || 'Imatge projecte'}">
+                    ${p.ImatgeText_2_Link ? `<img src="${p.ImatgeText_2_Link}" alt="${p.ImatgeText_2_Titol}">` : ''}
                   </div>
                   <div class="text-content">
                     ${p.ImatgeText_2_Titol ? `<h3>${p.ImatgeText_2_Titol}</h3>` : ''}
@@ -311,7 +353,7 @@
             break;
 
           case 'BlocText_1':
-            if (p.BlocText_1_Text) {
+            if (p.BlocText_1_Text || p.BlocText_1_Titol) {
               container.innerHTML += `
                 <section class="component-bloc-text">
                   ${p.BlocText_1_Titol ? `<h3>${p.BlocText_1_Titol}</h3>` : ''}
@@ -322,7 +364,7 @@
             break;
 
           case 'BlocText_2':
-            if (p.BlocText_2_Text) {
+            if (p.BlocText_2_Text || p.BlocText_2_Titol) {
               container.innerHTML += `
                 <section class="component-bloc-text">
                   ${p.BlocText_2_Titol ? `<h3>${p.BlocText_2_Titol}</h3>` : ''}
@@ -335,7 +377,6 @@
       });
     }
 
-    // Inicialitzar la càrrega
     carregarProjecte();
   </script>
 </body>
