@@ -789,6 +789,21 @@
             // Llegim directament la propietat corresponent de l'objecte item
             const enllac = (item.LinkBoto || item.linkBoto || item.link || '').toString().trim();
             const teEnllac = enllac !== '' && enllac !== '#';
+
+    console.group(`🔍 Targeta: "${item.titol || 'Sense títol'}"`);
+    console.log(`▸ Valor brut de item.linkBoto:`, `"${item.linkBoto}"`);
+    console.log(`▸ Té enllaç vàlid?:`, teEnllac);
+
+    if (teEnllac) {
+        card.className = 'targeta-imatge-text es-clicable';
+        card.onclick = (e) => navegarA(enllac, e);
+        console.log(`▸ Classe assignada:`, 'targeta-imatge-text es-clicable');
+    } else {
+        card.className = 'targeta-imatge-text es-estatica';
+        card.onclick = null;
+        console.log(`▸ Classe assignada:`, 'targeta-imatge-text es-estatica');
+    }
+    console.groupEnd();            
         
             // Assignem la classe en funció de si té enllaç actiu o no
             card.className = teEnllac ? 'targeta-imatge-text es-clicable' : 'targeta-imatge-text es-estatica';
@@ -825,7 +840,14 @@
             } else {
                 card.onclick = null;
             }
-        
+
+
+
+
+
+
+
+            
             card.innerHTML = `
                 <div class="caixa-img-targeta" style="height: ${alcadaImg};">
                     <img src="${urlImatge}" alt="${item.titol || 'Mínim Món'}">
