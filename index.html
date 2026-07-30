@@ -770,6 +770,69 @@
         
         function crearTargetaImatgeText(item) {
             const card = document.createElement('div');
+                card.className = 'targeta-imatge-text';
+            
+                const configDefecte = dadesWeb.components['targeta_imatge_text'] || {
+                    colorFonsDefecte: '#24153F',
+                    colorTextDefecte: '#E3D4FF'
+                };
+                const fons = obtenirColorHex(item.colorFons, configDefecte.colorFonsDefecte);
+                const text = obtenirColorHex(item.colorText, configDefecte.colorTextDefecte);
+            
+                let ampleCard = '280px';
+                if (item.ample && item.ample.trim() !== '' && item.ample.trim() !== '#N/A') {
+                    const v = item.ample.trim();
+                    ampleCard = (!isNaN(v)) ? `${v}px` : v;
+                }
+            
+                let alcadaImg = '200px';
+                if (item.altImatge && item.altImatge.trim() !== '' && item.altImatge.trim() !== '#N/A') {
+                    const v = item.altImatge.trim();
+                    alcadaImg = (!isNaN(v)) ? `${v}px` : v;
+                }
+            
+                card.style.backgroundColor = fons;
+                card.style.width = ampleCard;
+                card.style.flex = `0 1 ${ampleCard}`;
+            
+                const urlImatge = item.imatgeId && item.imatgeId !== '#N/A' && item.imatgeId.trim() !== ''
+                    ? `https://drive.google.com/thumbnail?sz=w800&id=${item.imatgeId.trim()}`
+                    : 'logo_mm_600.jpg';
+            
+                // Avaluació neta de l'enllaç
+                const enllacBrut = item.linkBoto || item.link || '';
+                const enllac = typeof enllacBrut === 'string' ? enllacBrut.trim() : '';
+                const teEnllac = enllac !== '' && enllac !== '#' && enllac !== '#N/A';
+            
+                // Control d'interactivitat i estils de punter
+                if (teEnllac) {
+                    card.classList.add('es-clicable');
+                    card.classList.remove('es-estatica');
+                    card.style.cursor = 'pointer';
+                    card.onclick = (e) => navegarA(enllac, e);
+                } else {
+                    card.classList.add('es-estatica');
+                    card.classList.remove('es-clicable');
+                    card.style.cursor = 'default';
+                    card.onclick = null;
+                }
+            
+                card.innerHTML = `
+                    <div class="caixa-img-targeta" style="height: ${alcadaImg};">
+                        <img src="${urlImatge}" alt="${item.titol || 'Mínim Món'}">
+                    </div>
+                    <div class="caixa-text-targeta">
+                        ${item.titol ? `<h3 style="color: ${text};">${item.titol}</h3>` : ''}
+                        ${item.descripcio ? `<p style="color: ${text};">${item.descripcio.replace(/\n/g, '<br>')}</p>` : ''}
+                    </div>
+                `;
+                return card;            
+            
+            
+            
+            
+            
+            /*const card = document.createElement('div');
             card.className = 'targeta-imatge-text';
         
             const configDefecte = dadesWeb.components['targeta_imatge_text'] || {
@@ -819,7 +882,7 @@
                     ${item.descripcio ? `<p style="color: ${text};">${item.descripcio.replace(/\n/g, '<br>')}</p>` : ''}
                 </div>
             `;
-            return card;
+            return card; */
         }    
 
         function crearGaleriaActiva(items, opcions = {}) {
