@@ -98,6 +98,15 @@
     margin: 0;
 }
 
+/* Només les targetes amb enllaç reaccionen al passar-hi el cursor */
+.targeta-element.amb-enllac:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 16px rgba(172, 128, 255, 0.25) !important;
+}
+
+.targeta-element.sense-enllac {
+    cursor: default !important;
+}
 
 /* ==========================================================================
    COMPONENT: BOTÓ CTA (CALL TO ACTION)
