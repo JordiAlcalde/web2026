@@ -614,7 +614,7 @@
    line-height: 1.4;
 }
 
-/* Contenidor principal de 5 columnes per defecte (Escriptori) */
+/* Contenidor principal de 5 columnes per a Ordinador */
 .contenidor-peu-5-columnes {
    max-width: 1200px; 
    margin: 0 auto; 
@@ -623,6 +623,10 @@
    gap: 1.5rem; 
    align-items: start; 
    padding-bottom: 2rem;
+}
+
+.grup-col-2-3 {
+   display: contents; /* A escriptori es comporta com si no existís el contenidor pare */
 }
 
 .col-peu a {
@@ -653,11 +657,11 @@
 /* Tauletes i pantalles mitjanes (menys de 992px) */
 @media (max-width: 992px) {
    .contenidor-peu-5-columnes {
-       grid-template-columns: 1fr 1fr 1fr; /* Es redueix a 3 columnes */
+       grid-template-columns: 1fr 1fr 1fr;
        gap: 2rem 1.5rem;
    }
    .col-1 {
-       grid-column: span 3; /* El logo i descripció ocupen tota la línia superior */
+       grid-column: span 3;
        max-width: 400px;
    }
 }
@@ -665,21 +669,39 @@
 /* Mòbils (menys de 600px) */
 @media (max-width: 600px) {
    .contenidor-peu-5-columnes {
-       grid-template-columns: 1fr; /* 1 sola columna per a tot */
+       display: flex;
+       flex-direction: column;
        gap: 1.5rem;
    }
+   
    .col-1 {
-       grid-column: span 1;
        width: 100%;
        box-sizing: border-box;
    }
+
+   /* Agrupació especial NOMÉS per a Mòbil */
+   .grup-col-2-3 {
+       display: flex;
+       flex-direction: row;
+       justify-content: space-between;
+       width: 100%;
+       gap: 1rem;
+   }
+
+   .col-2 {
+       flex: 1;
+   }
+
+   .col-3 {
+       flex: 2;
+   }
+
    .fila-inferior-peu {
        flex-direction: column;
        text-align: center;
        justify-content: center;
    }
 }
-
 
 /* ==========================================================================
    COMPONENTS ESTRUCTURALS: ESPAIADOR I SEPARADOR
