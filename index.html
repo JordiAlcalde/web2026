@@ -619,42 +619,54 @@
         // *****************************************
         function crearTargetaElement(item) {
             const card = document.createElement('div');
-                
-                // Comprovem si hi ha un enllaç vàlid assignat a Sheets
-                const teEnllac = item.enllac && item.enllac.trim() !== '' && item.enllac.trim() !== '#';
-                const destiEnllac = teEnllac ? item.enllac.trim() : '';
             
-                card.className = `targeta-element ${teEnllac ? 'amb-enllac' : 'sense-enllac'}`;
-                
-                // Si té enllaç, li assignem l'esdeveniment i el punter de ratolí
-                if (teEnllac) {
-                    card.setAttribute('onclick', `navegarA('${destiEnllac}')`);
-                    card.style.cursor = 'pointer';
-                } else {
-                    card.style.cursor = 'default';
+                const configDefecte = dadesWeb.components['targeta_imatge_text'] || {
+                    colorFonsDefecte: '#24153F',
+                    colorTextDefecte: '#E3D4FF'
+                };
+                const fons = obtenirColorHex(item.colorFons, configDefecte.colorFonsDefecte);
+                const text = obtenirColorHex(item.colorText, configDefecte.colorTextDefecte);
+            
+                let ampleCard = '280px';
+                if (item.ample && item.ample.trim() !== '' && item.ample.trim() !== '#N/A') {
+                    const v = item.ample.trim();
+                    ampleCard = (!isNaN(v)) ? `${v}px` : v;
                 }
             
-                // Estils base directes per a la targeta
-                card.style.backgroundColor = '#24153F'; // Fons fosc de la paleta
-                card.style.borderRadius = '8px';
-                card.style.overflow = 'hidden';
-                card.style.padding = '1.25rem';
-                card.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.2)';
-                card.style.transition = 'transform 0.2s ease, box-shadow 0.2s ease';
+                let alcadaImg = '200px';
+                if (item.altImatge && item.altImatge.trim() !== '' && item.altImatge.trim() !== '#N/A') {
+                    const v = item.altImatge.trim();
+                    alcadaImg = (!isNaN(v)) ? `${v}px` : v;
+                }
             
-                const urlImatge = item.imatgeId ? `https://drive.google.com/thumbnail?sz=w800&id=${item.imatgeId}` : 'logo_mm_600.jpg';
+                card.style.backgroundColor = fons;
+                card.style.width = ampleCard;
+                card.style.flex = `0 1 ${ampleCard}`;
             
-                // Construcció de l'HTML intern
+                const urlImatge = item.imatgeId && item.imatgeId !== '#N/A' && item.imatgeId.trim() !== ''
+                    ? `https://drive.google.com/thumbnail?sz=w800&id=${item.imatgeId.trim()}`
+                    : 'logo_mm_600.jpg';
+            
+                // Avaluem ÚNICAMENT si linkBoto té contingut real
+                const enllac = item.linkBoto ? item.linkBoto.trim() : '';
+                const teEnllac = enllac !== '' && enllac !== '#';
+            
+                if (teEnllac) {
+                    card.className = 'targeta-imatge-text es-clicable';
+                    card.onclick = (e) => navegarA(enllac, e);
+                } else {
+                    card.className = 'targeta-imatge-text es-estatica';
+                    card.onclick = null;
+                }
+            
                 card.innerHTML = `
-                    <div style="width: 100%; height: 200px; overflow: hidden; border-radius: 6px; margin-bottom: 1rem;">
-                        <img src="${urlImatge}" alt="${item.titol || ''}" style="width: 100%; height: 100%; object-fit: cover;">
+                    <div class="caixa-img-targeta" style="height: ${alcadaImg};">
+                        <img src="${urlImatge}" alt="${item.titol || 'Mínim Món'}">
                     </div>
-                    <h3 style="color: #E3D4FF; font-family: 'Montserrat', sans-serif; font-size: 1.1rem; margin-top: 0; margin-bottom: 0.5rem; font-weight: 600;">
-                        ${item.titol || ''}
-                    </h3>
-                    <p style="color: #C8AAFF; font-family: 'Montserrat', sans-serif; font-size: 0.85rem; line-height: 1.4; margin: 0;">
-                        ${item.descripcio || ''}
-                    </p>
+                    <div class="caixa-text-targeta">
+                        ${item.titol ? `<h3 style="color: ${text};">${item.titol}</h3>` : ''}
+                        ${item.descripcio ? `<p style="color: ${text};">${item.descripcio.replace(/\n/g, '<br>')}</p>` : ''}
+                    </div>
                 `;
             
                 return card;
