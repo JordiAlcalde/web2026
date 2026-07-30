@@ -31,6 +31,75 @@ body {
 
 
 /* ==========================================================================
+   CARREGADOR DE PÀGINA
+   ========================================================================== */
+/* Pantalla completa de càrrega */
+.carregador-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #24153F; /* Fons fosc profund de la paleta */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999; /* Per sobre de tot */
+    opacity: 1;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+/* Quan està carregat, s'amaga de forma fluida */
+.carregador-overlay.carregat {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.carregador-contingut {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Efecte de batec/pulsació al logo */
+.logo-carrega {
+    height: 70px;
+    width: auto;
+    animation: batecLogo 1.8s infinite ease-in-out;
+}
+
+@keyframes batecLogo {
+    0%, 100% { transform: scale(1); opacity: 0.9; }
+    50% { transform: scale(1.08); opacity: 1; }
+}
+
+/* Anell de càrrega giratori amb colors Mínim Món */
+.spinner-minim {
+    width: 38px;
+    height: 38px;
+    border: 3px solid #301269;
+    border-top: 3px solid #AC80FF; /* Lila d'accent */
+    border-radius: 50%;
+    animation: girarSpinner 0.9s linear infinite;
+}
+
+@keyframes girarSpinner {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.text-carrega {
+    color: #E3D4FF;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    margin: 0;
+}
+
+/* ==========================================================================
    BARRA DE NAVEGACIÓ (FONS BLANC & INDICADOR ACTIU)
    ========================================================================== */
 .nav-principal {
