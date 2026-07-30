@@ -619,6 +619,50 @@
         // *****************************************
         function crearTargetaElement(item) {
             const card = document.createElement('div');
+                
+                // Comprovem si hi ha un enllaç vàlid assignat a Sheets
+                const teEnllac = item.enllac && item.enllac.trim() !== '' && item.enllac.trim() !== '#';
+                const destiEnllac = teEnllac ? item.enllac.trim() : '';
+            
+                card.className = `targeta-element ${teEnllac ? 'amb-enllac' : 'sense-enllac'}`;
+                
+                // Si té enllaç, li assignem l'esdeveniment i el punter de ratolí
+                if (teEnllac) {
+                    card.setAttribute('onclick', `navegarA('${destiEnllac}')`);
+                    card.style.cursor = 'pointer';
+                } else {
+                    card.style.cursor = 'default';
+                }
+            
+                // Estils base directes per a la targeta
+                card.style.backgroundColor = '#24153F'; // Fons fosc de la paleta
+                card.style.borderRadius = '8px';
+                card.style.overflow = 'hidden';
+                card.style.padding = '1.25rem';
+                card.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.2)';
+                card.style.transition = 'transform 0.2s ease, box-shadow 0.2s ease';
+            
+                const urlImatge = item.imatgeId ? `https://drive.google.com/thumbnail?sz=w800&id=${item.imatgeId}` : 'logo_mm_600.jpg';
+            
+                // Construcció de l'HTML intern
+                card.innerHTML = `
+                    <div style="width: 100%; height: 200px; overflow: hidden; border-radius: 6px; margin-bottom: 1rem;">
+                        <img src="${urlImatge}" alt="${item.titol || ''}" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    <h3 style="color: #E3D4FF; font-family: 'Montserrat', sans-serif; font-size: 1.1rem; margin-top: 0; margin-bottom: 0.5rem; font-weight: 600;">
+                        ${item.titol || ''}
+                    </h3>
+                    <p style="color: #C8AAFF; font-family: 'Montserrat', sans-serif; font-size: 0.85rem; line-height: 1.4; margin: 0;">
+                        ${item.descripcio || ''}
+                    </p>
+                `;
+            
+                return card;
+
+
+
+            /*
+            const card = document.createElement('div');
             card.className = 'targeta-element';
             const urlImatge = item.imatgeId ? `https://drive.google.com/thumbnail?sz=w800&id=${item.imatgeId}` : 'logo_mm_600.jpg';
 
@@ -627,7 +671,7 @@
                 <h3 style="color: var(--color-clar, #E3D4FF); font-size: 1.1rem; margin-bottom: 0.5rem;">${item.titol}</h3>
                 <p style="color: var(--color-suau, #C8AAFF); font-size: 0.85rem;">${item.descripcio || ''}</p>
             `;
-            return card;
+            return card; */
         }
 
         function crearBlocImatgeText(item) {
