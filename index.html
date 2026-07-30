@@ -787,8 +787,9 @@
             const card = document.createElement('div');
                 
             // Llegim directament la propietat corresponent de l'objecte item
-            const enllac = (item.LinkBoto || item.linkBoto || item.link || '').toString().trim();
+            const enllac = (item.linkBoto || '').toString().trim();
             const teEnllac = enllac !== '' && enllac !== '#';
+            // const teEnllac = Boolean(item.linkBoto && item.linkBoto.trim() !== "");
 
     console.group(`🔍 Targeta: "${item.titol || 'Sense títol'}"`);
     console.log(`▸ Valor brut de item.linkBoto:`, `"${item.linkBoto}"`);
