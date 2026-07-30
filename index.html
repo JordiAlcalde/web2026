@@ -770,7 +770,13 @@
         
         function crearTargetaImatgeText(item) {
             const card = document.createElement('div');
-                card.className = 'targeta-imatge-text';
+                
+                // 1. Llegim directament el camp LinkBoto (o link)
+                const enllac = (item.LinkBoto || item.linkBoto || item.link || '').toString().trim();
+                const teEnllac = enllac !== '' && enllac !== '#';
+            
+                // 2. Assignem ÚNICAMENT la classe que correspon
+                card.className = teEnllac ? 'targeta-imatge-text es-clicable' : 'targeta-imatge-text es-estatica';
             
                 const configDefecte = dadesWeb.components['targeta_imatge_text'] || {
                     colorFonsDefecte: '#24153F',
@@ -799,21 +805,10 @@
                     ? `https://drive.google.com/thumbnail?sz=w800&id=${item.imatgeId.trim()}`
                     : 'logo_mm_600.jpg';
             
-                // Avaluació neta de l'enllaç
-                const enllacBrut = item.linkBoto || item.link || '';
-                const enllac = typeof enllacBrut === 'string' ? enllacBrut.trim() : '';
-                const teEnllac = enllac !== '' && enllac !== '#' && enllac !== '#N/A';
-            
-                // Control d'interactivitat i estils de punter
+                // 3. Comportament d'esdeveniment i punter NORMALS
                 if (teEnllac) {
-                    card.classList.add('es-clicable');
-                    card.classList.remove('es-estatica');
-                    card.style.cursor = 'pointer';
                     card.onclick = (e) => navegarA(enllac, e);
                 } else {
-                    card.classList.add('es-estatica');
-                    card.classList.remove('es-clicable');
-                    card.style.cursor = 'default';
                     card.onclick = null;
                 }
             
@@ -826,7 +821,8 @@
                         ${item.descripcio ? `<p style="color: ${text};">${item.descripcio.replace(/\n/g, '<br>')}</p>` : ''}
                     </div>
                 `;
-                return card;            
+                
+                return card;          
             
             
             
