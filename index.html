@@ -1638,46 +1638,65 @@
         /* ***********************************************************
         /* PROJECTES
         /* ******************************************************** */
-        function renderitzarPlantillaProjecte(idProjecte) {
-            const contenidorPrincipal = document.getElementById('contingut-principal'); // O el teu ID de contenidor principal
-            
-            if (!contenidorPrincipal) return;
-        
-            // Netejem el contingut anterior
-            contenidorPrincipal.innerHTML = '';
-        
-            // Creem la secció integrada
-            const seccioPlantilla = document.createElement('section');
-            seccioPlantilla.className = 'plantilla-projectes-contenidor';
-            
-            // Apliquem estils integrats amb la paleta i la font Montserrat
-            seccioPlantilla.style.cssText = `
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                min-height: 450px;
-                width: 100%;
-                background-color: #E3D4FF; /* Fons violeta molt clar de la paleta */
-                color: #301269;            /* Text violeta fosc principal */
-                font-family: 'Montserrat', sans-serif;
-                border-radius: 12px;
-                margin: 20px 0;
-                box-shadow: 0 4px 15px rgba(36, 21, 63, 0.08);
-            `;
-        
-            seccioPlantilla.innerHTML = `
-                <div style="text-align: center; padding: 2rem;">
-                    <h1 style="font-size: 2.2rem; font-weight: 700; margin-bottom: 0.5rem; color: #301269;">
-                        Plantilla de projectes
-                    </h1>
-                    <p style="font-size: 0.95rem; color: #340094; opacity: 0.8;">
-                        [ Identificador carregat: <strong>${idProjecte || 'Cap ID seleccionat'}</strong> ]
-                    </p>
-                </div>
-            `;
-        
-            contenidorPrincipal.appendChild(seccioPlantilla);
-        }
+function renderitzarPlantillaProjecte(idProjecte) {
+    // 1. Cercar el contenidor (comprova diferents IDs habituals per seguretat)
+    const contenidorPrincipal = document.getElementById('contingut-principal') || 
+                                document.getElementById('app') || 
+                                document.getElementById('main') ||
+                                document.body; // Si no en troba cap, ho injecta al body
+    
+    if (!contenidorPrincipal) {
+        console.error("No s'ha trobat cap contenidor al DOM.");
+        return;
+    }
+
+    // 2. Netejar el contingut anterior
+    contenidorPrincipal.innerHTML = '';
+
+    // 3. Crear el nou element
+    const seccioPlantilla = document.createElement('section');
+    seccioPlantilla.className = 'plantilla-projectes-contenidor';
+
+    // 4. Aplicar estils amb la paleta Mínim Món i Montserrat
+    seccioPlantilla.style.cssText = `
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 400px;
+        width: 100%;
+        background-color: #E3D4FF;
+        color: #301269;
+        font-family: 'Montserrat', sans-serif;
+        border-radius: 12px;
+        margin: 20px 0;
+        box-shadow: 0 4px 15px rgba(36, 21, 63, 0.1);
+        padding: 2rem;
+        box-sizing: border-box;
+    `;
+
+    // 5. Contingut simple de prova
+    seccioPlantilla.innerHTML = `
+        <div style="text-align: center;">
+            <h1 style="font-size: 2.2rem; font-weight: 700; margin-bottom: 0.5rem; color: #301269; font-family: 'Montserrat', sans-serif;">
+                Plantilla de projectes
+            </h1>
+            <p style="font-size: 1rem; color: #340094; font-family: 'Montserrat', sans-serif;">
+                [ Identificador carregat: <strong>${idProjecte || 'Cap ID seleccionat'}</strong> ]
+            </p>
+        </div>
+    `;
+
+    // 6. Injectar al DOM
+    contenidorPrincipal.appendChild(seccioPlantilla);
+}
+
+// -------------------------------------------------------------
+// EXECUCIÓ DE PROVA SEGURA (Esperar que el DOM estigui a punt)
+// -------------------------------------------------------------
+document.addEventListener('DOMContentLoaded', function() {
+    // Crida de prova amb l'ID demanat
+    renderitzarPlantillaProjecte('pr_0001');
+});
 
 
         
