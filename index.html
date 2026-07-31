@@ -1679,17 +1679,23 @@ function carregarPaginaProjectes(seccioActual) {
  * @param {string|null} idProjecte - Identificador únic del projecte a mostrar.
  */
 function crearPaginaProjectes(idProjecte) {
+    // 1. Declaració única i segura del contenidor principal
     const contenidorCentral = document.getElementById('seccions-contenidor');
-    if (!contenidorCentral) return;
+    
+    if (!contenidorCentral) {
+        console.error("Error: No s'ha trobat l'element '#seccions-contenidor' al DOM.");
+        return;
+    }
 
-    // Neteja del contingut dinàmic central
+    // 2. Netegem el contingut central
     contenidorCentral.innerHTML = '';
 
-    const seccio = document.createElement('section');
-    seccio.className = 'plantilla-projectes-contenidor';
-    
-    // Estils en línia alineats amb la paleta Mínim Món i tipografia Montserrat
-    seccio.style.cssText = `
+    // 3. Creem la secció
+    const seccioPlantilla = document.createElement('section');
+    seccioPlantilla.className = 'plantilla-projectes-contenidor';
+
+    // 4. Apliquem estils amb la paleta Mínim Món i Montserrat
+    seccioPlantilla.style.cssText = `
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -1707,7 +1713,7 @@ function crearPaginaProjectes(idProjecte) {
         box-sizing: border-box;
     `;
 
-    seccio.innerHTML = `
+    seccioPlantilla.innerHTML = `
         <div style="text-align: center; max-width: 600px;">
             <h1 style="font-size: 2.2rem; font-weight: 700; margin-bottom: 0.8rem; color: #301269; font-family: 'Montserrat', sans-serif;">
                 Plantilla de projectes
@@ -1725,22 +1731,24 @@ function crearPaginaProjectes(idProjecte) {
                 font-family: 'Montserrat', sans-serif;
                 font-weight: 600;
                 font-size: 0.9rem;
-                transition: opacity 0.2s ease;
-            " onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+            ">
                 Tornar a l'inici
             </button>
         </div>
     `;
 
-    contenidorCentral.appendChild(seccio);
-}
-    // 3. Afegim la vista al main
+    // 5. Inserció correcta utilitzant la variable 'contenidorCentral'
     contenidorCentral.appendChild(seccioPlantilla);
-
+    
     // 4. Afegim el peu de pàgina de forma segura com a component
     if (typeof crearPeuPagina === 'function') {
         crearPeuPagina();
     }
+    
+}
+
+
+
 
 
 // -------------------------------------------------------------
