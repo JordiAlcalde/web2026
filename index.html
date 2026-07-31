@@ -107,7 +107,7 @@
         const URL_CSV_FORM_CONTACTE = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=348010806&single=true&output=csv";
         const URL_CSV_PROJECTES     = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=405305768&single=true&output=csv"
 
-        let dadesWeb = { config: {}, estructura: [], components: {}, continguts: [] };
+        let dadesWeb = { config: {}, estructura: [], components: {}, continguts: [], projectes: [] };
 
         document.addEventListener('DOMContentLoaded', () => {
             carregarDadesPagina();
@@ -160,7 +160,7 @@
                 dadesWeb.components = parsejarCSVComponents(respostes[2]);
                 dadesWeb.continguts = parsejarCSVContinguts(respostes[3]);
                 dadesWeb['FORM_CONTACTE'] = parsejarCSVContinguts(respostes[4]);
-                dadesWeb['Projectes'] = parsejarCSVProjectes(respostes[5]);
+                dadesWeb.projectes = parsejarCSVProjectes(respostes[5]);
                 
                 console.log('Dades carregades correctament:', dadesWeb);
 
