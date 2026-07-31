@@ -675,6 +675,30 @@
             }
         }
 
+
+/**
+ * Assegura la càrrega de la secció de projectes extreient l'ID si es demana un projecte concret.
+ * @param {string} seccioActual - Ruta o hash actual (ex: 'projectes', 'projecte/pr_0001', 'pr_0001')
+ */
+function carregarPaginaProjectes(seccioActual) {
+    let idProjecte = null;
+
+    if (seccioActual.includes('/')) {
+        idProjecte = seccioActual.split('/')[1];
+    } else if (seccioActual.startsWith('pr_')) {
+        idProjecte = seccioActual;
+    }
+
+    // Renderitza la secció o la plantilla
+    crearPaginaProjectes(idProjecte);
+
+    // Mantenim la cohesió afegint el peu de pàgina com a component
+    if (typeof crearPeuPagina === 'function') {
+        crearPeuPagina();
+    }
+}
+        
+
         function activarSeccioInicial() {
             if (dadesWeb.estructura && dadesWeb.estructura.length > 0) {
                 canviarSeccio(dadesWeb.estructura[0].id);
@@ -1650,27 +1674,31 @@
         /* ***********************************************************
         /* PROJECTES
         /* ******************************************************** */
-function renderitzarPlantillaProjecte(idProjecte) {
+/**
+ * Renderitza la plantilla de la pàgina de projectes dins de #seccions-contenidor.
+ * @param {string|null} idProjecte - Identificador únic del projecte a mostrar.
+ */
+function crearPaginaProjectes(idProjecte) {
     const contenidorCentral = document.getElementById('seccions-contenidor');
     if (!contenidorCentral) return;
 
-    // 1. Netegem el contingut de la secció central
+    // Neteja del contingut dinàmic central
     contenidorCentral.innerHTML = '';
 
-    // 2. Creem el contenidor de la plantilla
-    const seccioPlantilla = document.createElement('section');
-    seccioPlantilla.className = 'plantilla-projectes-contenidor';
-
-    seccioPlantilla.style.cssText = `
+    const seccio = document.createElement('section');
+    seccio.className = 'plantilla-projectes-contenidor';
+    
+    // Estils en línia alineats amb la paleta Mínim Món i tipografia Montserrat
+    seccio.style.cssText = `
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        min-height: 450px;
+        min-height: 420px;
         width: 100%;
         max-width: 1100px;
         margin: 30px auto;
-        padding: 2rem;
+        padding: 2.5rem 1.5rem;
         background-color: #E3D4FF;
         color: #301269;
         font-family: 'Montserrat', sans-serif;
@@ -1679,17 +1707,16 @@ function renderitzarPlantillaProjecte(idProjecte) {
         box-sizing: border-box;
     `;
 
-    seccioPlantilla.innerHTML = `
-        <div style="text-align: center;">
-            <h1 style="font-size: 2.2rem; font-weight: 700; margin-bottom: 0.5rem; color: #301269;">
+    seccio.innerHTML = `
+        <div style="text-align: center; max-width: 600px;">
+            <h1 style="font-size: 2.2rem; font-weight: 700; margin-bottom: 0.8rem; color: #301269; font-family: 'Montserrat', sans-serif;">
                 Plantilla de projectes
             </h1>
-            <p style="font-size: 0.95rem; color: #340094; opacity: 0.9;">
-                [ Identificador carregat: <strong>${idProjecte || 'Cap ID seleccionat'}</strong> ]
+            <p style="font-size: 1rem; color: #340094; font-weight: 600; font-family: 'Montserrat', sans-serif; margin-bottom: 1.5rem;">
+                [ Identificador carregat: <strong>${idProjecte || 'Tots els projectes'}</strong> ]
             </p>
-            <button onclick="navegarA('#projectes')" style="
-                margin-top: 20px;
-                padding: 10px 20px;
+            <button onclick="navegarA('#home')" style="
+                padding: 10px 22px;
                 background-color: #301269;
                 color: #E3D4FF;
                 border: none;
@@ -1697,12 +1724,16 @@ function renderitzarPlantillaProjecte(idProjecte) {
                 cursor: pointer;
                 font-family: 'Montserrat', sans-serif;
                 font-weight: 600;
-            ">
-                Tornar a la galeria
+                font-size: 0.9rem;
+                transition: opacity 0.2s ease;
+            " onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+                Tornar a l'inici
             </button>
         </div>
     `;
 
+    contenidorCentral.appendChild(seccio);
+}
     // 3. Afegim la vista al main
     contenidorCentral.appendChild(seccioPlantilla);
 
