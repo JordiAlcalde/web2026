@@ -578,6 +578,7 @@
             const esLegal = ['avis_legal', 'privacitat', 'cookies', 'avis-legal'].includes(seccioActual);
             const esProjecte = ['projectes'].includes(seccioActual);
 
+            /*
             if (esLegal) {
                 carregarPaginaLegal(seccioActual);
                 return;
@@ -585,7 +586,44 @@
             if (esProjecte) {
                 carregarPaginaProjecte(seccioActual);
                 return;
-            }
+            } */
+
+// 1. Obtenim el hash net sense el caràcter '#'
+    const hashNetejat = (nomNovaSeccio || '').replace('#', '').trim();
+
+    // 2. CAS PROJECTE: Coincideix amb "projecte/pr_0001", "projectes/pr_0001" o "pr_0001"
+    if (
+        hashNetejat.startsWith('projecte/') || 
+        hashNetejat.startsWith('projectes/') || 
+        hashNetejat.startsWith('pr_') ||
+        hashNetejat === 'projectes'
+    ) {
+        if (typeof carregarPaginaProjectes === 'function') {
+            carregarPaginaProjectes(hashNetejat);
+        }
+        return; // Atura l'execució perquè no vagi al Home
+    }
+
+    // 3. CAS LEGAL: Comprovar si és la secció d'avís legal
+    if (hashNetejat.startsWith('legal') || hashNetejat.startsWith('avis-legal')) {
+        if (typeof carregarPaginaLegal === 'function') {
+            carregarPaginaLegal(hashNetejat);
+        }
+        return;
+    }
+
+    // 4. CAS HOME / INICI: Si està buit o és '#home'
+    if (hashNetejat === '' || hashNetejat === 'home') {
+        if (typeof activarSeccioInicial === 'function') {
+            activarSeccioInicial();
+        }
+        if (typeof crearPeuPagina === 'function') {
+            crearPeuPagina();
+        }
+        return;
+    }  
+
+
             
 
             // Si venim d'una pàgina legal, reconstruïm la web estàndard
@@ -596,6 +634,9 @@
             if (document.querySelector('.pantalla-projectes')) {
                 construirPantallesWeb();
             }
+
+
+          
             
 
             const seccions = document.querySelectorAll('.seccio-web');
