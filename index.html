@@ -1571,6 +1571,166 @@
             </div>
             `;
         }
+
+        /* ***************************************************************
+        /* P R O J E C T E S
+        /* ************************************************************* */
+
+
+        async function carregarProjecteIntegrat(idProjecte) {
+          const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=405305768&single=true&output=csv'; 
+          const targetId = (idProjecte || 'pr_0001').replace('-', '_');
+          const container = document.getElementById('project-container');
+        
+          if (!container) return;
+        
+          try {
+            const response = await fetch(CSV_URL);
+            const csvText = await response.text();
+            const projecte = parseCSV(csvText, targetId);
+        
+            if (projecte) {
+              renderitzarProjecte(projecte, container);
+            } else {
+              container.innerHTML = `<p style="text-align:center; padding: 50px; color: var(--accent, #AC80FF);">No s'ha trobat cap projecte amb l'ID: ${targetId}</p>`;
+            }
+          } catch (error) {
+            console.error("Error en carregar les dades del projecte:", error);
+            container.innerHTML = `<p style="text-align:center; color: var(--accent, #AC80FF);">Error en carregar el projecte.</p>`;
+          }
+        }
+        
+        function parseCSV(text, searchId) {
+          const lines = text.split(/\r?\n/);
+          if (lines.length < 2) return null;
+          const headers = parseCSVLine(lines[0]);
+        
+          for (let i = 1; i < lines.length; i++) {
+            if (!lines[i].trim()) continue;
+            const row = parseCSVLine(lines[i]);
+            if (row[0] === searchId) {
+              const obj = {};
+              headers.forEach((header, index) => {
+                obj[header.trim()] = row[index] ? row[index].trim() : '';
+              });
+              return obj;
+            }
+          }
+          return null;
+        }
+        
+        function parseCSVLine(text) {
+          const result = [];
+          let cur = '';
+          let inQuotes = false;
+          for (let i = 0; i < text.length; i++) {
+            const c = text[i];
+            if (c === '"') {
+              inQuotes = !inQuotes;
+            } else if (c === ',' && !inQuotes) {
+              result.push(cur);
+              cur = '';
+            } else {
+              cur += c;
+            }
+          }
+          result.push(cur);
+          return result;
+        }
+        
+        function renderitzarProjecte(p, container) {
+          container.innerHTML = '';
+          if (!p.Ordre) return;
+        
+          const ordre = p.Ordre.split(';').map(c => c.trim());
+        
+          ordre.forEach(comp => {
+            switch (comp) {
+              case 'Hero':
+                if (p.Nom_Projecte) {
+                  if (typeof window.crearHero === 'function') {
+                    container.appendChild(window.crearHero(p.Nom_Projecte, p.Hero_Titol, p.Hero_Imatge_Link));
+                  } else {
+                    const heroSec = document.createElement('section');
+                    heroSec.className = 'component-hero';
+                    if (p.Hero_Imatge_Link) heroSec.style.backgroundImage = `url('${p.Hero_Imatge_Link}')`;
+                    heroSec.innerHTML = `
+                      <div class="hero-overlay"></div>
+                      <div class="hero-content">
+                        <h1>${p.Nom_Projecte}</h1>
+                        ${p.Hero_Titol ? `<p>${p.Hero_Titol}</p>` : ''}
+                      </div>
+                    `;
+                    container.appendChild(heroSec);
+                  }
+                }
+                break;
+        
+              case 'Video_1':
+              case 'Video_2':
+                const linkVid = comp === 'Video_1' ? p.Video_1_Link : p.Video_2_Link;
+                const titolVid = comp === 'Video_1' ? p.Video_1_Titol : p.Video_2_Titol;
+                const textVid = comp === 'Video_1' ? p.Video_1_Text : p.Video_2_Text;
+        
+                if (linkVid || textVid) {
+                  if (typeof window.crearVideo === 'function') {
+                    container.appendChild(window.crearVideo(linkVid, titolVid, textVid));
+                  }
+                }
+                break;
+        
+              // Agrupació dels dos components d'Imatge + Text
+              case 'ImatgeText_1':
+              case 'ImatgeText_2':
+                const isSegon = comp === 'ImatgeText_2';
+                const imgLink = isSegon ? p.ImatgeText_2_Link : p.ImatgeText1_Link;
+                const imgTitol = isSegon ? p.ImatgeText_2_Titol : p.ImatgeText_1_Titol;
+                const imgText = isSegon ? p.ImatgeText_2_Text : p.ImatgeText_1_Text;
+        
+                if (imgLink || imgText) {
+                  if (typeof window.crearImatgeText === 'function') {
+                    // Cridem la funció existent (sempre amb alineació per defecte: imatge esquerra)
+                    container.appendChild(window.crearImatgeText(imgLink, imgTitol, imgText));
+                  } else {
+                    const imgSec = document.createElement('section');
+                    imgSec.className = 'component-imatge-text';
+                    imgSec.innerHTML = `
+                      <div class="image-wrapper">
+                        ${imgLink ? `<img src="${imgLink}" alt="${imgTitol || ''}">` : ''}
+                      </div>
+                      <div class="text-content">
+                        ${imgTitol ? `<h3>${imgTitol}</h3>` : ''}
+                        <p>${imgText || ''}</p>
+                      </div>
+                    `;
+                    container.appendChild(imgSec);
+                  }
+                }
+                break;
+        
+              case 'BlocText_1':
+              case 'BlocText_2':
+                const titolBloc = comp === 'BlocText_1' ? p.BlocText_1_Titol : p.BlocText_2_Titol;
+                const textBloc = comp === 'BlocText_1' ? p.BlocText_1_Text : p.BlocText_2_Text;
+        
+                if (textBloc || titolBloc) {
+                  if (typeof window.crearBlocText === 'function') {
+                    container.appendChild(window.crearBlocText(titolBloc, textBloc));
+                  }
+                }
+                break;
+            }
+          });
+        }
+        
+        // Inicialització en carregar la pàgina
+        document.addEventListener('DOMContentLoaded', () => {
+          const urlParams = new URLSearchParams(window.location.search);
+          const idParam = urlParams.get('id') || 'pr_0001';
+          carregarProjecteIntegrat(idParam);
+        });
+
+        
         
     </script>
 </body>
