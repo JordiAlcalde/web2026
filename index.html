@@ -308,7 +308,68 @@
             })).filter(item => item.id !== '');
         }
 
-
+        function parsejarCSVProjectes(csvText) {
+            const files = parseCSV(csvText);
+            
+            // Ignorem la primera fila (capçaleres)
+            return files.slice(1).map(fila => {
+                // Neteja d'espais en blanc per seguretat
+                const getVal = (idx) => (fila[idx] || '').trim();
+                const getBool = (idx) => {
+                    const val = getVal(idx).toUpperCase();
+                    return val === 'SI' || val === 'TRUE' || val === 'ACTIU';
+                };
+        
+                return {
+                    idProjecte: getVal(0),
+                    nomProjecte: getVal(1),
+                    estat: getVal(2) || 'Actiu', // Actiu / Esborrany / Inactiu
+                    ordre: getVal(3),            // Camps separats per ";"
+                    
+                    // Hero
+                    heroTitol: getVal(4),
+                    heroImatgeId: getVal(5),
+                    // getVal(6) -> Hero_Imatge_Link (Intern, s'omet)
+        
+                    // Video 1
+                    video1Id: getVal(7),
+                    // getVal(8) -> Video_1_Link (Intern, s'omet)
+                    video1Titol: getVal(9),
+                    video1Text: getVal(10),
+        
+                    // Video 2
+                    video2Id: getVal(11),
+                    // getVal(12) -> Video_2_Link (Intern, s'omet)
+                    video2Titol: getVal(13),
+                    video2Text: getVal(14),
+        
+                    // ImatgeText 1
+                    imatgeText1Id: getVal(15),
+                    // getVal(16) -> ImatgeText1_Link (Intern, s'omet)
+                    imatgeText1Titol: getVal(17),
+                    imatgeText1Text: getVal(18),
+        
+                    // ImatgeText 2
+                    imatgeText2Id: getVal(19),
+                    // getVal(20) -> ImatgeText_2_Link (Intern, s'omet)
+                    imatgeText2Titol: getVal(21),
+                    imatgeText2Text: getVal(22),
+        
+                    // BlocText 1
+                    blocText1Titol: getVal(23),
+                    blocText1Text: getVal(24),
+        
+                    // BlocText 2
+                    blocText2Titol: getVal(25),
+                    blocText2Text: getVal(26),
+        
+                    // Opcions finals
+                    carrusel: getBool(27),       // Si / No
+                    galeriaActivaId: getVal(28)
+                };
+            }).filter(item => item.idProjecte !== '' && item.estat.toLowerCase() !== 'inactiu');
+        }
+        
         
 
         function construirMenuNavegacio() {
