@@ -105,6 +105,7 @@
         const URL_CSV_COMPONENTS    = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=606337148&single=true&output=csv";
         const URL_CSV_CONTINGUTS    = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=819396845&single=true&output=csv";
         const URL_CSV_FORM_CONTACTE = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=348010806&single=true&output=csv";
+        const URL_CSV_PROJECTES     = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=405305768&single=true&output=csv"
 
         let dadesWeb = { config: {}, estructura: [], components: {}, continguts: [] };
 
@@ -141,7 +142,8 @@
                     ESTRUCTURA: URL_CSV_ESTRUCTURA,
                     COMPONENTS: URL_CSV_COMPONENTS,
                     CONTINGUTS: URL_CSV_CONTINGUTS,
-                    FORM_CONTACTE: URL_CSV_FORM_CONTACTE
+                    FORM_CONTACTE: URL_CSV_FORM_CONTACTE,
+                    PROJECTES: URL_CSV_PROJECTES
                 };
         
                 const respostes = await Promise.all([
@@ -149,7 +151,8 @@
                     fetch(URLS.ESTRUCTURA).then(res => res.text()),
                     fetch(URLS.COMPONENTS).then(res => res.text()),
                     fetch(URLS.CONTINGUTS).then(res => res.text()),
-                    fetch(URLS.FORM_CONTACTE).then(res => res.text())
+                    fetch(URLS.FORM_CONTACTE).then(res => res.text()),
+                    fetch(URLS.PROJECTES).then(res => res.text())                    
                 ]);
         
                 dadesWeb.config = parsejarCSVConfig(respostes[0]);
@@ -157,7 +160,8 @@
                 dadesWeb.components = parsejarCSVComponents(respostes[2]);
                 dadesWeb.continguts = parsejarCSVContinguts(respostes[3]);
                 dadesWeb['FORM_CONTACTE'] = parsejarCSVContinguts(respostes[4]);
-        
+                dadesWeb['Projectes'] = parsejarCSVProjectes(respostes[5]);
+                
                 console.log('Dades carregades correctament:', dadesWeb);
 
                 actualitzarLogo();
@@ -303,6 +307,9 @@
                 videoControls: fila[21] ? (fila[21].toUpperCase().trim() !== 'NO' && fila[21].toUpperCase().trim() !== 'FALSE') : true
             })).filter(item => item.id !== '');
         }
+
+
+        
 
         function construirMenuNavegacio() {
             const menuUL = document.getElementById('menu-navegacio');
