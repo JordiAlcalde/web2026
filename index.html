@@ -605,7 +605,7 @@
     }
 
     // 3. CAS LEGAL: Comprovar si és la secció d'avís legal
-    if (hashNetejat.startsWith('legal') || hashNetejat.startsWith('avis-legal')) {
+    if (hashNetejat.startsWith('legal') || hashNetejat.startsWith('avis-legal') || hashNetejat.startsWith('privacitat') || hashNetejat.startsWith('cookies')) {
         if (typeof carregarPaginaLegal === 'function') {
             carregarPaginaLegal(hashNetejat);
         }
