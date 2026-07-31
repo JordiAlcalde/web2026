@@ -573,6 +573,23 @@
         }
 
         function canviarSeccio(nomNovaSeccio) {
+
+    const hashNetejat = desti.replace('#', '').trim();
+
+    // Si el hash indica un projecte concret (ex: #projecte/pr_0001 o #pr_0001)
+    if (hashNetejat.startsWith('projecte/') || hashNetejat.startsWith('pr_')) {
+        const idProjecte = hashNetejat.replace('projecte/', '');
+        renderitzarPlantillaProjecte(idProjecte);
+        return;
+    }
+
+    // Si és el Home o una secció estàndard
+    if (hashNetejat === '' || hashNetejat === 'home') {
+        activarSeccioInicial();
+        if (typeof crearPeuPagina === 'function') crearPeuPagina();
+        return;
+    }
+            
             const seccioActual = nomNovaSeccio.replace('#', '').trim();
             const esLegal = ['avis_legal', 'privacitat', 'cookies', 'avis-legal'].includes(seccioActual);
 
@@ -1639,55 +1656,65 @@
         /* PROJECTES
         /* ******************************************************** */
 function renderitzarPlantillaProjecte(idProjecte) {
-    // 1. Cercar el contenidor (comprova diferents IDs habituals per seguretat)
-    const contenidorPrincipal = document.getElementById('contingut-principal') || 
-                                document.getElementById('app') || 
-                                document.getElementById('main') ||
-                                document.body; // Si no en troba cap, ho injecta al body
-    
-    if (!contenidorPrincipal) {
-        console.error("No s'ha trobat cap contenidor al DOM.");
-        return;
-    }
+    const contenidorCentral = document.getElementById('seccions-contenidor');
+    if (!contenidorCentral) return;
 
-    // 2. Netejar el contingut anterior
-    contenidorPrincipal.innerHTML = '';
+    // 1. Netegem el contingut de la secció central
+    contenidorCentral.innerHTML = '';
 
-    // 3. Crear el nou element
+    // 2. Creem el contenidor de la plantilla
     const seccioPlantilla = document.createElement('section');
     seccioPlantilla.className = 'plantilla-projectes-contenidor';
 
-    // 4. Aplicar estils amb la paleta Mínim Món i Montserrat
     seccioPlantilla.style.cssText = `
         display: flex;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
-        min-height: 400px;
+        min-height: 450px;
         width: 100%;
+        max-width: 1100px;
+        margin: 30px auto;
+        padding: 2rem;
         background-color: #E3D4FF;
         color: #301269;
         font-family: 'Montserrat', sans-serif;
         border-radius: 12px;
-        margin: 20px 0;
-        box-shadow: 0 4px 15px rgba(36, 21, 63, 0.1);
-        padding: 2rem;
+        box-shadow: 0 4px 15px rgba(36, 21, 63, 0.08);
         box-sizing: border-box;
     `;
 
-    // 5. Contingut simple de prova
     seccioPlantilla.innerHTML = `
         <div style="text-align: center;">
-            <h1 style="font-size: 2.2rem; font-weight: 700; margin-bottom: 0.5rem; color: #301269; font-family: 'Montserrat', sans-serif;">
+            <h1 style="font-size: 2.2rem; font-weight: 700; margin-bottom: 0.5rem; color: #301269;">
                 Plantilla de projectes
             </h1>
-            <p style="font-size: 1rem; color: #340094; font-family: 'Montserrat', sans-serif;">
+            <p style="font-size: 0.95rem; color: #340094; opacity: 0.9;">
                 [ Identificador carregat: <strong>${idProjecte || 'Cap ID seleccionat'}</strong> ]
             </p>
+            <button onclick="navegarA('#projectes')" style="
+                margin-top: 20px;
+                padding: 10px 20px;
+                background-color: #301269;
+                color: #E3D4FF;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-family: 'Montserrat', sans-serif;
+                font-weight: 600;
+            ">
+                Tornar a la galeria
+            </button>
         </div>
     `;
 
-    // 6. Injectar al DOM
-    contenidorPrincipal.appendChild(seccioPlantilla);
+    // 3. Afegim la vista al main
+    contenidorCentral.appendChild(seccioPlantilla);
+
+    // 4. Afegim el peu de pàgina de forma segura com a component
+    if (typeof crearPeuPagina === 'function') {
+        crearPeuPagina();
+    }
 }
 
 // -------------------------------------------------------------
