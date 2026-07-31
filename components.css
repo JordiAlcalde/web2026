@@ -965,6 +965,44 @@
 
 
 
+
+/* ==========================================================================
+   PROJECTES
+   ========================================================================== */
+/* Contenidor de projectes */
+#project-container {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 30px 20px;
+}
+
+/* Disposició fixa: Imatge a l'esquerra, Text a la dreta */
+.component-imatge-text {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.image-wrapper img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  object-fit: cover;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Responsivitat per a pantalles petites */
+@media (max-width: 768px) {
+  .component-imatge-text {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+
 /* ==========================================================================
    ADAPTACIÓ MÒBIL GENERAL (REVISADA I FORÇADA AL 100%)
    ========================================================================== */
