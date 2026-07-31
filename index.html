@@ -574,7 +574,7 @@
 
         function canviarSeccio(nomNovaSeccio) {
 
-    const hashNetejat = desti.replace('#', '').trim();
+    const hashNetejat = nomNovaSeccio.replace('#', '').trim();
 
     // Si el hash indica un projecte concret (ex: #projecte/pr_0001 o #pr_0001)
     if (hashNetejat.startsWith('projecte/') || hashNetejat.startsWith('pr_')) {
