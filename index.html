@@ -731,12 +731,25 @@ function carregarPaginaProjectes(seccioActual) {
     }
 
     // Renderitza la secció o la plantilla
-    crearPaginaProjectes(idProjecte);
+   // crearPaginaProjectes(idProjecte) + crearPeuPagina(configuracioPeu);
+
+            // Recuperem la configuració del peu de pàgina si existeix al CSV
+            const configuracioPeu = dadesWeb.continguts.find(item => {
+                const tipus = item.tipusComponent ? item.tipusComponent.toLowerCase().trim() : '';
+                return tipus === 'peu_de_pagina';
+            }) || {};
+
+            const main = document.getElementById('seccions-contenidor');
+            if (main) {
+                // Generem la pàgina legal amb el títol accentuat i el peu de pàgina
+                main.innerHTML = crearPaginaProjectes(idProjecte) + crearPeuPagina(configuracioPeu);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }    
 
     // Mantenim la cohesió afegint el peu de pàgina com a component
-    if (typeof crearPeuPagina === 'function') {
-        crearPeuPagina();
-    }
+    //if (typeof crearPeuPagina === 'function') {
+    //    crearPeuPagina();
+    //}
 }
         
 
@@ -776,6 +789,7 @@ function carregarPaginaProjectes(seccioActual) {
         }
 
         window.addEventListener('hashchange', carregarPaginaPerHash);
+        
         
         // *****************************************
         // COMPONENTS
