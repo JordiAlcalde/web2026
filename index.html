@@ -573,35 +573,30 @@
         }
 
         function canviarSeccio(nomNovaSeccio) {
-
-    const hashNetejat = nomNovaSeccio.replace('#', '').trim();
-
-    // Si el hash indica un projecte concret (ex: #projecte/pr_0001 o #pr_0001)
-    if (hashNetejat.startsWith('projecte/') || hashNetejat.startsWith('pr_')) {
-        const idProjecte = hashNetejat.replace('projecte/', '');
-        renderitzarPlantillaProjecte(idProjecte);
-        return;
-    }
-
-    // Si és el Home o una secció estàndard
-    if (hashNetejat === '' || hashNetejat === 'home') {
-        activarSeccioInicial();
-        if (typeof crearPeuPagina === 'function') crearPeuPagina();
-        return;
-    }
-            
+   
             const seccioActual = nomNovaSeccio.replace('#', '').trim();
             const esLegal = ['avis_legal', 'privacitat', 'cookies', 'avis-legal'].includes(seccioActual);
+            const esProjecte = ['projectes'].includes(seccioActual);
 
             if (esLegal) {
                 carregarPaginaLegal(seccioActual);
                 return;
             }
+            if (esProjecte) {
+                carregarPaginaProjecte(seccioActual);
+                return;
+            }
+            
 
             // Si venim d'una pàgina legal, reconstruïm la web estàndard
             if (document.querySelector('.pantalla-legal')) {
                 construirPantallesWeb();
             }
+            // Si venim d'una pàgina de projecte, reconstruïm la web estàndard
+            if (document.querySelector('.pantalla-projectes')) {
+                construirPantallesWeb();
+            }
+            
 
             const seccions = document.querySelectorAll('.seccio-web');
             seccions.forEach(sec => sec.style.display = 'none');
