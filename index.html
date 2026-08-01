@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0010]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0011]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -578,59 +578,45 @@
             const esLegal = ['avis_legal', 'privacitat', 'cookies', 'avis-legal'].includes(seccioActual);
             const esProjecte = ['projectes'].includes(seccioActual);
 
-            /*
-            if (esLegal) {
-                carregarPaginaLegal(seccioActual);
+            // 1. Obtenim el hash net sense el caràcter '#'
+            const hashOriginal = window.location.hash;
+            console.log("👉 0. nomNovaSeccio:", nomNovaSeccio);
+            console.log("👉 1. Hash detectat a la URL:", hashOriginal);        
+            const hashNetejat = (nomNovaSeccio || '').replace('#', '').trim();
+            console.log("👉 2. Hash netejat:", hashNetejat);
+                    
+            // 2. CAS PROJECTE: Coincideix amb "projecte/pr_0001", "projectes/pr_0001" o "pr_0001"
+            if (
+                hashNetejat.startsWith('projecte/') || 
+                hashNetejat.startsWith('projectes/') || 
+                hashNetejat.startsWith('pr_') ||
+                hashNetejat === 'projectes'
+            ) {
+                if (typeof carregarPaginaProjectes === 'function') {
+                    carregarPaginaProjectes(hashNetejat);
+                }
+                return; // Atura l'execució perquè no vagi al Home
+            }
+        
+            // 3. CAS LEGAL: Comprovar si és la secció d'avís legal
+            if (hashNetejat.startsWith('legal') || hashNetejat.startsWith('avis-legal') || hashNetejat.startsWith('privacitat') || hashNetejat.startsWith('cookies')) {
+                if (typeof carregarPaginaLegal === 'function') {
+                    carregarPaginaLegal(hashNetejat);
+                }
                 return;
             }
-            if (esProjecte) {
-                carregarPaginaProjecte(seccioActual);
+        
+            // 4. CAS HOME / INICI: Si està buit o és '#home'
+            if (hashNetejat === '' || hashNetejat === 'home') {
+                console.log("🟢 Executant ruta: HOME");
+                if (typeof activarSeccioInicial === 'function') {
+                    activarSeccioInicial();
+                }
+                //if (typeof crearPeuPagina === 'function') {
+                //    crearPeuPagina();
+                //}
                 return;
-            } */
-
-// 1. Obtenim el hash net sense el caràcter '#'
-
-    const hashOriginal = window.location.hash;
-    console.log("👉 0. nomNovaSeccio:", nomNovaSeccio);
-    console.log("👉 1. Hash detectat a la URL:", hashOriginal);        
-    const hashNetejat = (nomNovaSeccio || '').replace('#', '').trim();
-    console.log("👉 2. Hash netejat:", hashNetejat);
-            
-    // 2. CAS PROJECTE: Coincideix amb "projecte/pr_0001", "projectes/pr_0001" o "pr_0001"
-    if (
-        hashNetejat.startsWith('projecte/') || 
-        hashNetejat.startsWith('projectes/') || 
-        hashNetejat.startsWith('pr_') ||
-        hashNetejat === 'projectes'
-    ) {
-        if (typeof carregarPaginaProjectes === 'function') {
-            carregarPaginaProjectes(hashNetejat);
-        }
-        return; // Atura l'execució perquè no vagi al Home
-    }
-
-    // 3. CAS LEGAL: Comprovar si és la secció d'avís legal
-    if (hashNetejat.startsWith('legal') || hashNetejat.startsWith('avis-legal') || hashNetejat.startsWith('privacitat') || hashNetejat.startsWith('cookies')) {
-        if (typeof carregarPaginaLegal === 'function') {
-            carregarPaginaLegal(hashNetejat);
-        }
-        return;
-    }
-
-    // 4. CAS HOME / INICI: Si està buit o és '#home'
-    if (hashNetejat === '' || hashNetejat === 'home') {
-        console.log("🟢 Executant ruta: HOME");
-        if (typeof activarSeccioInicial === 'function') {
-            activarSeccioInicial();
-        }
-        //if (typeof crearPeuPagina === 'function') {
-        //    crearPeuPagina();
-        //}
-        return;
-    }  
-
-
-            
+            }  
 
             // Si venim d'una pàgina legal, reconstruïm la web estàndard
             if (document.querySelector('.pantalla-legal')) {
@@ -642,10 +628,6 @@
                 console.log("🟢 Executant ruta: PROJECTES");
                 carregarPaginaProjectes(hashNetejat);
             }
-
-
-          
-            
 
             const seccions = document.querySelectorAll('.seccio-web');
             seccions.forEach(sec => sec.style.display = 'none');
@@ -725,117 +707,50 @@
         }
 
 
-/**
- * Assegura la càrrega de la secció de projectes extreient l'ID si es demana un projecte concret.
- * @param {string} seccioActual - Ruta o hash actual (ex: 'projectes', 'projecte/pr_0001', 'pr_0001')
-
-    ******* VERSIÓ PRÈVIA ****
-
- 
-
-function carregarPaginaProjectes(seccioActual) {
-    let idProjecte = null;
-
-    console.log("👉 3. Entrada a carregarPaginaProjectes amb:", seccioActual);
-    
-    if (seccioActual.includes('/')) {
-        idProjecte = seccioActual.split('/')[1];
-    } else if (seccioActual.startsWith('pr_')) {
-        idProjecte = seccioActual;
-    }
-
-    // Renderitza la secció o la plantilla
-   // crearPaginaProjectes(idProjecte) + crearPeuPagina(configuracioPeu);
-
-            // Recuperem la configuració del peu de pàgina si existeix al CSV
-            const configuracioPeu = dadesWeb.continguts.find(item => {
-                const tipus = item.tipusComponent ? item.tipusComponent.toLowerCase().trim() : '';
-                return tipus === 'peu_de_pagina';
-            }) || {};
-
-            console.log("👉 4. ID de projecte extret:", idProjecte);
-            const main = document.getElementById('seccions-contenidor');
-            if (!main) {
-                console.error("❌ ERROR: No s'ha trobat l'element #seccions-contenidor al DOM!");
-                return;
-            }
-            if (main) {
-                // Generem la pàgina Projectes i el peu de pàgina
-                main.innerHTML = crearPaginaProjectes(idProjecte) + crearPeuPagina(configuracioPeu);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }    
-
-    // Comprovar què retorna exactament la funció de dibuixat
-    const htmlProjectes = typeof crearPaginaProjectes === 'function' 
-        ? crearPaginaProjectes(idProjecte) 
-        : '';
-
-    console.log("👉 5. Tipus de contingut generat per crearPaginaProjectes:", typeof htmlProjectes);
-    console.log("👉 6. Valor de htmlProjectes:", htmlProjectes);
-
-    // Càrrega al DOM evitant concatenar "undefined"
-    if (htmlProjectes && htmlProjectes !== 'undefined') {
-        main.innerHTML = htmlProjectes;
-    } else {
-        console.warn("⚠️ htmlProjectes és indefinit o buit!");
-    }
-
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    // Mantenim la cohesió afegint el peu de pàgina com a component
-    //if (typeof crearPeuPagina === 'function') {
-    //    crearPeuPagina();
-    //}
-}
-  */       
-
-function crearPaginaProjectes(idProjecte) {
-    console.log("👉 Dins de crearPaginaProjectes | idProjecte:", idProjecte);
-
-    return `
-        <section class="plantilla-projectes-contenidor" style="
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 420px;
-            width: 100%;
-            max-width: 1100px;
-            margin: 30px auto;
-            padding: 2.5rem 1.5rem;
-            background-color: #E3D4FF;
-            color: #301269;
-            font-family: 'Montserrat', sans-serif;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(36, 21, 63, 0.08);
-            box-sizing: border-box;">
-            
-            <div class="pantalla-projectes" style="text-align: center; max-width: 600px;">
-                <h1 style="font-size: 2.2rem; font-weight: 700; margin-bottom: 0.8rem; color: #301269; font-family: 'Montserrat', sans-serif;">
-                    Plantilla de projectes
-                </h1>
-                <p style="font-size: 1rem; color: #340094; font-weight: 600; font-family: 'Montserrat', sans-serif; margin-bottom: 1.5rem;">
-                    [ Identificador carregat: <strong>${idProjecte || 'Tots els projectes'}</strong> ]
-                </p>
-                <button onclick="navegarA('#home')" style="
-                    padding: 10px 22px;
-                    background-color: #301269;
-                    color: #E3D4FF;
-                    border: none;
-                    border-radius: 6px;
-                    cursor: pointer;
+        function crearPaginaProjectes(idProjecte) {
+            console.log("👉 Dins de crearPaginaProjectes | idProjecte:", idProjecte);
+        
+            return `
+                <section class="plantilla-projectes-contenidor" style="
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    min-height: 420px;
+                    width: 100%;
+                    max-width: 1100px;
+                    margin: 30px auto;
+                    padding: 2.5rem 1.5rem;
+                    background-color: #E3D4FF;
+                    color: #301269;
                     font-family: 'Montserrat', sans-serif;
-                    font-weight: 600;
-                    font-size: 0.9rem;">
-                    Tornar a l'inici
-                </button>
-            </div>
-        </section>
-    `;
-}
-
-
-
+                    border-radius: 12px;
+                    box-shadow: 0 4px 15px rgba(36, 21, 63, 0.08);
+                    box-sizing: border-box;">
+                    
+                    <div class="pantalla-projectes" style="text-align: center; max-width: 600px;">
+                        <h1 style="font-size: 2.2rem; font-weight: 700; margin-bottom: 0.8rem; color: #301269; font-family: 'Montserrat', sans-serif;">
+                            Plantilla de projectes
+                        </h1>
+                        <p style="font-size: 1rem; color: #340094; font-weight: 600; font-family: 'Montserrat', sans-serif; margin-bottom: 1.5rem;">
+                            [ Identificador carregat: <strong>${idProjecte || 'Tots els projectes'}</strong> ]
+                        </p>
+                        <button onclick="navegarA('#home')" style="
+                            padding: 10px 22px;
+                            background-color: #301269;
+                            color: #E3D4FF;
+                            border: none;
+                            border-radius: 6px;
+                            cursor: pointer;
+                            font-family: 'Montserrat', sans-serif;
+                            font-weight: 600;
+                            font-size: 0.9rem;">
+                            Tornar a l'inici
+                        </button>
+                    </div>
+                </section>
+            `;
+        }
 
         
         function activarSeccioInicial() {
@@ -850,111 +765,57 @@ function crearPaginaProjectes(idProjecte) {
         }   
 
 
-        /*  VERSIONS PRÈVIES ****
-        function navegarA(desti, event) {
-            if (event) event.preventDefault();
-            
-            const menu = document.getElementById('menu-navegacio');
-            if (menu) menu.classList.remove('obert');
-        
-            if (!desti || desti === '#') return;
-        
-            if (desti.startsWith('#') || !desti.includes('://')) {
-                canviarSeccio(desti);
-            } else {
-                window.open(desti, '_blank');
-            }
-        }
-        
+
 
         function navegarA(hashDesti) {
-            // Normalitzem el nom del hash (eliminant el #)
-            const seccio = hashDesti.replace('#', '');
-        
-            // Llista de seccions que viuen a la pàgina d'inici
-            const seccionsHome = ['univers_minim', 'mons_minims', 'la_botiga', 'el_laboratori'];
-        
-            // Si l'enllaç pertany a la pàgina principal...
-            if (seccionsHome.includes(seccio)) {
+            // 1. Normalitzem el hash d'entrada
+            const hashNetejat = hashDesti.startsWith('#') ? hashDesti : '#' + hashDesti;
+            const idSeccio = hashNetejat.replace('#', '');
+            
+            // Seccions de la pàgina principal (amb ancoratge)
+            const seccionsHome = ['univers_minim', 'mons_minims', 'la_botiga', 'el_laboratori', 'home'];
+            
+            // 2. Si l'usuari vol anar a una secció de la pàgina principal
+            if (seccionsHome.includes(idSeccio)) {
                 
-                // Si actualment NO estem a la pàgina principal (perquè estem a #projectes, per exemple)
-                if (window.location.hash.includes('projectes')) {
-                    // 1. Tornem a carregar el layout de la pàgina principal
-                    carregarPaginaInici().then(() => {
-                        // 2. Actualitzem el hash i fem scroll a l'element
-                        window.location.hash = hashDesti;
-                        desplacarAElement(seccio);
-                    });
-                } else {
-                    // Si ja som a home, només fem l'scroll
-                    window.location.hash = hashDesti;
-                    desplacarAElement(seccio);
-                }
-            } else {
-                // Si és una altra ruta (com #projectes, #avis-legal, etc.)
-                window.location.hash = hashDesti;
-            }
-        }
-        
-        function desplacarAElement(id) {
-            setTimeout(() => {
-                const el = document.getElementById(id);
-                if (el) {
-                    el.scrollIntoView({ behavior: 'smooth' });
-                }
-            }, 100);
-        }        
-        */
-
-        function navegarA(hashDesti) {
-    // 1. Normalitzem el hash d'entrada
-    const hashNetejat = hashDesti.startsWith('#') ? hashDesti : '#' + hashDesti;
-    const idSeccio = hashNetejat.replace('#', '');
-
-    // Seccions de la pàgina principal (amb ancoratge)
-    const seccionsHome = ['univers_minim', 'mons_minims', 'la_botiga', 'el_laboratori', 'home'];
-
-    // 2. Si l'usuari vol anar a una secció de la pàgina principal
-    if (seccionsHome.includes(idSeccio)) {
-        
-        // Comprovem si actualment NO som a la pàgina principal (estem a #projectes, #avis-legal, etc.)
-        const foraDeHome = window.location.hash.includes('projectes') || 
-                           window.location.hash.includes('avis-legal') || 
-                           window.location.hash.includes('privacitat') || 
-                           window.location.hash.includes('cookies');
-
-        if (foraDeHome) {
-            // Actualitzem la URL
-            window.location.hash = hashNetejat;
+                // Comprovem si actualment NO som a la pàgina principal (estem a #projectes, #avis-legal, etc.)
+                const foraDeHome = window.location.hash.includes('projectes') || 
+                                   window.location.hash.includes('avis-legal') || 
+                                   window.location.hash.includes('privacitat') || 
+                                   window.location.hash.includes('cookies');
             
-            // Reconstruïm les seccions de la Home amb la teva funció real
-            construirPantallesWeb();
-
-            // Esperem un instant a què el DOM es dibuixi per fer el smooth scroll
-            setTimeout(() => {
-                const el = document.getElementById(idSeccio);
-                if (el) {
-                    el.scrollIntoView({ behavior: 'smooth' });
+                if (foraDeHome) {
+                    // Actualitzem la URL
+                    window.location.hash = hashNetejat;
+                    
+                    // Reconstruïm les seccions de la Home amb la teva funció real
+                    construirPantallesWeb();
+            
+                    // Esperem un instant a què el DOM es dibuixi per fer el smooth scroll
+                    setTimeout(() => {
+                        const el = document.getElementById(idSeccio);
+                        if (el) {
+                            el.scrollIntoView({ behavior: 'smooth' });
+                        } else {
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }
+                    }, 100);
+            
                 } else {
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    // Si JA som a la Home, només actualitzem hash i fem scroll
+                    window.location.hash = hashNetejat;
+                    const el = document.getElementById(idSeccio);
+                    if (el) {
+                        el.scrollIntoView({ behavior: 'smooth' });
+                    }
                 }
-            }, 100);
-
-        } else {
-            // Si JA som a la Home, només actualitzem hash i fem scroll
-            window.location.hash = hashNetejat;
-            const el = document.getElementById(idSeccio);
-            if (el) {
-                el.scrollIntoView({ behavior: 'smooth' });
+            
+            } else {
+                // Per a rutes independents (#projectes/pr-0001, legals, etc.)
+                window.location.hash = hashNetejat;
             }
         }
-
-    } else {
-        // Per a rutes independents (#projectes/pr-0001, legals, etc.)
-        window.location.hash = hashNetejat;
-    }
-}
-        
+            
         function carregarPaginaPerHash() {
             let hash = window.location.hash.replace('#', '').trim();
             if (!hash) {
@@ -963,7 +824,7 @@ function crearPaginaProjectes(idProjecte) {
                 canviarSeccio(hash);
             }
         }
-
+    
         window.addEventListener('hashchange', carregarPaginaPerHash);
         
         
