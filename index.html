@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0005]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0006]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -728,7 +728,11 @@
 /**
  * Assegura la càrrega de la secció de projectes extreient l'ID si es demana un projecte concret.
  * @param {string} seccioActual - Ruta o hash actual (ex: 'projectes', 'projecte/pr_0001', 'pr_0001')
- */
+
+    ******* VERSIÓ PRÈVIA ****
+
+ 
+
 function carregarPaginaProjectes(seccioActual) {
     let idProjecte = null;
 
@@ -783,8 +787,57 @@ function carregarPaginaProjectes(seccioActual) {
     //    crearPeuPagina();
     //}
 }
-        
+  */       
 
+function crearPaginaProjectes(idProjecte) {
+    console.log("👉 Dins de crearPaginaProjectes | idProjecte:", idProjecte);
+
+    return `
+        <section class="plantilla-projectes-contenidor" style="
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 420px;
+            width: 100%;
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 2.5rem 1.5rem;
+            background-color: #E3D4FF;
+            color: #301269;
+            font-family: 'Montserrat', sans-serif;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(36, 21, 63, 0.08);
+            box-sizing: border-box;">
+            
+            <div class="pantalla-projectes" style="text-align: center; max-width: 600px;">
+                <h1 style="font-size: 2.2rem; font-weight: 700; margin-bottom: 0.8rem; color: #301269; font-family: 'Montserrat', sans-serif;">
+                    Plantilla de projectes
+                </h1>
+                <p style="font-size: 1rem; color: #340094; font-weight: 600; font-family: 'Montserrat', sans-serif; margin-bottom: 1.5rem;">
+                    [ Identificador carregat: <strong>${idProjecte || 'Tots els projectes'}</strong> ]
+                </p>
+                <button onclick="navegarA('#home')" style="
+                    padding: 10px 22px;
+                    background-color: #301269;
+                    color: #E3D4FF;
+                    border: none;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    font-family: 'Montserrat', sans-serif;
+                    font-weight: 600;
+                    font-size: 0.9rem;">
+                    Tornar a l'inici
+                </button>
+            </div>
+        </section>
+    `;
+}
+
+
+
+
+        
         function activarSeccioInicial() {
             if (dadesWeb.estructura && dadesWeb.estructura.length > 0) {
                 canviarSeccio(dadesWeb.estructura[0].id);
@@ -1764,7 +1817,9 @@ function carregarPaginaProjectes(seccioActual) {
 /**
  * Renderitza la plantilla de la pàgina de projectes dins de #seccions-contenidor.
  * @param {string|null} idProjecte - Identificador únic del projecte a mostrar.
- */
+
+         **** VERSIÓ PRÈVIA ****
+
 function crearPaginaProjectes(idProjecte) {
     // 1. Declaració única i segura del contenidor principal
     const contenidorCentral = document.getElementById('seccions-contenidor');
@@ -1835,7 +1890,49 @@ function crearPaginaProjectes(idProjecte) {
     //}
     
 }
+ */
 
+
+function carregarPaginaProjectes(seccioActual) {
+    let idProjecte = null;
+
+    console.log("👉 3. Entrada a carregarPaginaProjectes amb:", seccioActual);
+    
+    if (seccioActual.includes('/')) {
+        idProjecte = seccioActual.split('/')[1];
+    } else if (seccioActual.startsWith('pr_') || seccioActual.startsWith('pr-')) {
+        idProjecte = seccioActual;
+    }
+
+    console.log("👉 4. ID de projecte extret:", idProjecte);
+
+    const main = document.getElementById('seccions-contenidor');
+    if (!main) {
+        console.error("❌ ERROR: No s'ha trobat l'element #seccions-contenidor al DOM!");
+        return;
+    }
+
+    // Configuració del peu de pàgina
+    const configuracioPeu = dadesWeb.continguts.find(item => {
+        const tipus = item.tipusComponent ? item.tipusComponent.toLowerCase().trim() : '';
+        return tipus === 'peu_de_pagina';
+    }) || {};
+
+    // Generem el contingut HTML de projectes
+    const htmlProjectes = crearPaginaProjectes(idProjecte);
+
+    console.log("👉 5. Tipus de contingut generat per crearPaginaProjectes:", typeof htmlProjectes);
+    console.log("👉 6. Valor de htmlProjectes:", htmlProjectes ? "Generat correctament" : "Buit");
+
+    if (htmlProjectes) {
+        main.innerHTML = htmlProjectes + crearPeuPagina(configuracioPeu);
+    } else {
+        console.warn("⚠️ htmlProjectes és indefinit o buit!");
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+        
 
 
 
