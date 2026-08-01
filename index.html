@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0003]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0004]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -1768,6 +1768,8 @@ function carregarPaginaProjectes(seccioActual) {
 function crearPaginaProjectes(idProjecte) {
     // 1. Declaració única i segura del contenidor principal
     const contenidorCentral = document.getElementById('seccions-contenidor');
+    console.log("👉 Dins de crearPaginaProjectes | idProjecte:", idProjecte);
+
     
     if (!contenidorCentral) {
         console.error("Error: No s'ha trobat l'element '#seccions-contenidor' al DOM.");
