@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0008]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0009]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -849,6 +849,8 @@ function crearPaginaProjectes(idProjecte) {
             if (menu) menu.classList.toggle('obert');
         }   
 
+
+        /*  VERSIÓ PRÈVIA ****
         function navegarA(desti, event) {
             if (event) event.preventDefault();
             
@@ -863,6 +865,45 @@ function crearPaginaProjectes(idProjecte) {
                 window.open(desti, '_blank');
             }
         }
+        */
+
+function navegarA(hashDesti) {
+    // Normalitzem el nom del hash (eliminant el #)
+    const seccio = hashDesti.replace('#', '');
+
+    // Llista de seccions que viuen a la pàgina d'inici
+    const seccionsHome = ['univers_minim', 'mons_minims', 'la_botiga', 'el_laboratori'];
+
+    // Si l'enllaç pertany a la pàgina principal...
+    if (seccionsHome.includes(seccio)) {
+        
+        // Si actualment NO estem a la pàgina principal (perquè estem a #projectes, per exemple)
+        if (window.location.hash.includes('projectes')) {
+            // 1. Tornem a carregar el layout de la pàgina principal
+            carregarPaginaInici().then(() => {
+                // 2. Actualitzem el hash i fem scroll a l'element
+                window.location.hash = hashDesti;
+                desplacarAElement(seccio);
+            });
+        } else {
+            // Si ja som a home, només fem l'scroll
+            window.location.hash = hashDesti;
+            desplacarAElement(seccio);
+        }
+    } else {
+        // Si és una altra ruta (com #projectes, #avis-legal, etc.)
+        window.location.hash = hashDesti;
+    }
+}
+
+function desplacarAElement(id) {
+    setTimeout(() => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, 100);
+}        
 
         function carregarPaginaPerHash() {
             let hash = window.location.hash.replace('#', '').trim();
