@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0001]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0002]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -589,8 +589,13 @@
             } */
 
 // 1. Obtenim el hash net sense el caràcter '#'
-    const hashNetejat = (nomNovaSeccio || '').replace('#', '').trim();
 
+    const hashOriginal = window.location.hash;
+    console.log("👉 0. nomNovaSeccio:", nomNovaSeccio);
+    console.log("👉 1. Hash detectat a la URL:", hashOriginal);        
+    const hashNetejat = (nomNovaSeccio || '').replace('#', '').trim();
+    console.log("👉 2. Hash netejat:", hashNetejat);
+            
     // 2. CAS PROJECTE: Coincideix amb "projecte/pr_0001", "projectes/pr_0001" o "pr_0001"
     if (
         hashNetejat.startsWith('projecte/') || 
@@ -614,6 +619,7 @@
 
     // 4. CAS HOME / INICI: Si està buit o és '#home'
     if (hashNetejat === '' || hashNetejat === 'home') {
+        console.log("🟢 Executant ruta: HOME");
         if (typeof activarSeccioInicial === 'function') {
             activarSeccioInicial();
         }
@@ -632,7 +638,9 @@
             }
             // Si venim d'una pàgina de projecte, reconstruïm la web estàndard
             if (document.querySelector('.pantalla-projectes')) {
-                construirPantallesWeb();
+                //construirPantallesWeb();
+                console.log("🟢 Executant ruta: PROJECTES");
+                carregarPaginaProjectes(hashNetejat);
             }
 
 
