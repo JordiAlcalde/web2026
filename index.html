@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0015]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0016]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -665,7 +665,7 @@
                 history.pushState(null, null, '#' + seccioActual);
             }
         }
-        */
+  
 
 
 function canviarSeccio(nomNovaSeccio) {
@@ -726,9 +726,81 @@ function canviarSeccio(nomNovaSeccio) {
         history.pushState(null, null, '#' + hashNetejat);
     }
 }
-
+*/
         
 
+function canviarSeccio(nomNovaSeccio) {
+    // 1. Obtenim el hash net
+    const hashOriginal = window.location.hash;
+    const hashNetejat = (nomNovaSeccio || '').replace('#', '').trim();
+    
+    console.log("👉 Hash detectat:", hashNetejat);
+            
+    // 2. CAS PROJECTES
+    if (
+        hashNetejat.startsWith('projecte/') || 
+        hashNetejat.startsWith('projectes/') || 
+        hashNetejat.startsWith('pr_') ||
+        hashNetejat === 'projectes'
+    ) {
+        if (typeof carregarPaginaProjectes === 'function') {
+            carregarPaginaProjectes(hashNetejat);
+        }
+        // AQUI: Executem el peu de pàgina global abans de sortir
+        if (typeof crearPeuPagina === 'function') crearPeuPagina();
+        return;
+    }
+
+    // 3. CAS LEGAL
+    if (hashNetejat.startsWith('legal') || hashNetejat.startsWith('avis-legal') || hashNetejat.startsWith('privacitat') || hashNetejat.startsWith('cookies')) {
+        if (typeof carregarPaginaLegal === 'function') {
+            carregarPaginaLegal(hashNetejat);
+        }
+        // AQUI: Executem el peu de pàgina global abans de sortir
+        if (typeof crearPeuPagina === 'function') crearPeuPagina();
+        return;
+    }
+
+    // 4. CAS HOME / INICI
+    if (hashNetejat === '' || hashNetejat === 'home') {
+        if (typeof activarSeccioInicial === 'function') {
+            activarSeccioInicial();
+        }
+        // AQUI: Executem el peu de pàgina global abans de sortir
+        if (typeof crearPeuPagina === 'function') crearPeuPagina();
+        return;
+    }  
+
+    // 5. SECCIONS ESTÀNDARD
+    if (document.querySelector('.pantalla-legal') || document.querySelector('.pantalla-projectes')) {
+        construirPantallesWeb();
+    }
+
+    const seccions = document.querySelectorAll('.seccio-web');
+    seccions.forEach(sec => sec.style.display = 'none');
+
+    const targetId = hashNetejat.startsWith('pantalla-') ? hashNetejat : `pantalla-${hashNetejat}`;
+    const seccioDesti = document.getElementById(targetId);
+
+    if (seccioDesti) {
+        seccioDesti.style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (seccions.length > 0) {
+        seccions[0].style.display = 'block';
+    }
+
+    if (window.location.hash !== '#' + hashNetejat) {
+        history.pushState(null, null, '#' + hashNetejat);
+    }
+
+    // 6. CRIDA FINAL PER A TOTA LA RESTA DE SECCIONS
+    if (typeof crearPeuPagina === 'function') {
+        crearPeuPagina();
+    }
+}
+
+
+        
         function carregarPaginaLegal(idLegal) {
             const idNormalitzat = idLegal.replace(/-/g, '_');
             
