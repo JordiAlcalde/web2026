@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0013]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0014]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -592,8 +592,8 @@
                 hashNetejat.startsWith('pr_') ||
                 hashNetejat === 'projectes'
             ) {
-                if (typeof carregarPagectes === 'function') {
-                    carregarPagectes(hashNetejat);
+                if (typeof carregarProjectes === 'function') {
+                    carregarProjctes(hashNetejat);
                 }
                 return; // Atura l'execució perquè no vagi al Home
             }
@@ -706,6 +706,15 @@
             }
         }
 
+        
+        function carregarPaginaProjectes(idProjecte) {
+            const main = document.getElementById('seccions-contenidor');
+            if (main) {
+                main.innerHTML = crearPaginaProjectes(idProjecte);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+        
 
         function crearPaginaProjectes(idProjecte) {
             console.log("👉 Dins de crearPaginaProjectes | idProjecte:", idProjecte);
