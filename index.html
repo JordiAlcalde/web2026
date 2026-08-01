@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0009]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0010]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -850,7 +850,7 @@ function crearPaginaProjectes(idProjecte) {
         }   
 
 
-        /*  VERSIÓ PRÈVIA ****
+        /*  VERSIONS PRÈVIES ****
         function navegarA(desti, event) {
             if (event) event.preventDefault();
             
@@ -865,46 +865,96 @@ function crearPaginaProjectes(idProjecte) {
                 window.open(desti, '_blank');
             }
         }
+        
+
+        function navegarA(hashDesti) {
+            // Normalitzem el nom del hash (eliminant el #)
+            const seccio = hashDesti.replace('#', '');
+        
+            // Llista de seccions que viuen a la pàgina d'inici
+            const seccionsHome = ['univers_minim', 'mons_minims', 'la_botiga', 'el_laboratori'];
+        
+            // Si l'enllaç pertany a la pàgina principal...
+            if (seccionsHome.includes(seccio)) {
+                
+                // Si actualment NO estem a la pàgina principal (perquè estem a #projectes, per exemple)
+                if (window.location.hash.includes('projectes')) {
+                    // 1. Tornem a carregar el layout de la pàgina principal
+                    carregarPaginaInici().then(() => {
+                        // 2. Actualitzem el hash i fem scroll a l'element
+                        window.location.hash = hashDesti;
+                        desplacarAElement(seccio);
+                    });
+                } else {
+                    // Si ja som a home, només fem l'scroll
+                    window.location.hash = hashDesti;
+                    desplacarAElement(seccio);
+                }
+            } else {
+                // Si és una altra ruta (com #projectes, #avis-legal, etc.)
+                window.location.hash = hashDesti;
+            }
+        }
+        
+        function desplacarAElement(id) {
+            setTimeout(() => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.scrollIntoView({ behavior: 'smooth' });
+                }
+            }, 100);
+        }        
         */
 
-function navegarA(hashDesti) {
-    // Normalitzem el nom del hash (eliminant el #)
-    const seccio = hashDesti.replace('#', '');
+        function navegarA(hashDesti) {
+    // 1. Normalitzem el hash d'entrada
+    const hashNetejat = hashDesti.startsWith('#') ? hashDesti : '#' + hashDesti;
+    const idSeccio = hashNetejat.replace('#', '');
 
-    // Llista de seccions que viuen a la pàgina d'inici
-    const seccionsHome = ['univers_minim', 'mons_minims', 'la_botiga', 'el_laboratori'];
+    // Seccions de la pàgina principal (amb ancoratge)
+    const seccionsHome = ['univers_minim', 'mons_minims', 'la_botiga', 'el_laboratori', 'home'];
 
-    // Si l'enllaç pertany a la pàgina principal...
-    if (seccionsHome.includes(seccio)) {
+    // 2. Si l'usuari vol anar a una secció de la pàgina principal
+    if (seccionsHome.includes(idSeccio)) {
         
-        // Si actualment NO estem a la pàgina principal (perquè estem a #projectes, per exemple)
-        if (window.location.hash.includes('projectes')) {
-            // 1. Tornem a carregar el layout de la pàgina principal
-            carregarPaginaInici().then(() => {
-                // 2. Actualitzem el hash i fem scroll a l'element
-                window.location.hash = hashDesti;
-                desplacarAElement(seccio);
-            });
+        // Comprovem si actualment NO som a la pàgina principal (estem a #projectes, #avis-legal, etc.)
+        const foraDeHome = window.location.hash.includes('projectes') || 
+                           window.location.hash.includes('avis-legal') || 
+                           window.location.hash.includes('privacitat') || 
+                           window.location.hash.includes('cookies');
+
+        if (foraDeHome) {
+            // Actualitzem la URL
+            window.location.hash = hashNetejat;
+            
+            // Reconstruïm les seccions de la Home amb la teva funció real
+            construirPantallesWeb();
+
+            // Esperem un instant a què el DOM es dibuixi per fer el smooth scroll
+            setTimeout(() => {
+                const el = document.getElementById(idSeccio);
+                if (el) {
+                    el.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            }, 100);
+
         } else {
-            // Si ja som a home, només fem l'scroll
-            window.location.hash = hashDesti;
-            desplacarAElement(seccio);
+            // Si JA som a la Home, només actualitzem hash i fem scroll
+            window.location.hash = hashNetejat;
+            const el = document.getElementById(idSeccio);
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth' });
+            }
         }
+
     } else {
-        // Si és una altra ruta (com #projectes, #avis-legal, etc.)
-        window.location.hash = hashDesti;
+        // Per a rutes independents (#projectes/pr-0001, legals, etc.)
+        window.location.hash = hashNetejat;
     }
 }
-
-function desplacarAElement(id) {
-    setTimeout(() => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.scrollIntoView({ behavior: 'smooth' });
-        }
-    }, 100);
-}        
-
+        
         function carregarPaginaPerHash() {
             let hash = window.location.hash.replace('#', '').trim();
             if (!hash) {
