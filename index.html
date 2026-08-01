@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0002]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0003]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -732,6 +732,8 @@
 function carregarPaginaProjectes(seccioActual) {
     let idProjecte = null;
 
+    console.log("👉 3. Entrada a carregarPaginaProjectes amb:", seccioActual);
+    
     if (seccioActual.includes('/')) {
         idProjecte = seccioActual.split('/')[1];
     } else if (seccioActual.startsWith('pr_')) {
@@ -747,12 +749,34 @@ function carregarPaginaProjectes(seccioActual) {
                 return tipus === 'peu_de_pagina';
             }) || {};
 
+            console.log("👉 4. ID de projecte extret:", idProjecte);
             const main = document.getElementById('seccions-contenidor');
+            if (!main) {
+                console.error("❌ ERROR: No s'ha trobat l'element #seccions-contenidor al DOM!");
+                return;
+            }
             if (main) {
-                // Generem la pàgina legal amb el títol accentuat i el peu de pàgina
+                // Generem la pàgina Projectes i el peu de pàgina
                 main.innerHTML = crearPaginaProjectes(idProjecte) + crearPeuPagina(configuracioPeu);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }    
+
+    // Comprovar què retorna exactament la funció de dibuixat
+    const htmlProjectes = typeof crearPaginaProjectesHTML === 'function' 
+        ? crearPaginaProjectesHTML(idProjecte) 
+        : '';
+
+    console.log("👉 5. Tipus de contingut generat per crearPaginaProjectesHTML:", typeof htmlProjectes);
+    console.log("👉 6. Valor de htmlProjectes:", htmlProjectes);
+
+    // Càrrega al DOM evitant concatenar "undefined"
+    if (htmlProjectes && htmlProjectes !== 'undefined') {
+        main.innerHTML = htmlProjectes;
+    } else {
+        console.warn("⚠️ htmlProjectes és indefinit o buit!");
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 
     // Mantenim la cohesió afegint el peu de pàgina com a component
     //if (typeof crearPeuPagina === 'function') {
