@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0012]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0013]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -1766,7 +1766,53 @@
         /* ***********************************************************
         /* PROJECTES
         /* ******************************************************** */
+
 function crearPaginaProjectes(idProjecte) {
+    console.log("👉 Dins de crearPaginaProjectes | idProjecte:", idProjecte);
+
+    return `
+        <section class="plantilla-projectes-contenidor" style="
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 420px;
+            width: 100%;
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 2.5rem 1.5rem;
+            background-color: #E3D4FF;
+            color: #301269;
+            font-family: 'Montserrat', sans-serif;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(36, 21, 63, 0.08);
+            box-sizing: border-box;">
+            
+            <div class="pantalla-projectes" style="text-align: center; max-width: 600px;">
+                <h1 style="font-size: 2.2rem; font-weight: 700; margin-bottom: 0.8rem; color: #301269; font-family: 'Montserrat', sans-serif;">
+                    Plantilla de projectes
+                </h1>
+                <p style="font-size: 1rem; color: #340094; font-weight: 600; font-family: 'Montserrat', sans-serif; margin-bottom: 1.5rem;">
+                    [ Identificador carregat: <strong>${idProjecte || 'Tots els projectes'}</strong> ]
+                </p>
+                <button onclick="navegarA('#home')" style="
+                    padding: 10px 22px;
+                    background-color: #301269;
+                    color: #E3D4FF;
+                    border: none;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    font-family: 'Montserrat', sans-serif;
+                    font-weight: 600;
+                    font-size: 0.9rem;">
+                    Tornar a l'inici
+                </button>
+            </div>
+        </section>
+    `;
+}
+        
+function crearPaginaProjectes_NO_FUNCIONA(idProjecte) {
     // 1. Recuperem l'objecte del projecte des de les dades del Sheets
     const llistaProjectes = (window.dadesWeb && window.dadesWeb.projectes) ? window.dadesWeb.projectes : [];
     const projecte = llistaProjectes.find(p => p.ID_Projecte === idProjecte) || {};
