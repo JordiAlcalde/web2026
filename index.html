@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0016]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0017]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -726,7 +726,7 @@ function canviarSeccio(nomNovaSeccio) {
         history.pushState(null, null, '#' + hashNetejat);
     }
 }
-*/
+
         
 
 function canviarSeccio(nomNovaSeccio) {
@@ -798,7 +798,52 @@ function canviarSeccio(nomNovaSeccio) {
         crearPeuPagina();
     }
 }
+*/
 
+        function canviarSeccio(nomNovaSeccio) {
+    const hashNetejat = (nomNovaSeccio || '').replace('#', '').trim();
+    
+    // CAS PROJECTES
+    if (
+        hashNetejat.startsWith('projecte/') || 
+        hashNetejat.startsWith('projectes/') || 
+        hashNetejat.startsWith('pr_') ||
+        hashNetejat === 'projectes'
+    ) {
+        if (typeof carregarPaginaProjectes === 'function') {
+            carregarPaginaProjectes(hashNetejat);
+        }
+
+        // 👉 AFAGEIX AQUESTA LÍNIA AQUÍ:
+        if (typeof carPeuDePagina === 'function') carPeuDePagina();
+
+        return; // El return ja no bloqueja la càrrega del peu!
+    }
+
+    // CAS LEGAL
+    if (hashNetejat.startsWith('legal') || hashNetejat.startsWith('avis-legal') || hashNetejat.startsWith('privacitat')) {
+        if (typeof carregarPaginaLegal === 'function') {
+            carregarPaginaLegal(hashNetejat);
+        }
+        if (typeof carPeuDePagina === 'function') carPeuDePagina();
+        return;
+    }
+
+    // RESTA DE SECCIONS
+    const seccions = document.querySelectorAll('.seccio-web');
+    seccions.forEach(sec => sec.style.display = 'none');
+
+    const targetId = hashNetejat.startsWith('pantalla-') ? hashNetejat : `pantalla-${hashNetejat}`;
+    const seccioDesti = document.getElementById(targetId);
+
+    if (seccioDesti) {
+        seccioDesti.style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // 👉 Assegurem la crida general per a qualsevol altra secció
+    if (typeof carPeuDePagina === 'function') carPeuDePagina();
+}
 
         
         function carregarPaginaLegal(idLegal) {
