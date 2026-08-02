@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0032]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0033]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -1803,88 +1803,42 @@ function renderitzarBlocPortada(p) {
         /* ***********************************************************
         /* PROJECTES
         /* ******************************************************** */
-
-
-/*  Versió de proves, que funciona correctament mostrant la pantalla de proves.
-function crearPaginaProjectes(idProjecte) {
-    console.log("👉 Dins de crearPaginaProjectes | idProjecte:", idProjecte);
-
-    return `
-        <section class="plantilla-projectes-contenidor" style="
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 420px;
-            width: 100%;
-            max-width: 1100px;
-            margin: 30px auto;
-            padding: 2.5rem 1.5rem;
-            background-color: #E3D4FF;
-            color: #301269;
-            font-family: 'Montserrat', sans-serif;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(36, 21, 63, 0.08);
-            box-sizing: border-box;">
-            
-            <div class="pantalla-projectes" style="text-align: center; max-width: 600px;">
-                <h1 style="font-size: 2.2rem; font-weight: 700; margin-bottom: 0.8rem; color: #301269; font-family: 'Montserrat', sans-serif;">
-                    Plantilla de projectes
-                </h1>
-                <p style="font-size: 1rem; color: #340094; font-weight: 600; font-family: 'Montserrat', sans-serif; margin-bottom: 1.5rem;">
-                    [ Identificador carregat: <strong>${idProjecte || 'Tots els projectes'}</strong> ]
-                </p>
-                <button onclick="navegarA('#home')" style="
-                    padding: 10px 22px;
-                    background-color: #301269;
-                    color: #E3D4FF;
-                    border: none;
-                    border-radius: 6px;
-                    cursor: pointer;
-                    font-family: 'Montserrat', sans-serif;
-                    font-weight: 600;
-                    font-size: 0.9rem;">
-                    Tornar a l'inici
-                </button>
-            </div>
-        </section>
-    `;
-}
-
-*/        
-        
+ 
 // Funció principal adaptada al parser del CSV de Projectes
 function crearPaginaProjectes(idProjecte, llistaProjectes = []) {
-    // 1. Busquem el projecte a la llista que retorna parsejarCSVProjectes
-    // Nota: Es compara la ID neta (per si ve amb "#projectes/pr_0001" o directament "pr_0001")
-    const idNeta = idProjecte.replace('projecte/', '').replace('projectes/', '').replace('#', '').trim();
+    const idNeta = (idProjecte || '').replace('#', '').replace('projecte/', '').replace('projectes/', '').trim();
+    console.log("🔍 Cerca de projecte per ID neta:", idNeta);
+
     const projecte = llistaProjectes.find(p => p.idProjecte === idNeta) || llistaProjectes[0];
 
-    // Si no es troba cap projecte o la llista és buida
     if (!projecte) {
-        return `
-            <div style="padding: 4rem 1rem; text-align: center; font-family: 'Montserrat', sans-serif; color: #24153F;">
-                <h2>Projecte no trobat</h2>
-                <p>No s'han pogut carregar les dades del projecte sol·licitat.</p>
-            </div>
-        `;
+        console.error("❌ No s'ha trobat cap projecte a la llista.");
+        return `<div style="padding: 4rem; text-align: center;"><h2>Projecte no trobat</h2></div>`;
     }
 
-    // 2. Llegim el camp 'ordre' (ex: "Portada;Video1;BlocText1")
-    const ordres = (projecte.ordre || 'Portada').split(';').map(o => o.trim());
+    // Ordre per defecte si no s'especifica
+    const ordresRaw = projecte.ordre && projecte.ordre.trim() !== '' ? projecte.ordre : 'Portada;Video_1';
+    const ordres = ordresRaw.split(';').map(o => o.trim());
 
     let htmlFinal = `<article class="pantalla-projecte-singular" data-id="${projecte.idProjecte}">`;
 
-    // 3. Iterem per l'ordre especificat al CSV
     ordres.forEach(bloc => {
         const blocNom = bloc.toLowerCase();
-
-        if (blocNom === 'portada') {
+        
+        // 1. Bloc Portada
+        if (blocNom === 'portada' || blocNom === 'hero') {
             htmlFinal += renderitzarBlocPortada(projecte);
         }
-        // Més endavant afegirem la resta de casuístiques:
-        // else if (blocNom === 'video1') { ... }
-        // else if (blocNom === 'imagtetext1') { ... }
+        
+        // 2. Bloc Vídeo 1
+        else if (blocNom === 'video_1' || blocNom === 'video1') {
+            htmlFinal += renderitzarBlocVideo(projecte, 1);
+        }
+        
+        // 3. Bloc Vídeo 2 (preparat per a quan s'afegeixi)
+        else if (blocNom === 'video_2' || blocNom === 'video2') {
+            htmlFinal += renderitzarBlocVideo(projecte, 2);
+        }
     });
 
     htmlFinal += `</article>`;
@@ -1923,6 +1877,38 @@ function renderitzarBlocPortada(p) {
     `;
 }
         
+function renderitzarBlocVideo(projecte, numVideo = 1) {
+    // Extreiem les dades segons si és el vídeo 1 o 2
+    const videoId = projecte[`video${numVideo}Id`];
+    const videoTitol = projecte[`video${numVideo}Titol` style="margin-top:0;"] || '';
+    const videoText = projecte[`video${numVideo}Text`] || '';
+
+    // Si no hi ha cap ID de vídeo configurat, no renderitzem el bloc
+    if (!videoId || videoId.trim() === '') {
+        console.warn(`⚠️ Warning: No s'ha trobat videoId per al bloc Video_${numVideo} al projecte ${projecte.idProjecte}`);
+        return '';
+    }
+
+    // Adaptem l'estructura de dades perquè la llegeixi crearComponentVideo(item)
+    const itemVideo = {
+        videoId: videoId.trim(),
+        titol: videoTitol.trim(),
+        text: videoText.trim(),
+        numVideo: numVideo
+    };
+
+    console.log(`🎬 [Video_${numVideo}] Generant component de vídeo per:`, projecte.nomProjecte);
+
+    // Cridem la teva funció existent per generar l'estructura HTML del vídeo
+    return `
+        <section class="seccio-bloc-video bloc-video-${numVideo}" style="margin: 2rem 0;">
+            ${crearComponentVideo(itemVideo)}
+        </section>
+    `;
+}
+
+
+
         
     </script>
 </body>
