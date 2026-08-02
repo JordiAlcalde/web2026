@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0021]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0022]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -697,72 +697,143 @@
         }
         */
 
-        function carregarPaginaProjectes(idProjecte) {
-            const main = document.getElementById('seccions-contenidor');
-            if (!main) return;
-        
-            // Comprovem si dadesWeb i l'array de projectes ja estan carregats
-            if (!window.dadesWeb || !Array.isArray(window.dadesWeb.projectes) || dadesWeb.projectes.length === 0) {
-                main.innerHTML = `
-                    <div style="text-align:center; padding: 4rem 1.5rem; font-family: 'Montserrat', sans-serif; color: #24153F;">
-                        <p style="font-size: 1.1rem; color: #301269;">Carregant el Món Mínim...</p>
-                    </div>
-                `;
-                return;
-            }
-        
-            // Renderitzem la pàgina passant l'ID sol·licitat
-            main.innerHTML = crearPaginaProjectes(idProjecte);
-            
-            // Assegurem la posició a dalt de tot
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }      
-        
+function carregarPaginaProjectes(idProjecte) {
+    console.log("🔍 [1] carregarPaginaProjectes cridada amb idProjecte:", idProjecte);
+    
+    const main = document.getElementById('seccions-contenidor');
+    if (!main) {
+        console.error("❌ Error: No s'ha trobat l'element #seccions-contenidor");
+        return;
+    }
 
-        function crearPaginaProjectes(idProjecte) {
-            console.log("👉 Dins de crearPaginaProjectes | idProjecte:", idProjecte);
-        
-            return `
-                <section class="plantilla-projectes-contenidor" style="
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
-                    align-items: center;
-                    min-height: 420px;
-                    width: 100%;
-                    max-width: 1100px;
-                    margin: 30px auto;
-                    padding: 2.5rem 1.5rem;
-                    background-color: #E3D4FF;
-                    color: #301269;
-                    font-family: 'Montserrat', sans-serif;
-                    border-radius: 12px;
-                    box-shadow: 0 4px 15px rgba(36, 21, 63, 0.08);
-                    box-sizing: border-box;">
-                    
-                    <div class="pantalla-projectes" style="text-align: center; max-width: 600px;">
-                        <h1 style="font-size: 2.2rem; font-weight: 700; margin-bottom: 0.8rem; color: #301269; font-family: 'Montserrat', sans-serif;">
-                            Plantilla de projectes
-                        </h1>
-                        <p style="font-size: 1rem; color: #340094; font-weight: 600; font-family: 'Montserrat', sans-serif; margin-bottom: 1.5rem;">
-                            [ Identificador carregat: <strong>${idProjecte || 'Tots els projectes'}</strong> ]
-                        </p>
-                        <button onclick="navegarA('#home')" style="
-                            padding: 10px 22px;
-                            background-color: #301269;
-                            color: #E3D4FF;
-                            border: none;
-                            border-radius: 6px;
-                            cursor: pointer;
-                            font-family: 'Montserrat', sans-serif;
-                            font-weight: 600;
-                            font-size: 0.9rem;">
-                            Tornar a l'inici
-                        </button>
-                    </div>
-                </section>
-            `;
+    // Comprovem l'estat de les dades globals
+    if (!window.dadesWeb || !Array.isArray(window.dadesWeb.projectes) || dadesWeb.projectes.length === 0) {
+        console.warn("⚠️ dadesWeb.projectes encara no està disponible o està buit:", window.dadesWeb?.projectes);
+        main.innerHTML = `
+            <div style="text-align:center; padding: 4rem 1.5rem; font-family: 'Montserrat', sans-serif; color: #24153F;">
+                <p style="font-size: 1.1rem; color: #301269;">Carregant el Món Mínim...</p>
+            </div>
+        `;
+        return;
+    }
+
+    console.log("✅ Dades de projectes trobades a dadesWeb. Total projectes:", dadesWeb.projectes.length);
+
+    // Renderitzem
+    main.innerHTML = crearPaginaProjectes(idProjecte);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function crearPaginaProjectes(idProjecte) {
+    const idNeta = (idProjecte || '').replace('#', '').replace('projecte/', '').replace('projectes/', '').trim();
+    console.log("🔍 [2] Cercant projecte amb idNeta:", idNeta);
+    
+    const llista = dadesWeb.projectes || [];
+    const projecte = llista.find(p => p.idProjecte === idNeta) || llista[0];
+
+    console.log("📌 Projecte trobat/assignat:", projecte);
+
+    if (!projecte) {
+        console.error("❌ No s'ha pogut assignar cap projecte.");
+        return `<div style="padding: 4rem; text-align: center;"><h2>Projecte no trobat</h2></div>`;
+    }
+
+    const ordres = (projecte.ordre || 'Hero').split(';').map(o => o.trim());
+    console.log("📋 Ordre dels blocs a renderitzar:", ordres);
+
+    let htmlFinal = `<article class="pantalla-projecte-singular" data-id="${projecte.idProjecte}">`;
+
+    ordres.forEach(bloc => {
+        const blocNom = bloc.toLowerCase();
+        if (blocNom === 'hero') {
+            htmlFinal += renderitzarBlocHero(projecte);
         }
+    });
+
+    htmlFinal += `</article>`;
+    return htmlFinal;
+}
+
+function renderitzarBlocHero(p) {
+    console.log("🖼️ [3] Renderitzant Hero pel projecte:", p.idProjecte);
+    console.log("   - heroImatgeId:", p.heroImatgeId);
+    console.log("   - heroTitol:", p.heroTitol);
+
+    // Gestió de la URL de la imatge
+    let imatgeUrl = 'img/projecte_default.jpg';
+    if (p.heroImatgeId) {
+        // Opció per Google Drive (assegura't que el fitxer a Drive sigui 'Públic/Qualsevol persona amb el link')
+        imatgeUrl = `https://drive.google.com/thumbnail?id=${p.heroImatgeId}&sz=w1600`;
+    }
+
+    console.log("   - URL imatge final:", imatgeUrl);
+
+    const titol = p.heroTitol || p.nomProjecte || 'Mínim Món';
+
+    return `
+        <section class="hero-projecte" style="
+            position: relative;
+            width: 100%;
+            min-height: 55vh;
+            max-height: 600px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background-color: #24153F;
+            border-radius: 0 0 16px 16px;
+        ">
+            <!-- Imatge principal -->
+            <img src="${imatgeUrl}" 
+                 alt="${titol}" 
+                 onload="console.log('✅ Imatge Hero carregada correctament:', '${imatgeUrl}')"
+                 onerror="console.error('❌ Error en carregar la imatge Hero:', '${imatgeUrl}'); this.style.display='none';"
+                 style="
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    object-position: center;
+                    z-index: 1;
+                 " />
+
+            <!-- Capa de contrast (#24153F) -->
+            <div class="overlay-hero" style="
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(180deg, rgba(36, 21, 63, 0.35) 0%, rgba(36, 21, 63, 0.85) 100%);
+                z-index: 2;
+            "></div>
+
+            <!-- Títol superposat -->
+            <div class="contingut-hero-text" style="
+                position: relative;
+                z-index: 3;
+                text-align: center;
+                padding: 2.5rem 1.5rem;
+                max-width: 900px;
+            ">
+                <h1 style="
+                    font-family: 'Montserrat', sans-serif;
+                    font-weight: 800;
+                    color: #FFFFFF;
+                    font-size: clamp(2.2rem, 5vw, 3.8rem);
+                    line-height: 1.15;
+                    margin: 0;
+                    text-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+                    letter-spacing: -0.5px;
+                ">
+                    ${titol}
+                </h1>
+            </div>
+        </section>
+    `;
+}
 
         
         function activarSeccioInicial() {
