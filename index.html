@@ -764,7 +764,7 @@ function canviarSeccio(nomNovaSeccio) {
     // 4. CAS HOME / INICI
     if (hashNetejat === '' || hashNetejat === 'home') {
         if (typeof activarSeccioInicial === 'function') {
-            activarSeccioInicial();
+            construirPantallesWeb();
         }
         // AQUI: Executem el peu de pàgina global abans de sortir
         if (typeof crearPeuPagina === 'function') crearPeuPagina();
