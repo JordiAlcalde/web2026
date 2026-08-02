@@ -1880,7 +1880,7 @@ function renderitzarBlocPortada(p) {
 function renderitzarBlocVideo(projecte, numVideo = 1) {
     // Extreiem les dades segons si és el vídeo 1 o 2
     const videoId = projecte[`video${numVideo}Id`];
-    const videoTitol = projecte[`video${numVideo}Titol` style="margin-top:0;"] || '';
+    const videoTitol = projecte[`video${numVideo}Titol`] || '';
     const videoText = projecte[`video${numVideo}Text`] || '';
 
     // Si no hi ha cap ID de vídeo configurat, no renderitzem el bloc
