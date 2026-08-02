@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0020]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0021]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -686,7 +686,8 @@
             }
         }
 
-        
+        /*
+        Versió cOK abans d'incorporar contingut a Projectes
         function carregarPaginaProjectes(idProjecte) {
             const main = document.getElementById('seccions-contenidor');
             if (main) {
@@ -694,6 +695,28 @@
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         }
+        */
+
+        function carregarPaginaProjectes(idProjecte) {
+            const main = document.getElementById('seccions-contenidor');
+            if (!main) return;
+        
+            // Comprovem si dadesWeb i l'array de projectes ja estan carregats
+            if (!window.dadesWeb || !Array.isArray(window.dadesWeb.projectes) || dadesWeb.projectes.length === 0) {
+                main.innerHTML = `
+                    <div style="text-align:center; padding: 4rem 1.5rem; font-family: 'Montserrat', sans-serif; color: #24153F;">
+                        <p style="font-size: 1.1rem; color: #301269;">Carregant el Món Mínim...</p>
+                    </div>
+                `;
+                return;
+            }
+        
+            // Renderitzem la pàgina passant l'ID sol·licitat
+            main.innerHTML = crearPaginaProjectes(idProjecte);
+            
+            // Assegurem la posició a dalt de tot
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }      
         
 
         function crearPaginaProjectes(idProjecte) {
@@ -1756,6 +1779,8 @@
         /* PROJECTES
         /* ******************************************************** */
 
+
+/*  Versió de proves, que funciona correctament mostrant la pantalla de proves.
 function crearPaginaProjectes(idProjecte) {
     console.log("👉 Dins de crearPaginaProjectes | idProjecte:", idProjecte);
 
@@ -1800,102 +1825,115 @@ function crearPaginaProjectes(idProjecte) {
         </section>
     `;
 }
-        
-function crearPaginaProjectes_NO_FUNCIONA(idProjecte) {
-    // 1. Recuperem l'objecte del projecte des de les dades del Sheets
-    const llistaProjectes = (window.dadesWeb && window.dadesWeb.projectes) ? window.dadesWeb.projectes : [];
-    const projecte = llistaProjectes.find(p => p.ID_Projecte === idProjecte) || {};
 
-    // 2. Capçalera HERO (Sempre fixa a l'inici del projecte)
-    let htmlProjecte = `
-        <article class="projecte-contenidor" style="max-width: 1100px; margin: 0 auto; padding: 2rem 1rem; font-family: 'Montserrat', sans-serif;">
-            
-            <!-- Botó de retorn als Mínims Móns -->
-            <div style="margin-bottom: 1.5rem;">
-                <a href="#mons_minims" onclick="navegarA('#mons_minims'); return false;" style="color: #301269; font-weight: 600; text-decoration: none;">
-                    ← Tornar als Mínims Móns
-                </a>
+*/        
+        
+// Funció principal adaptada al parser del CSV de Projectes
+function crearPaginaProjectes(idProjecte, llistaProjectes = []) {
+    // 1. Busquem el projecte a la llista que retorna parsejarCSVProjectes
+    // Nota: Es compara la ID neta (per si ve amb "#projectes/pr_0001" o directament "pr_0001")
+    const idNeta = idProjecte.replace('projecte/', '').replace('projectes/', '').replace('#', '').trim();
+    const projecte = llistaProjectes.find(p => p.idProjecte === idNeta) || llistaProjectes[0];
+
+    // Si no es troba cap projecte o la llista és buida
+    if (!projecte) {
+        return `
+            <div style="padding: 4rem 1rem; text-align: center; font-family: 'Montserrat', sans-serif; color: #24153F;">
+                <h2>Projecte no trobat</h2>
+                <p>No s'han pogut carregar les dades del projecte sol·licitat.</p>
             </div>
+        `;
+    }
 
-            <!-- Hero del Projecte -->
-            <header class="projecte-hero" style="margin-bottom: 2.5rem;">
-                <h1 style="color: #301269; font-size: 2.2rem; font-weight: 700; margin-bottom: 1rem;">
-                    ${projecte.Hero_Titol || projecte.Nom_Projecte || ''}
-                </h1>
-                ${projecte.Hero_Imatge_ID ? `
-                    <div style="width: 100%; max-height: 480px; overflow: hidden; border-radius: 12px; background-color: #E3D4FF;">
-                        <img src="${projecte.Hero_Imatge_ID}" alt="${projecte.Hero_Titol}" style="width: 100%; height: 100%; object-fit: cover; display: block;">
-                    </div>
-                ` : ''}
-            </header>
-            
-            <div class="projecte-cos-dinamic">
-    `;
+    // 2. Llegim el camp 'ordre' (ex: "Hero;Video1;BlocText1")
+    const ordres = (projecte.ordre || 'Hero').split(';').map(o => o.trim());
 
-    // 3. Processament del camp 'Ordre' (ex: "Video_1;ImatgeText_1;BlocText_1;Carrusel")
-    const cadenaOrdre = projecte.Ordre || "";
-    const llistaComponents = cadenaOrdre.split(';').map(c => c.trim()).filter(c => c !== "");
+    let htmlFinal = `<article class="pantalla-projecte-singular" data-id="${projecte.idProjecte}">`;
 
-    // 4. Bucle que invoca els constructors de components segons l'ordre exacte de Sheets
-    llistaComponents.forEach(component => {
-        
-        switch (component) {
-            case 'Video_1':
-                if (projecte.Video_1_ID && typeof crearComponentVideo === 'function') {
-                    htmlProjecte += crearComponentVideo(projecte.Video_1_ID, projecte.Video_1_Titol, projecte.Video_1_Text);
-                }
-                break;
+    // 3. Iterem per l'ordre especificat al CSV
+    ordres.forEach(bloc => {
+        const blocNom = bloc.toLowerCase();
 
-            case 'Video_2':
-                if (projecte.Video_2_ID && typeof crearComponentVideo === 'function') {
-                    htmlProjecte += crearComponentVideo(projecte.Video_2_ID, projecte.Video_2_Titol, projecte.Video_2_Text);
-                }
-                break;
-
-            case 'ImatgeText_1':
-                if (projecte.ImatgeText_1_ID && typeof crearComponentImatgeText === 'function') {
-                    htmlProjecte += crearComponentImatgeText(projecte.ImatgeText_1_ID, projecte.ImatgeText_1_Titol, projecte.ImatgeText_1_Text);
-                }
-                break;
-
-            case 'ImatgeText_2':
-                if (projecte.ImatgeText_2_ID && typeof crearComponentImatgeText === 'function') {
-                    htmlProjecte += crearComponentImatgeText(projecte.ImatgeText_2_ID, projecte.ImatgeText_2_Titol, projecte.ImatgeText_2_Text);
-                }
-                break;
-
-            case 'BlocText_1':
-                if (projecte.BlocText_1_Text && typeof crearComponentBlocText === 'function') {
-                    htmlProjecte += crearComponentBlocText(projecte.BlocText_1_Titol, projecte.BlocText_1_Text);
-                }
-                break;
-
-            case 'BlocText_2':
-                if (projecte.BlocText_2_Text && typeof crearComponentBlocText === 'function') {
-                    htmlProjecte += crearComponentBlocText(projecte.BlocText_2_Titol, projecte.BlocText_2_Text);
-                }
-                break;
-
-            case 'Carrusel':
-            case 'Galeria':
-                if (projecte.Galeria_Activa_ID && typeof crearComponentGaleria === 'function') {
-                    htmlProjecte += crearComponentGaleria(projecte.Galeria_Activa_ID, projecte.Carrusel);
-                }
-                break;
-
-            default:
-                console.warn(`Component no reconegut o no definit: ${component}`);
-                break;
+        if (blocNom === 'hero') {
+            htmlFinal += renderitzarBlocHero(projecte);
         }
+        // Més endavant afegirem la resta de casuístiques:
+        // else if (blocNom === 'video1') { ... }
+        // else if (blocNom === 'imagtetext1') { ... }
     });
 
-    // Tancament de la xarxa del projecte
-    htmlProjecte += `
-            </div>
-        </article>
-    `;
+    htmlFinal += `</article>`;
+    return htmlFinal;
+}
 
-    return htmlProjecte;
+// Renderitzador del bloc HERO ajustat als camps del parsejarCSVProjectes
+function renderitzarBlocHero(p) {
+    // Si tenim només la ID de la imatge de Drive/servidor, construïm la URL o usem un fallback
+    const imatgeUrl = p.heroImatgeId 
+        ? `https://lh3.googleusercontent.com/d/${p.heroImatgeId}` // Format típic per a imatges de Google Drive
+        : 'img/projecte_default.jpg';
+
+    const titol = p.heroTitol || p.nomProjecte || 'Mínim Món';
+
+    return `
+        <section class="hero-projecte" style="
+            position: relative;
+            width: 100%;
+            min-height: 55vh;
+            max-height: 600px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background-color: #24153F;
+            border-radius: 0 0 16px 16px;
+        ">
+            <!-- Imatge principal del Hero -->
+            <img src="${imatgeUrl}" alt="${titol}" style="
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                object-position: center;
+                z-index: 1;
+            " />
+
+            <!-- Filtre / Degradat corporatiu (#24153F) per garantir llegibilitat -->
+            <div class="overlay-hero" style="
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(180deg, rgba(36, 21, 63, 0.35) 0%, rgba(36, 21, 63, 0.85) 100%);
+                z-index: 2;
+            "></div>
+
+            <!-- Títol del Projecte Superposat -->
+            <div class="contingut-hero-text" style="
+                position: relative;
+                z-index: 3;
+                text-align: center;
+                padding: 2.5rem 1.5rem;
+                max-width: 900px;
+            ">
+                <h1 style="
+                    font-family: 'Montserrat', sans-serif;
+                    font-weight: 800;
+                    color: #FFFFFF;
+                    font-size: clamp(2.2rem, 5vw, 3.8rem);
+                    line-height: 1.15;
+                    margin: 0;
+                    text-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+                    letter-spacing: -0.5px;
+                ">
+                    ${titol}
+                </h1>
+            </div>
+        </section>
+    `;
 }
 
         
