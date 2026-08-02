@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0029]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0030]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -738,8 +738,8 @@ function crearPaginaProjectes(idProjecte, llistaProjectes = []) {
         return `<div style="padding: 4rem; text-align: center;"><h2>Projecte no trobat</h2></div>`;
     }
 
-    // Si el camp 'ordre' ve buit al CSV, forcem 'Hero' per defecte
-    const ordresRaw = projecte.ordre && projecte.ordre.trim() !== '' ? projecte.ordre : 'Hero';
+    // Si el camp 'ordre' ve buit al CSV, forcem 'Portada' per defecte
+    const ordresRaw = projecte.ordre && projecte.ordre.trim() !== '' ? projecte.ordre : 'Portada';
     const ordres = ordresRaw.split(';').map(o => o.trim());
 
     console.log("📋 Ordre dels blocs a generar:", ordres);
@@ -757,23 +757,23 @@ function crearPaginaProjectes(idProjecte, llistaProjectes = []) {
     return htmlFinal;
 }
 
-function renderitzarBlocHero(p) {
-    console.log("🖼️ [3] Renderitzant Hero reduït (320px) per:", p.nomProjecte || p.idProjecte);
+function renderitzarBlocPortada(p) {
+    console.log("🖼️ [3] Renderitzant Portada reduït (320px) per:", p.nomProjecte || p.idProjecte);
 
     let imatgeUrl = 'img/projecte_default.jpg';
-    if (p.heroImatgeId && p.heroImatgeId.trim() !== '') {
-        imatgeUrl = `https://drive.google.com/thumbnail?id=${p.heroImatgeId.trim()}&sz=w1600`;
+    if (p.portadaImatgeId && p.portadaImatgeId.trim() !== '') {
+        imatgeUrl = `https://drive.google.com/thumbnail?id=${p.portadaImatgeId.trim()}&sz=w1600`;
     }
 
-    const titol = p.heroTitol || p.nomProjecte || 'Herboristeria del Rei';
+    const titol = p.portadaTitol || p.nomProjecte || 'Herboristeria del Rei';
 
     return `
-        <div class="hero-wrapper" style="width: 100%; height: 320px; max-height: 320px; overflow: hidden; position: relative; background-color: #24153F; border-radius: 0 0 12px 12px;">
+        <div class="portada-wrapper" style="width: 100%; height: 320px; max-height: 320px; overflow: hidden; position: relative; background-color: #24153F; border-radius: 0 0 12px 12px;">
             <!-- Imatge retallada a 320px d'alçada i centrada -->
             <img src="${imatgeUrl}" 
                  alt="${titol}" 
-                 onload="console.log('✅ Imatge Hero carregada:', '${imatgeUrl}')"
-                 onerror="console.error('❌ Error carregant la imatge Hero:', '${imatgeUrl}');"
+                 onload="console.log('✅ Imatge Portada carregada:', '${imatgeUrl}')"
+                 onerror="console.error('❌ Error carregant la imatge Portada:', '${imatgeUrl}');"
                  style="width: 100%; height: 320px; object-fit: cover; object-position: center center; display: block; position: absolute; top: 0; left: 0; z-index: 1;" />
 
             <!-- Capa de contrast violeta fosca (#24153F) -->
@@ -1870,8 +1870,8 @@ function crearPaginaProjectes(idProjecte, llistaProjectes = []) {
         `;
     }
 
-    // 2. Llegim el camp 'ordre' (ex: "Hero;Video1;BlocText1")
-    const ordres = (projecte.ordre || 'Hero').split(';').map(o => o.trim());
+    // 2. Llegim el camp 'ordre' (ex: "Portada;Video1;BlocText1")
+    const ordres = (projecte.ordre || 'Portada').split(';').map(o => o.trim());
 
     let htmlFinal = `<article class="pantalla-projecte-singular" data-id="${projecte.idProjecte}">`;
 
@@ -1879,8 +1879,8 @@ function crearPaginaProjectes(idProjecte, llistaProjectes = []) {
     ordres.forEach(bloc => {
         const blocNom = bloc.toLowerCase();
 
-        if (blocNom === 'hero') {
-            htmlFinal += renderitzarBlocHero(projecte);
+        if (blocNom === 'portada') {
+            htmlFinal += renderitzarBlocPortada(projecte);
         }
         // Més endavant afegirem la resta de casuístiques:
         // else if (blocNom === 'video1') { ... }
@@ -1892,16 +1892,16 @@ function crearPaginaProjectes(idProjecte, llistaProjectes = []) {
 }
 
 // Renderitzador del bloc HERO ajustat als camps del parsejarCSVProjectes
-function renderitzarBlocHero(p) {
+function renderitzarBlocPortada(p) {
     // Si tenim només la ID de la imatge de Drive/servidor, construïm la URL o usem un fallback
-    const imatgeUrl = p.heroImatgeId 
-        ? `https://lh3.googleusercontent.com/d/${p.heroImatgeId}` // Format típic per a imatges de Google Drive
+    const imatgeUrl = p.portadaImatgeId 
+        ? `https://lh3.googleusercontent.com/d/${p.portadaImatgeId}` // Format típic per a imatges de Google Drive
         : 'img/projecte_default.jpg';
 
-    const titol = p.heroTitol || p.nomProjecte || 'Mínim Món';
+    const titol = p.hportadaTitol || p.nomProjecte || 'Mínim Món';
 
     return `
-        <section class="hero-projecte" style="
+        <section class="portada-projecte" style="
             position: relative;
             width: 100%;
             min-height: 55vh;
@@ -1913,7 +1913,7 @@ function renderitzarBlocHero(p) {
             background-color: #24153F;
             border-radius: 0 0 16px 16px;
         ">
-            <!-- Imatge principal del Hero -->
+            <!-- Imatge principal de Portada -->
             <img src="${imatgeUrl}" alt="${titol}" style="
                 position: absolute;
                 top: 0;
@@ -1926,7 +1926,7 @@ function renderitzarBlocHero(p) {
             " />
 
             <!-- Filtre / Degradat corporatiu (#24153F) per garantir llegibilitat -->
-            <div class="overlay-hero" style="
+            <div class="overlay-portada" style="
                 position: absolute;
                 top: 0;
                 left: 0;
@@ -1937,7 +1937,7 @@ function renderitzarBlocHero(p) {
             "></div>
 
             <!-- Títol del Projecte Superposat -->
-            <div class="contingut-hero-text" style="
+            <div class="contingut-portada-text" style="
                 position: relative;
                 z-index: 3;
                 text-align: center;
