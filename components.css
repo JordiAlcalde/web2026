@@ -1038,6 +1038,25 @@
 }
 
 /* ==========================================================================
+   CONTENIDOR BLOC VÍDEO PROJECTES
+   ========================================================================== */
+.seccio-bloc-video {
+    width: 100%;
+    max-width: 900px;
+    margin: 2.5rem auto !important;
+    padding: 0 1rem;
+    box-sizing: border-box;
+}
+
+.seccio-bloc-video iframe,
+.seccio-bloc-video video {
+    width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(36, 21, 63, 0.4);
+    border: 1px solid rgba(172, 128, 255, 0.2);
+}
+
+/* ==========================================================================
    ADAPTACIÓ MÒBIL GENERAL (REVISADA I FORÇADA AL 100%)
    ========================================================================== */
 
