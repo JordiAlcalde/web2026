@@ -1038,18 +1038,9 @@
 }
 
 /* ==========================================================================
-   TARGETA BLANCA PER A BLOCS DE VÍDEO (PROJECTES)
+   TARGETA BLANCA I REPRODUCTOR AUTO-ADAPTABLE PER A VÍDEOS DE DRIVE
    ========================================================================== */
 
-.seccio-bloc-video-targeta {
-    width: 100%;
-    max-width: 1100px;
-    margin: 2rem auto;
-    padding: 0 1rem;
-    box-sizing: border-box;
-}
-
-/* Marc Blanc exterior que engloba tot el bloc */
 .targeta-video-contenidor {
     background-color: #FFFFFF !important;
     border-radius: 12px;
@@ -1058,28 +1049,31 @@
     flex-direction: row;
     align-items: flex-start; /* Alineació estricta a TOP */
     gap: 2rem;
-    box-shadow: 0 4px 15px rgba(36, 21, 63, 0.2);
+    box-shadow: 0 4px 15px rgba(36, 21, 63, 0.15);
 }
 
-/* Columna Esquerra: Vídeo */
-.columna-video-media {
+/* Contenidor flexible: no forçam aspect-ratio de 16:9 */
+.columna-video-media-flexible {
     flex: 1 1 50%;
     width: 100%;
     max-width: 550px;
-    aspect-ratio: 16 / 9; /* Manté la proporció panoràmica de reproducció */
     background-color: #000000;
     border-radius: 8px;
     overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.columna-video-media iframe {
+/* El vídeo s'autoadapta a les seves pròpies dimensions originals */
+.columna-video-media-flexible video {
     width: 100%;
-    height: 100%;
-    border: none;
+    height: auto;             /* Alçada automàtica segons el format (horitzontal, quadrat o vertical) */
+    max-height: 500px;        /* Mantenim un límit raonable per a vídeos verticals */
     display: block;
+    object-fit: contain;      /* Respecta la proporció sense deformar ni tallar */
 }
 
-/* Columna Dreta: Textos */
 .columna-video-text {
     flex: 1 1 50%;
     display: flex;
@@ -1087,15 +1081,15 @@
     justify-content: flex-start;
     align-items: flex-start;
     text-align: left;
-    padding-top: 0.2rem; /* Ajust d'alineació d'alçada respecte el vídeo */
 }
 
 .titol-video-targeta {
     font-family: var(--font-principal, 'Montserrat', sans-serif);
-    color: var(--color-primari, #301269) !important; /* Text fosc sobre fons blanc */
-    font-size: 1.5rem;
+    color: var(--color-primari, #301269) !important;
+    font-size: 1.4rem;
     font-weight: 700;
-    margin-bottom: 1rem;
+    margin-top: 0 !important;
+    margin-bottom: 0.8rem;
     line-height: 1.25;
 }
 
@@ -1107,7 +1101,7 @@
     margin: 0;
 }
 
-/* Adaptació per a pantalles petites (Mòbils) */
+/* Responsivitat mòbil */
 @media (max-width: 768px) {
     .targeta-video-contenidor {
         flex-direction: column;
@@ -1115,12 +1109,8 @@
         gap: 1.2rem;
     }
 
-    .columna-video-media {
+    .columna-video-media-flexible {
         max-width: 100%;
-    }
-
-    .titol-video-targeta {
-        font-size: 1.25rem;
     }
 }
 
