@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0024]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0025]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -699,17 +699,22 @@
 
 function carregarPaginaProjectes(idProjecte) {
     console.log("🔍 [1] carregarPaginaProjectes cridada amb idProjecte:", idProjecte);
-    console.log("🔍 [1.1] dadesWeb.projectes:", dadesWeb.projectes.length);
-    
+
     const main = document.getElementById('seccions-contenidor');
     if (!main) {
         console.error("❌ Error: No s'ha trobat l'element #seccions-contenidor");
         return;
     }
 
-    // Comprovem l'estat de les dades globals
-    if (!window.dadesWeb || !Array.isArray(window.dadesWeb.projectes) || dadesWeb.projectes.length === 0) {
-        console.warn("⚠️ dadesWeb.projectes encara no està disponible o està buit:", window.dadesWeb?.projectes);
+    // Obtenim l'array de projectes de la variable global dadesWeb
+    const llistaProjectes = (typeof dadesWeb !== 'undefined' && dadesWeb.projectes) 
+        ? dadesWeb.projectes 
+        : (window.dadesWeb && window.dadesWeb.projectes ? window.dadesWeb.projectes : []);
+
+    console.log("📊 Estat de llistaProjectes. Total trobats:", llistaProjectes.length);
+
+    if (!llistaProjectes || llistaProjectes.length === 0) {
+        console.warn("⚠️ L'array de projectes encara no està a punt.");
         main.innerHTML = `
             <div style="text-align:center; padding: 4rem 1.5rem; font-family: 'Montserrat', sans-serif; color: #24153F;">
                 <p style="font-size: 1.1rem; color: #301269;">Carregant el Món Mínim...</p>
@@ -718,29 +723,31 @@ function carregarPaginaProjectes(idProjecte) {
         return;
     }
 
-    console.log("✅ Dades de projectes trobades a dadesWeb. Total projectes:", dadesWeb.projectes.length);
-
-    // Renderitzem
-    main.innerHTML = crearPaginaProjectes(idProjecte);
+    // Passem l'ID i la llista directament
+    main.innerHTML = crearPaginaProjectes(idProjecte, llistaProjectes);
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function crearPaginaProjectes(idProjecte) {
+function crearPaginaProjectes(idProjecte, llistaProjectes = []) {
+    // Netejem l'ID per si ve com "projectes/pr_0001" o "#projectes/pr_0001"
     const idNeta = (idProjecte || '').replace('#', '').replace('projecte/', '').replace('projectes/', '').trim();
-    console.log("🔍 [2] Cercant projecte amb idNeta:", idNeta);
-    
-    const llista = dadesWeb.projectes || [];
-    const projecte = llista.find(p => p.idProjecte === idNeta) || llista[0];
+    console.log("🔍 [2] Cerca de projecte per ID neta:", idNeta);
 
-    console.log("📌 Projecte trobat/assignat:", projecte);
+    // Busquem el projecte per ID o agafem el primer per defecte si no s'especifica
+    const projecte = llistaProjectes.find(p => p.idProjecte === idNeta) || llistaProjectes[0];
+
+    console.log("📌 Projecte trobat per renderitzar:", projecte);
 
     if (!projecte) {
-        console.error("❌ No s'ha pogut assignar cap projecte.");
+        console.error("❌ No s'ha trobat cap projecte a la llista.");
         return `<div style="padding: 4rem; text-align: center;"><h2>Projecte no trobat</h2></div>`;
     }
 
-    const ordres = (projecte.ordre || 'Hero').split(';').map(o => o.trim());
-    console.log("📋 Ordre dels blocs a renderitzar:", ordres);
+    // Si el camp 'ordre' ve buit al CSV, forcem 'Hero' per defecte
+    const ordresRaw = projecte.ordre && projecte.ordre.trim() !== '' ? projecte.ordre : 'Hero';
+    const ordres = ordresRaw.split(';').map(o => o.trim());
+
+    console.log("📋 Ordre dels blocs a generar:", ordres);
 
     let htmlFinal = `<article class="pantalla-projecte-singular" data-id="${projecte.idProjecte}">`;
 
@@ -756,20 +763,21 @@ function crearPaginaProjectes(idProjecte) {
 }
 
 function renderitzarBlocHero(p) {
-    console.log("🖼️ [3] Renderitzant Hero pel projecte:", p.idProjecte);
+    console.log("🖼️ [3] Generant HTML del Hero per:", p.nomProjecte || p.idProjecte);
     console.log("   - heroImatgeId:", p.heroImatgeId);
     console.log("   - heroTitol:", p.heroTitol);
 
-    // Gestió de la URL de la imatge
+    // Determinació de la imatge de fons
     let imatgeUrl = 'img/projecte_default.jpg';
-    if (p.heroImatgeId) {
-        // Opció per Google Drive (assegura't que el fitxer a Drive sigui 'Públic/Qualsevol persona amb el link')
-        imatgeUrl = `https://drive.google.com/thumbnail?id=${p.heroImatgeId}&sz=w1600`;
+    if (p.heroImatgeId && p.heroImatgeId.trim() !== '') {
+        // Enllaç optimitzat de Google Drive
+        imatgeUrl = `https://drive.google.com/thumbnail?id=${p.heroImatgeId.trim()}&sz=w1600`;
     }
 
-    console.log("   - URL imatge final:", imatgeUrl);
+    // Títol prioritzat: heroTitol -> nomProjecte -> Fallback
+    const titol = p.heroTitol || p.nomProjecte || 'Herboristeria del Rei';
 
-    const titol = p.heroTitol || p.nomProjecte || 'Mínim Món';
+    console.log("   - URL final imatge Hero:", imatgeUrl);
 
     return `
         <section class="hero-projecte" style="
@@ -784,11 +792,11 @@ function renderitzarBlocHero(p) {
             background-color: #24153F;
             border-radius: 0 0 16px 16px;
         ">
-            <!-- Imatge principal -->
+            <!-- Imatge principal de la peça -->
             <img src="${imatgeUrl}" 
                  alt="${titol}" 
-                 onload="console.log('✅ Imatge Hero carregada correctament:', '${imatgeUrl}')"
-                 onerror="console.error('❌ Error en carregar la imatge Hero:', '${imatgeUrl}'); this.style.display='none';"
+                 onload="console.log('✅ Imatge Hero carregada:', '${imatgeUrl}')"
+                 onerror="console.error('❌ Error carregant la imatge Hero:', '${imatgeUrl}');"
                  style="
                     position: absolute;
                     top: 0;
@@ -800,7 +808,7 @@ function renderitzarBlocHero(p) {
                     z-index: 1;
                  " />
 
-            <!-- Capa de contrast (#24153F) -->
+            <!-- Capa de contrast violeta fosca (#24153F) -->
             <div class="overlay-hero" style="
                 position: absolute;
                 top: 0;
@@ -811,7 +819,7 @@ function renderitzarBlocHero(p) {
                 z-index: 2;
             "></div>
 
-            <!-- Títol superposat -->
+            <!-- Títol superposat amb tipografia Montserrat -->
             <div class="contingut-hero-text" style="
                 position: relative;
                 z-index: 3;
