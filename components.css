@@ -1052,17 +1052,26 @@
     box-shadow: 0 4px 15px rgba(36, 21, 63, 0.15);
 }
 
-/* Contenidor flexible: no forçam aspect-ratio de 16:9 */
+/* Contenidor flexible per al reproductor de Drive */
 .columna-video-media-flexible {
     flex: 1 1 50%;
     width: 100%;
     max-width: 550px;
+    aspect-ratio: 16 / 9; /* Proporció per defecte de la finestra de reproducció */
     background-color: #000000;
     border-radius: 8px;
     overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    position: relative;
+}
+
+.columna-video-media-flexible iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 8px;
 }
 
 /* El vídeo s'autoadapta a les seves pròpies dimensions originals */
