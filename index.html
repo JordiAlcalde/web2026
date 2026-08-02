@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0031]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0032]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -1893,74 +1893,35 @@ function crearPaginaProjectes(idProjecte, llistaProjectes = []) {
 
 // Renderitzador del bloc HERO ajustat als camps del parsejarCSVProjectes
 function renderitzarBlocPortada(p) {
-    // Si tenim només la ID de la imatge de Drive/servidor, construïm la URL o usem un fallback
-    const imatgeUrl = p.portadaImatgeId 
-        ? `https://lh3.googleusercontent.com/d/${p.portadaImatgeId}` // Format típic per a imatges de Google Drive
-        : 'img/projecte_default.jpg';
+    console.log("🖼️ [Portada] Renderitzant bloc Portada de Projectes per:", p.nomProjecte || p.idProjecte);
 
-    const titol = p.hportadaTitol || p.nomProjecte || 'Mínim Món';
+    // Imatge optimitzada de Google Drive
+    let imatgeUrl = 'img/projecte_default.jpg';
+    if (p.portadaImatgeId && p.portadaImatgeId.trim() !== '') {
+        imatgeUrl = `https://drive.google.com/thumbnail?id=${p.portadaImatgeId.trim()}&sz=w1600`;
+    }
+
+    // Títol de Portada amb fallback al nom del projecte
+    const titol = p.portadaTitol || p.nomProjecte || 'Mínim Món';
 
     return `
-        <section class="portada-projecte" style="
-            position: relative;
-            width: 100%;
-            min-height: 55vh;
-            max-height: 600px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            background-color: #24153F;
-            border-radius: 0 0 16px 16px;
-        ">
-            <!-- Imatge principal de Portada -->
-            <img src="${imatgeUrl}" alt="${titol}" style="
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-                object-position: center;
-                z-index: 1;
-            " />
+        <div class="portada-wrapper-projecte">
+            <!-- Imatge retallada i ancorada al centre -->
+            <img src="${imatgeUrl}" 
+                 alt="${titol}" 
+                 onload="console.log('✅ Imatge de Portada carregada:', '${imatgeUrl}')"
+                 onerror="console.error('❌ Error carregant la imatge de Portada:', '${imatgeUrl}');" />
 
-            <!-- Filtre / Degradat corporatiu (#24153F) per garantir llegibilitat -->
-            <div class="overlay-portada" style="
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: linear-gradient(180deg, rgba(36, 21, 63, 0.35) 0%, rgba(36, 21, 63, 0.85) 100%);
-                z-index: 2;
-            "></div>
+            <!-- Gradient fosc de la paleta oficial -->
+            <div class="overlay-portada"></div>
 
-            <!-- Títol del Projecte Superposat -->
-            <div class="contingut-portada-text" style="
-                position: relative;
-                z-index: 3;
-                text-align: center;
-                padding: 2.5rem 1.5rem;
-                max-width: 900px;
-            ">
-                <h1 style="
-                    font-family: 'Montserrat', sans-serif;
-                    font-weight: 800;
-                    color: #FFFFFF;
-                    font-size: clamp(2.2rem, 5vw, 3.8rem);
-                    line-height: 1.15;
-                    margin: 0;
-                    text-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
-                    letter-spacing: -0.5px;
-                ">
-                    ${titol}
-                </h1>
+            <!-- Títol en font Montserrat i mida continguda -->
+            <div class="contingut-text-portada">
+                <h1>${titol}</h1>
             </div>
-        </section>
+        </div>
     `;
 }
-
         
         
     </script>
