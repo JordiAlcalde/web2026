@@ -572,358 +572,77 @@
             });
         }
 
-        /* VERSIÓ ANTIGA
-        function canviarSeccio(nomNovaSeccio) {
-   
-            const seccioActual = nomNovaSeccio.replace('#', '').trim();
-            const esLegal = ['avis_legal', 'privacitat', 'cookies', 'avis-legal'].includes(seccioActual);
-            const esProjecte = ['projectes'].includes(seccioActual);
 
-            // 1. Obtenim el hash net sense el caràcter '#'
-            const hashOriginal = window.location.hash;
-            console.log("👉 0. nomNovaSeccio:", nomNovaSeccio);
-            console.log("👉 1. Hash detectat a la URL:", hashOriginal);        
+        function canviarSeccio(nomNovaSeccio) {
             const hashNetejat = (nomNovaSeccio || '').replace('#', '').trim();
-            console.log("👉 2. Hash netejat:", hashNetejat);
+            
+            // Funció interna per renderitzar el peu allà on toqui
+            const renderitzarPeu = () => {
+                if (typeof crearPeuPagina === 'function') {
+                    const htmlPeu = crearPeuPagina(); // Generem l'HTML
                     
-            // 2. CAS PROJECTE: Coincideix amb "projecte/pr_0001", "projectes/pr_0001" o "pr_0001"
+                    // BUSQUEM ON INJECTAR-LO:
+                    // 1. Si tens un div específic per al peu fora del main:
+                    const contenidorPeu = document.getElementById('contenidor-peu-pagina');
+                    if (contenidorPeu) {
+                        contenidorPeu.innerHTML = htmlPeu;
+                    } else {
+                        // 2. Si no existeix, l'afegim al final de la secció o contenidor actiu
+                        const main = document.getElementById('seccions-contenidor') || document.body;
+                        
+                        // Evitem duplicar-lo si ja existeix
+                        const peuExistent = main.querySelector('.peu-pagina');
+                        if (peuExistent) peuExistent.remove();
+                        
+                        main.insertAdjacentHTML('beforeend', htmlPeu);
+                    }
+                }
+            };
+        
+            // 1. CAS PROJECTES
             if (
                 hashNetejat.startsWith('projecte/') || 
                 hashNetejat.startsWith('projectes/') || 
                 hashNetejat.startsWith('pr_') ||
                 hashNetejat === 'projectes'
             ) {
-                if (typeof carregarProjectes === 'function') {
-                    carregarProjctes(hashNetejat);
-                }
-                return; // Atura l'execució perquè no vagi al Home
+                if (typeof carregarPaginaProjectes === 'function') {
+                    carregarPaginaProjectes(hashNetejat);
+                }        
+                // Dibuixem el peu després de carregar el projecte
+                renderitzarPeu();
+                return; 
             }
         
-            // 3. CAS LEGAL: Comprovar si és la secció d'avís legal
-            if (hashNetejat.startsWith('legal') || hashNetejat.startsWith('avis-legal') || hashNetejat.startsWith('privacitat') || hashNetejat.startsWith('cookies')) {
+            // 2. CAS LEGAL
+            if (
+                hashNetejat.startsWith('legal') || 
+                hashNetejat.startsWith('avis-legal') || 
+                hashNetejat.startsWith('privacitat') || 
+                hashNetejat.startsWith('cookies')
+            ) {
                 if (typeof carregarPaginaLegal === 'function') {
                     carregarPaginaLegal(hashNetejat);
                 }
+                renderitzarPeu();
                 return;
             }
         
-            // 4. CAS HOME / INICI: Si està buit o és '#home'
-            if (hashNetejat === '' || hashNetejat === 'home') {
-                console.log("🟢 Executant ruta: HOME");
-                if (typeof activarSeccioInicial === 'function') {
-                    activarSeccioInicial();
-                }
-                //if (typeof crearPeuPagina === 'function') {
-                //    crearPeuPagina();
-                //}
-                return;
-            }  
-
-            // Si venim d'una pàgina legal, reconstruïm la web estàndard
-            if (document.querySelector('.pantalla-legal')) {
-                construirPantallesWeb();
-            }
-            // Si venim d'una pàgina de projecte, reconstruïm la web estàndard
-            if (document.querySelector('.pantalla-projectes')) {
-                //construirPantallesWeb();
-                console.log("🟢 Executant ruta: PROJECTES");
-                carregarPaginaProjectes(hashNetejat);
-            }
-
+            // 3. RESTA DE SECCIONS ESTÀNDARD
             const seccions = document.querySelectorAll('.seccio-web');
             seccions.forEach(sec => sec.style.display = 'none');
-
-            const targetId = seccioActual.startsWith('pantalla-') ? seccioActual : `pantalla-${seccioActual}`;
+        
+            const targetId = hashNetejat.startsWith('pantalla-') ? hashNetejat : `pantalla-${hashNetejat}`;
             const seccioDesti = document.getElementById(targetId);
-
+        
             if (seccioDesti) {
                 seccioDesti.style.display = 'block';
-                
-                // Filtrem dinàmicament els continguts abans de pintar si hi ha contenidors actius
-                const contenidor = seccioDesti.querySelector('.contenidor-fila-flex') || seccioDesti.querySelector('.contenidor-continguts-seccio');
-                if (contenidor && dadesWeb.continguts && dadesWeb.continguts.length > 0) {
-                    const itemsSeccio = dadesWeb.continguts.filter(item => 
-                        item.seccio && item.seccio.toLowerCase() === seccioActual.toLowerCase()
-                    );
-                    
-                    // Si volem repintar dinàmicament segons secció activa sense sobresriure tot el DOM:
-                    if (seccioDesti.dataset.dinamic === "true") {
-                        contenidor.innerHTML = '';
-                        itemsSeccio.forEach(item => {
-                            const targeta = crearTargetaImatgeText(item);
-                            contenidor.appendChild(targeta);
-                        });
-                    }
-                }
-
                 window.scrollTo({ top: 0, behavior: 'smooth' });
-            } else if (seccions.length > 0) {
-                seccions[0].style.display = 'block';
             }
-
-            if (window.location.hash !== '#' + seccioActual) {
-                history.pushState(null, null, '#' + seccioActual);
-            }
-        }
-  
-
-
-function canviarSeccio(nomNovaSeccio) {
-    // 1. Obtenim el hash net
-    const hashOriginal = window.location.hash;
-    const hashNetejat = (nomNovaSeccio || '').replace('#', '').trim();
-    
-    console.log("👉 Hash detectat:", hashNetejat);
-            
-    // 2. CAS PROJECTES
-    if (
-        hashNetejat.startsWith('projecte/') || 
-        hashNetejat.startsWith('projectes/') || 
-        hashNetejat.startsWith('pr_') ||
-        hashNetejat === 'projectes'
-    ) {
-        if (typeof carregarPaginaProjectes === 'function') {
-            carregarPaginaProjectes(hashNetejat);
-        }
-        return;
-    }
-
-    // 3. CAS LEGAL
-    if (hashNetejat.startsWith('legal') || hashNetejat.startsWith('avis-legal') || hashNetejat.startsWith('privacitat') || hashNetejat.startsWith('cookies')) {
-        if (typeof carregarPaginaLegal === 'function') {
-            carregarPaginaLegal(hashNetejat);
-        }
-        return;
-    }
-
-    // 4. CAS HOME / INICI
-    if (hashNetejat === '' || hashNetejat === 'home') {
-        if (typeof activarSeccioInicial === 'function') {
-            activarSeccioInicial();
-        }
-        return;
-    }  
-
-    // Si venim d'una pàgina legal o de projecte, reconstruïm la web estàndard
-    if (document.querySelector('.pantalla-legal') || document.querySelector('.pantalla-projectes')) {
-        construirPantallesWeb();
-    }
-
-    const seccions = document.querySelectorAll('.seccio-web');
-    seccions.forEach(sec => sec.style.display = 'none');
-
-    const targetId = hashNetejat.startsWith('pantalla-') ? hashNetejat : `pantalla-${hashNetejat}`;
-    const seccioDesti = document.getElementById(targetId);
-
-    if (seccioDesti) {
-        seccioDesti.style.display = 'block';
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    } else if (seccions.length > 0) {
-        seccions[0].style.display = 'block';
-    }
-
-    if (window.location.hash !== '#' + hashNetejat) {
-        history.pushState(null, null, '#' + hashNetejat);
-    }
-}
-
         
-
-function canviarSeccio(nomNovaSeccio) {
-    // 1. Obtenim el hash net
-    const hashOriginal = window.location.hash;
-    const hashNetejat = (nomNovaSeccio || '').replace('#', '').trim();
-    
-    console.log("👉 Hash detectat:", hashNetejat);
-            
-    // 2. CAS PROJECTES
-    if (
-        hashNetejat.startsWith('projecte/') || 
-        hashNetejat.startsWith('projectes/') || 
-        hashNetejat.startsWith('pr_') ||
-        hashNetejat === 'projectes'
-    ) {
-        if (typeof carregarPaginaProjectes === 'function') {
-            carregarPaginaProjectes(hashNetejat);
+            // Renderitzem el peu per a les seccions generals
+            renderitzarPeu();
         }
-        // AQUI: Executem el peu de pàgina global abans de sortir
-        if (typeof crearPeuPagina === 'function') crearPeuPagina();
-        return;
-    }
-
-    // 3. CAS LEGAL
-    if (hashNetejat.startsWith('legal') || hashNetejat.startsWith('avis-legal') || hashNetejat.startsWith('privacitat') || hashNetejat.startsWith('cookies')) {
-        if (typeof carregarPaginaLegal === 'function') {
-            carregarPaginaLegal(hashNetejat);
-        }
-        // AQUI: Executem el peu de pàgina global abans de sortir
-        if (typeof crearPeuPagina === 'function') crearPeuPagina();
-        return;
-    }
-
-    // 4. CAS HOME / INICI
-    if (hashNetejat === '' || hashNetejat === 'home') {
-        if (typeof activarSeccioInicial === 'function') {
-            construirPantallesWeb();
-        }
-        // AQUI: Executem el peu de pàgina global abans de sortir
-        if (typeof crearPeuPagina === 'function') crearPeuPagina();
-        return;
-    }  
-
-    // 5. SECCIONS ESTÀNDARD
-    if (document.querySelector('.pantalla-legal') || document.querySelector('.pantalla-projectes')) {
-        construirPantallesWeb();
-    }
-
-    const seccions = document.querySelectorAll('.seccio-web');
-    seccions.forEach(sec => sec.style.display = 'none');
-
-    const targetId = hashNetejat.startsWith('pantalla-') ? hashNetejat : `pantalla-${hashNetejat}`;
-    const seccioDesti = document.getElementById(targetId);
-
-    if (seccioDesti) {
-        seccioDesti.style.display = 'block';
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    } else if (seccions.length > 0) {
-        seccions[0].style.display = 'block';
-    }
-
-    if (window.location.hash !== '#' + hashNetejat) {
-        history.pushState(null, null, '#' + hashNetejat);
-    }
-
-    // 6. CRIDA FINAL PER A TOTA LA RESTA DE SECCIONS
-    if (typeof crearPeuPagina === 'function') {
-        crearPeuPagina();
-    }
-}
-
-
-        function canviarSeccio(nomNovaSeccio) {
-    const hashNetejat = (nomNovaSeccio || '').replace('#', '').trim();
-    
-    // CAS PROJECTES
-    if (
-        hashNetejat.startsWith('projecte/') || 
-        hashNetejat.startsWith('projectes/') || 
-        hashNetejat.startsWith('pr_') ||
-        hashNetejat === 'projectes'
-    ) {
-        if (typeof carregarPaginaProjectes === 'function') {
-            carregarPaginaProjectes(hashNetejat);
-        }
-
-        // 👉 AFAGEIX AQUESTA LÍNIA AQUÍ:
-        if (typeof crearPeuPagina === 'function') crearPeuPagina();
-
-        return; // El return ja no bloqueja la càrrega del peu!
-    }
-
-    // CAS LEGAL
-    if (hashNetejat.startsWith('legal') || hashNetejat.startsWith('avis-legal') || hashNetejat.startsWith('privacitat') || hashNetejat.startsWith('cookies')) {
-        if (typeof carregarPaginaLegal === 'function') {
-            carregarPaginaLegal(hashNetejat);
-        }
-        if (typeof crearPeuPagina === 'function') crearPeuPagina();
-        return;
-    }
-
-    // RESTA DE SECCIONS
-    const seccions = document.querySelectorAll('.seccio-web');
-    seccions.forEach(sec => sec.style.display = 'none');
-
-    const targetId = hashNetejat.startsWith('pantalla-') ? hashNetejat : `pantalla-${hashNetejat}`;
-    const seccioDesti = document.getElementById(targetId);
-
-    if (seccioDesti) {
-        seccioDesti.style.display = 'block';
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    // 👉 Assegurem la crida general per a qualsevol altra secció
-    if (typeof crearPeuPagina === 'function') crearPeuPagina();
-}
-
-*/        
-
-function canviarSeccio(nomNovaSeccio) {
-    const hashNetejat = (nomNovaSeccio || '').replace('#', '').trim();
-    
-    // Funció interna per renderitzar el peu allà on toqui
-    const renderitzarPeu = () => {
-        if (typeof crearPeuPagina === 'function') {
-            const htmlPeu = crearPeuPagina(); // Generem l'HTML
-            
-            // BUSQUEM ON INJECTAR-LO:
-            // 1. Si tens un div específic per al peu fora del main:
-            const contenidorPeu = document.getElementById('contenidor-peu-pagina');
-            if (contenidorPeu) {
-                contenidorPeu.innerHTML = htmlPeu;
-            } else {
-                // 2. Si no existeix, l'afegim al final de la secció o contenidor actiu
-                const main = document.getElementById('seccions-contenidor') || document.body;
-                
-                // Evitem duplicar-lo si ja existeix
-                const peuExistent = main.querySelector('.peu-pagina');
-                if (peuExistent) peuExistent.remove();
-                
-                main.insertAdjacentHTML('beforeend', htmlPeu);
-            }
-        }
-    };
-
-    // -------------------------------------------------------------
-    // 1. CAS PROJECTES
-    // -------------------------------------------------------------
-    if (
-        hashNetejat.startsWith('projecte/') || 
-        hashNetejat.startsWith('projectes/') || 
-        hashNetejat.startsWith('pr_') ||
-        hashNetejat === 'projectes'
-    ) {
-        if (typeof carregarPaginaProjectes === 'function') {
-            carregarPaginaProjectes(hashNetejat);
-        }
-
-        // Dibuixem el peu després de carregar el projecte
-        renderitzarPeu();
-        return; 
-    }
-
-    // -------------------------------------------------------------
-    // 2. CAS LEGAL
-    // -------------------------------------------------------------
-    if (
-        hashNetejat.startsWith('legal') || 
-        hashNetejat.startsWith('avis-legal') || 
-        hashNetejat.startsWith('privacitat') || 
-        hashNetejat.startsWith('cookies')
-    ) {
-        if (typeof carregarPaginaLegal === 'function') {
-            carregarPaginaLegal(hashNetejat);
-        }
-        renderitzarPeu();
-        return;
-    }
-
-    // -------------------------------------------------------------
-    // 3. RESTA DE SECCIONS ESTÀNDARD
-    // -------------------------------------------------------------
-    const seccions = document.querySelectorAll('.seccio-web');
-    seccions.forEach(sec => sec.style.display = 'none');
-
-    const targetId = hashNetejat.startsWith('pantalla-') ? hashNetejat : `pantalla-${hashNetejat}`;
-    const seccioDesti = document.getElementById(targetId);
-
-    if (seccioDesti) {
-        seccioDesti.style.display = 'block';
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    // Renderitzem el peu per a les seccions generals
-    renderitzarPeu();
-}
 
         
         function carregarPaginaLegal(idLegal) {
