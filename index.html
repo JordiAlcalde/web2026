@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0017]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0018]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -815,7 +815,7 @@ function canviarSeccio(nomNovaSeccio) {
         }
 
         // 👉 AFAGEIX AQUESTA LÍNIA AQUÍ:
-        if (typeof carPeuDePagina === 'function') carPeuDePagina();
+        if (typeof crearPeuPagina === 'function') crearPeuPagina();
 
         return; // El return ja no bloqueja la càrrega del peu!
     }
@@ -825,7 +825,7 @@ function canviarSeccio(nomNovaSeccio) {
         if (typeof carregarPaginaLegal === 'function') {
             carregarPaginaLegal(hashNetejat);
         }
-        if (typeof carPeuDePagina === 'function') carPeuDePagina();
+        if (typeof crearPeuPagina === 'function') crearPeuPagina();
         return;
     }
 
@@ -842,7 +842,7 @@ function canviarSeccio(nomNovaSeccio) {
     }
 
     // 👉 Assegurem la crida general per a qualsevol altra secció
-    if (typeof carPeuDePagina === 'function') carPeuDePagina();
+    if (typeof creaPeuPagina === 'function') crearPeuPagina();
 }
 
         
