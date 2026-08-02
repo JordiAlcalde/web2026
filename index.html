@@ -821,7 +821,7 @@ function canviarSeccio(nomNovaSeccio) {
     }
 
     // CAS LEGAL
-    if (hashNetejat.startsWith('legal') || hashNetejat.startsWith('avis-legal') || hashNetejat.startsWith('privacitat')) {
+    if (hashNetejat.startsWith('legal') || hashNetejat.startsWith('avis-legal') || hashNetejat.startsWith('privacitat')) || hashNetejat.startsWith('cookies')) {
         if (typeof carregarPaginaLegal === 'function') {
             carregarPaginaLegal(hashNetejat);
         }
