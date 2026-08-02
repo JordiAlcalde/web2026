@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0035]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0036]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -1896,28 +1896,41 @@ function renderitzarBlocVideo(projecte, numVideo) {
 
         
 function crearComponentVideoProjecte(item) {
-    const rawSrc = item.videoId || item.link || '';
+    let rawSrc = item.videoId || item.link || '';
     const titol = item.titol || '';
     const text = item.text || '';
     
-    // Atributs per al reproductor HTML5
+    if (!rawSrc) return '';
+
+    // Transformació automàtica si només es passa l'ID de Google Drive
+    if (!rawSrc.startsWith('http://') && !rawSrc.startsWith('https://')) {
+        // Netegem l'ID per si porta espais
+        const driveId = rawSrc.trim();
+        // Generem l'enllaç directe de stream de Drive
+        rawSrc = `https://drive.google.com/uc?export=download&id=${driveId}`;
+    } else if (rawSrc.includes('drive.google.com') && rawSrc.includes('/file/d/')) {
+        // Si han enganxat l'URL de compartició completa de Drive
+        const match = rawSrc.match(/\/d\/([^\/]+)/);
+        if (match && match[1]) {
+            rawSrc = `https://drive.google.com/uc?export=download&id=${match[1]}`;
+        }
+    }
+
     const atributAutoplay = item.videoAutoStart ? 'autoplay muted loop' : '';
     const atributControls = item.videoControls !== false ? 'controls' : '';
 
     return `
         <div class="targeta-video-contenidor">
-            <!-- Columna Esquerra: Reproductor natiu de vídeo -->
-            <div class="columna-video-media">
-                <div class="caixa-reproductor-video-adaptable">
-                    <video 
-                        src="${rawSrc}" 
-                        ${atributControls} 
-                        ${atributAutoplay} 
-                        playsinline 
-                        preload="metadata">
-                        El teu navegador no permet la reproducció de vídeo HTML5.
-                    </video>
-                </div>
+            <!-- Columna Esquerra: Reproductor auto-adaptable al format del vídeo -->
+            <div class="columna-video-media-flexible">
+                <video 
+                    src="${rawSrc}" 
+                    ${atributControls} 
+                    ${atributAutoplay} 
+                    playsinline 
+                    preload="metadata">
+                    El teu navegador no permet la reproducció de vídeo HTML5.
+                </video>
             </div>
 
             <!-- Columna Dreta: Textos alineats a TOP -->
