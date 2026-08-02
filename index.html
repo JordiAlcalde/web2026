@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0036]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0037]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -1902,35 +1902,29 @@ function crearComponentVideoProjecte(item) {
     
     if (!rawSrc) return '';
 
-    // Transformació automàtica si només es passa l'ID de Google Drive
-    if (!rawSrc.startsWith('http://') && !rawSrc.startsWith('https://')) {
-        // Netegem l'ID per si porta espais
-        const driveId = rawSrc.trim();
-        // Generem l'enllaç directe de stream de Drive
-        rawSrc = `https://drive.google.com/uc?export=download&id=${driveId}`;
-    } else if (rawSrc.includes('drive.google.com') && rawSrc.includes('/file/d/')) {
-        // Si han enganxat l'URL de compartició completa de Drive
-        const match = rawSrc.match(/\/d\/([^\/]+)/);
-        if (match && match[1]) {
-            rawSrc = `https://drive.google.com/uc?export=download&id=${match[1]}`;
-        }
+    // Extreiem només l'ID net de Google Drive
+    let driveId = rawSrc.trim();
+    if (driveId.includes('/file/d/')) {
+        const match = driveId.match(/\/d\/([^\/]+)/);
+        if (match && match[1]) driveId = match[1];
+    } else if (driveId.includes('id=')) {
+        const match = driveId.match(/id=([^&]+)/);
+        if (match && match[1]) driveId = match[1];
     }
 
-    const atributAutoplay = item.videoAutoStart ? 'autoplay muted loop' : '';
-    const atributControls = item.videoControls !== false ? 'controls' : '';
+    // URL oficial d'incrustació (preview) de Google Drive
+    const iframeUrl = `https://drive.google.com/file/d/${driveId}/preview`;
 
     return `
         <div class="targeta-video-contenidor">
-            <!-- Columna Esquerra: Reproductor auto-adaptable al format del vídeo -->
+            <!-- Columna Esquerra: Reproductor adaptable de Google Drive -->
             <div class="columna-video-media-flexible">
-                <video 
-                    src="${rawSrc}" 
-                    ${atributControls} 
-                    ${atributAutoplay} 
-                    playsinline 
-                    preload="metadata">
-                    El teu navegador no permet la reproducció de vídeo HTML5.
-                </video>
+                <iframe 
+                    src="${iframeUrl}" 
+                    title="${titol || 'Vídeo de Mínim Món'}" 
+                    allow="autoplay" 
+                    allowfullscreen>
+                </iframe>
             </div>
 
             <!-- Columna Dreta: Textos alineats a TOP -->
