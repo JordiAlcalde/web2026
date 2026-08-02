@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0034]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0035]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -1870,13 +1870,12 @@ function renderitzarBlocPortada(p) {
 }
         
 function renderitzarBlocVideo(projecte, numVideo) {
-    const videoId = projecte[`video${numVideo}Id`]; // Sintaxi neta
+    const videoId = projecte[`video${numVideo}Id` style="margin-top:0;"];
     const videoTitol = projecte[`video${numVideo}Titol`] || '';
     const videoText = projecte[`video${numVideo}Text`] || '';
 
-    // Si no hi ha ID de vídeo configurat, no mostrem el bloc
     if (!videoId || videoId.trim() === '') {
-        console.warn(`⚠️ No s'ha trobat ID de vídeo per al bloc Video_${numVideo}`);
+        console.warn(`⚠️ No s'ha trobat l'enllaç del vídeo per al bloc Video_${numVideo}`);
         return '';
     }
 
@@ -1884,10 +1883,9 @@ function renderitzarBlocVideo(projecte, numVideo) {
         videoId: videoId.trim(),
         titol: videoTitol.trim(),
         text: videoText.trim(),
-        numVideo: numVideo
+        videoControls: true,
+        videoAutoStart: false
     };
-
-    console.log(`🎬 Generant targeta blanca de vídeo per al bloc Video_${numVideo}`);
 
     return `
         <section class="seccio-bloc-video-targeta">
@@ -1896,32 +1894,36 @@ function renderitzarBlocVideo(projecte, numVideo) {
     `;
 }
 
+        
 function crearComponentVideoProjecte(item) {
-    // Gestió d'URL d'incrustació per a YouTube o Drive
-    let iframeSrc = '';
-    if (item.videoId.includes('http')) {
-        iframeSrc = item.videoId;
-    } else {
-        iframeSrc = `https://www.youtube.com/embed/${item.videoId}?rel=0`;
-    }
+    const rawSrc = item.videoId || item.link || '';
+    const titol = item.titol || '';
+    const text = item.text || '';
+    
+    // Atributs per al reproductor HTML5
+    const atributAutoplay = item.videoAutoStart ? 'autoplay muted loop' : '';
+    const atributControls = item.videoControls !== false ? 'controls' : '';
 
     return `
         <div class="targeta-video-contenidor">
-            <!-- Columna Esquerra: Reproductor de Vídeo -->
+            <!-- Columna Esquerra: Reproductor natiu de vídeo -->
             <div class="columna-video-media">
-                <iframe 
-                    src="${iframeSrc}" 
-                    title="${item.titol || 'Vídeo de Mínim Món'}" 
-                    frameborder="0" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                    allowfullscreen>
-                </iframe>
+                <div class="caixa-reproductor-video-adaptable">
+                    <video 
+                        src="${rawSrc}" 
+                        ${atributControls} 
+                        ${atributAutoplay} 
+                        playsinline 
+                        preload="metadata">
+                        El teu navegador no permet la reproducció de vídeo HTML5.
+                    </video>
+                </div>
             </div>
 
-            <!-- Columna Dreta: Contingut de Text ajustat a TOP -->
+            <!-- Columna Dreta: Textos alineats a TOP -->
             <div class="columna-video-text">
-                ${item.titol ? `<h3 class="titol-video-targeta">${item.titol}</h3>` : ''}
-                ${item.text ? `<p class="text-video-targeta">${item.text}</p>` : ''}
+                ${titol ? `<h3 class="titol-video-targeta">${titol}</h3>` : ''}
+                ${text ? `<p class="text-video-targeta">${text}</p>` : ''}
             </div>
         </div>
     `;
