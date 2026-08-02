@@ -765,7 +765,7 @@ function renderitzarBlocPortada(p) {
         imatgeUrl = `https://drive.google.com/thumbnail?id=${p.portadaImatgeId.trim()}&sz=w1600`;
     }
 
-    const titol = p.portadaTitol || p.nomProjecte || 'Herboristeria del Rei';
+    const titol = p.portadaTitol || p.nomProjecte || 'Projecte sense nom';
 
     return `
         <div class="portada-wrapper" style="width: 100%; height: 320px; max-height: 320px; overflow: hidden; position: relative; background-color: #24153F; border-radius: 0 0 12px 12px;">
