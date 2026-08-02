@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0025]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0026]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -763,36 +763,31 @@ function crearPaginaProjectes(idProjecte, llistaProjectes = []) {
 }
 
 function renderitzarBlocHero(p) {
-    console.log("🖼️ [3] Generant HTML del Hero per:", p.nomProjecte || p.idProjecte);
-    console.log("   - heroImatgeId:", p.heroImatgeId);
-    console.log("   - heroTitol:", p.heroTitol);
+    console.log("🖼️ [3] Generant HTML del Hero ajustat per:", p.nomProjecte || p.idProjecte);
 
-    // Determinació de la imatge de fons
+    // Enllaç optimitzat de Google Drive
     let imatgeUrl = 'img/projecte_default.jpg';
     if (p.heroImatgeId && p.heroImatgeId.trim() !== '') {
-        // Enllaç optimitzat de Google Drive
         imatgeUrl = `https://drive.google.com/thumbnail?id=${p.heroImatgeId.trim()}&sz=w1600`;
     }
 
-    // Títol prioritzat: heroTitol -> nomProjecte -> Fallback
-    const titol = p.heroTitol || p.nomProjecte || 'Herboristeria del Rei';
-
-    console.log("   - URL final imatge Hero:", imatgeUrl);
+    const titol = p.heroTitol || p.nomProjecte || 'Projecte sense nom';
 
     return `
         <section class="hero-projecte" style="
             position: relative;
             width: 100%;
-            min-height: 55vh;
-            max-height: 600px;
+            /* Alçada reduïda al ~60% de l'anterior */
+            min-height: 33vh;
+            max-height: 360px;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
             background-color: #24153F;
-            border-radius: 0 0 16px 16px;
+            border-radius: 0 0 12px 12px;
         ">
-            <!-- Imatge principal de la peça -->
+            <!-- Imatge principal ancorada pel centre -->
             <img src="${imatgeUrl}" 
                  alt="${titol}" 
                  onload="console.log('✅ Imatge Hero carregada:', '${imatgeUrl}')"
@@ -804,7 +799,7 @@ function renderitzarBlocHero(p) {
                     width: 100%;
                     height: 100%;
                     object-fit: cover;
-                    object-position: center;
+                    object-position: center center; /* Ancorat perfecte pel centre */
                     z-index: 1;
                  " />
 
@@ -815,26 +810,27 @@ function renderitzarBlocHero(p) {
                 left: 0;
                 width: 100%;
                 height: 100%;
-                background: linear-gradient(180deg, rgba(36, 21, 63, 0.35) 0%, rgba(36, 21, 63, 0.85) 100%);
+                background: linear-gradient(180deg, rgba(36, 21, 63, 0.3) 0%, rgba(36, 21, 63, 0.75) 100%);
                 z-index: 2;
             "></div>
 
-            <!-- Títol superposat amb tipografia Montserrat -->
+            <!-- Títol superposat ajustat a la mida de referència -->
             <div class="contingut-hero-text" style="
                 position: relative;
                 z-index: 3;
                 text-align: center;
-                padding: 2.5rem 1.5rem;
+                padding: 1.5rem 1rem;
                 max-width: 900px;
             ">
                 <h1 style="
                     font-family: 'Montserrat', sans-serif;
                     font-weight: 800;
                     color: #FFFFFF;
-                    font-size: clamp(2.2rem, 5vw, 3.8rem);
+                    /* Mida de font ajustada per coincidir amb la referència */
+                    font-size: clamp(1.6rem, 3.5vw, 2.6rem);
                     line-height: 1.15;
                     margin: 0;
-                    text-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+                    text-shadow: 0 3px 12px rgba(0, 0, 0, 0.6);
                     letter-spacing: -0.5px;
                 ">
                     ${titol}
