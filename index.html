@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0057]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0058]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -2098,6 +2098,8 @@ function crearComponentBlocTextProjecte(item) {
 function renderitzarCarrusel(projecte, mapCarrusels) {
     if (!projecte) return '';
 
+    console.log("mapCarrusels: ", mapCarrusels);
+    
     // Verificació del camp 'carrusel' (Si/No) a Sheets
     const teCarrusel = projecte.carrusel && projecte.carrusel.toString().trim().toLowerCase() === 'si';
     const idProjecte = projecte.ID_Projecte || projecte.id || '';
