@@ -800,6 +800,10 @@ function renderitzarBlocPortada(p) {
 
 
         function navegarA(hashDesti) {
+            // Tanca el menú desplegable mòbil si està obert
+            const menu = document.getElementById('menu-navegacio');
+            if (menu) menu.classList.remove('obert');
+                    
             // 1. Normalitzem el hash d'entrada
             const hashNetejat = hashDesti.startsWith('#') ? hashDesti : '#' + hashDesti;
             const idSeccio = hashNetejat.replace('#', '');
