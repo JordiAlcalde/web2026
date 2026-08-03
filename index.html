@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0060]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0061]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -2095,42 +2095,32 @@ function crearComponentBlocTextProjecte(item) {
  * @param {Object} mapCarrusels - Mapa d'imatges per ID_Projecte obtingut amb parsejarCSVCarrusels
  * @returns {string} HTML renderitzat del carrusel o cadena buida si no correspon
  */
+/**
+ * Renderitza el carrusel d'un projecte.
+ */
 function renderitzarCarrusel(projecte, mapCarrusels) {
-    console.log("🔍 [Carrusel Debug] Dades rebudes:", { projecte, mapCarrusels });
+    if (!projecte) return '';
 
-    if (!projecte) {
-        console.warn("⚠️ [Carrusel Debug] 'projecte' és null o undefined");
-        return '';
-    }
-
+    // 1. Lectura robusta de l'ID del projecte (cobreix idProjecte, ID_Projecte i id)
+    const idProjecte = projecte.idProjecte || projecte.ID_Projecte || projecte.id || '';
+    
+    // 2. Comprovació del camp 'carrusel'
     const teCarrusel = projecte.carrusel && projecte.carrusel.toString().trim().toLowerCase() === 'si';
-    const idProjecte = projecte.ID_Projecte || projecte.id || '';
 
-    console.log(`🔍 [Carrusel Debug] ID: ${idProjecte} | camp carrusel: "${projecte.carrusel}" -> teCarrusel: ${teCarrusel}`);
-
-    if (!teCarrusel) {
-        console.warn("⚠️ [Carrusel Debug] Aturat: El camp 'carrusel' a Sheets no és 'Si'");
+    // 3. Validació de seguretat
+    if (!teCarrusel || !idProjecte || !mapCarrusels || typeof mapCarrusels !== 'object') {
         return '';
     }
 
-    if (!idProjecte || !mapCarrusels) {
-        console.warn("⚠️ [Carrusel Debug] Aturat: Falta idProjecte o mapCarrusels");
-        return '';
-    }
-
-    // Comprovació de si mapCarrusels te les imatges d'aquest ID
-    const imatges = mapCarrusels[idProjecte];
-    console.log(`🔍 [Carrusel Debug] Imatges trobades per a ${idProjecte}:`, imatges);
-
-    if (!imatges || imatges.length === 0) {
-        console.warn(`⚠️ [Carrusel Debug] Aturat: No s'han trobat imatges al mapCarrusels per a l'ID ${idProjecte}`);
+    // 4. Obtenció de les imatges del mapa
+    const llistaImatges = mapCarrusels[idProjecte];
+    if (!llistaImatges || llistaImatges.length === 0) {
         return '';
     }
 
     const carruselAlt = projecte.carrusel_Alt || 380;
-    console.log("✅ [Carrusel Debug] Generant HTML del carrusel...");
 
-    return crearComponentCarruselProjecte(imatges, carruselAlt, idProjecte);
+    return crearComponentCarruselProjecte(llistaImatges, carruselAlt, idProjecte);
 }
 
 
