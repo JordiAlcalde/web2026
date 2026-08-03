@@ -1251,7 +1251,7 @@
 .mm-bloc-text-container {
     width: 100%;
     /* Mantenim el mateix max-width i marge que les targetes d'imatge/vídeo */
-    max-width: 1200px; 
+    max-width: 1100px; 
     margin: 0 auto 32px auto; /* Marge inferior per separar-lo del footer/següent bloc */
     background-color: #FFFFFF;
     border-radius: 16px;
