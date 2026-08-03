@@ -1122,7 +1122,7 @@
 }
 
 /* ==========================================================================
-   TARGETA BLANCA D'IMATGE I TEXT (PROJECTES MÍNIM MÓN)
+   TARGETA BLANCA D'IMATGE I TEXT (MÍNIM MÓN)
    ========================================================================== */
 
 .seccio-bloc-imatge-targeta {
@@ -1141,11 +1141,13 @@
     flex-direction: row;
     align-items: flex-start; /* Alineació estricta a TOP */
     gap: 2rem;
-    box-shadow: 0 4px 18px rgba(36, 21, 63, 0.15);
+    box-shadow: 0 4px 18px rgba(36, 21, 63, 0.15); /* Ombres amb color fosc #24153F */
 }
 
+/* Columna de la Imatge */
 .columna-imatge-media {
     flex: 0 0 auto;
+    width: auto;
     max-width: 100%;
     border-radius: 8px;
     overflow: hidden;
@@ -1155,11 +1157,20 @@
     align-items: center;
 }
 
-.columna-imatge-media img {
+/* Estils de la Imatge en pantalles d'escriptori (PC) */
+.columna-imatge-media img,
+.imatge-responsive-mm {
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    max-height: var(--max-altura-desitjada, 420px);
+    object-fit: contain;
+    display: block;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
+/* Columna del Text */
 .columna-imatge-text {
     flex: 1 1 auto;
     display: flex;
@@ -1171,7 +1182,7 @@
 
 .titol-imatge-targeta {
     font-family: 'Montserrat', sans-serif;
-    color: #301269 !important; /* Purple fosc oficial */
+    color: #301269 !important; /* Lila fosc oficial */
     font-size: 1.35rem;
     font-weight: 700;
     margin-top: 0 !important;
@@ -1181,30 +1192,37 @@
 
 .text-imatge-targeta {
     font-family: 'Montserrat', sans-serif;
-    color: #24153F !important; /* Text fosc oficial */
+    color: #24153F !important; /* Text fosc principal */
     font-size: 0.95rem;
     line-height: 1.6;
     margin: 0;
 }
 
-/* Responsivitat mòbil */
+/* ==========================================================================
+   RESPONSIVITAT MÒBIL D'IMATGE I TEXT (Ajustos de pantalla petita)
+   ========================================================================== */
+
 @media (max-width: 768px) {
     .targeta-imatge-contenidor {
         flex-direction: column;
         padding: 1.25rem;
         gap: 1.25rem;
     }
+
     .columna-imatge-media {
         width: 100%;
         height: auto !important;
     }
-    .columna-imatge-media img {
-        width: 100%;
+
+    /* En mòbil la imatge ocupa el 100% de l'ample i calcula l'alçada automàticament */
+    .columna-imatge-media img,
+    .imatge-responsive-mm {
+        width: 100% !important;
         height: auto !important;
-        max-height: none !important;
+        max-height: none !important; /* Elimina la restricció fixa en PX */
+        object-fit: cover;
     }
 }
-
 
 
 /* ==========================================================================
