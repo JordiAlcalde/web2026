@@ -394,7 +394,9 @@
                     const idImatge   = cols[1] ? cols[1].trim() : '';
                     const linkImatge = cols[2] ? cols[2].trim() : '';
                     const descripcio = cols[3] ? cols[3].trim().replace(/^"|"$/g, '') : '';
-            
+
+                    console.log("idImatge: ", idImatge);
+                    
                     if (idProjecte && linkImatge && !linkImatge.includes('#N/A')) {
                         if (!carruselsPerProjecte[idProjecte]) {
                             carruselsPerProjecte[idProjecte] = [];
