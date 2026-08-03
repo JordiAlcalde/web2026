@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0041]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0042]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -1994,19 +1994,24 @@ function crearComponentVideoProjecte(item) {
         driveId = driveId.split('/d/')[1].split('/')[0];
     }
 
-    // URL de descàrrega directa que permet la reproducció de vídeo HTML5 fluida i activa els controls
-    const videoUrl = `https://drive.google.com/uc?export=download&id=${driveId}`;
+    // 1. URL per al flux de vídeo
+    const videoUrl = `https://drive.google.com/uc?export=open&id=${driveId}`;
+    
+    // 2. Poster / Imatge de portada directa des de Drive (garanteix el primer fotograma)
+    const posterUrl = `https://drive.google.com/thumbnail?id=${driveId}&sz=w1200`;
 
     return `
         <div class="targeta-video-contenidor">
-            <!-- Columna Esquerra: Reproductor natiu adaptable -->
+            <!-- Columna Esquerra: Reproductor adaptable -->
             <div class="columna-video-media-nativa" style="height: ${alcadaVideo};">
                 <video 
                     src="${videoUrl}" 
+                    poster="${posterUrl}"
                     controls 
                     playsinline 
-                    preload="auto"
+                    preload="metadata"
                     style="height: 100%; max-height: ${alcadaVideo}; width: auto; display: block;">
+                    <source src="${videoUrl}" type="video/mp4">
                     El teu navegador no permet la reproducció de vídeo HTML5.
                 </video>
             </div>
