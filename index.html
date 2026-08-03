@@ -1819,15 +1819,16 @@ function crearPaginaProjectes(idProjecte, llistaProjectes = []) {
 
     ordres.forEach(bloc => {
         const blocNom = bloc.toLowerCase().replace('_', '');
-        const numVideo = blocNom === 'video1' ? 1 : 2;
-        const numImatgeText = blocNom === 'imatgeText1' ? 1 : 2;
+        const numVideo
+        const numImatgeText
         
         if (blocNom === 'portada' || blocNom === 'hero') {
-            htmlFinal += renderitzarBlocPortada(projecte);
-        } 
-        else if (blocNom === 'video1' || blocNom === 'video2') {            
+            htmlFinal += renderitzarBlocPortada(projecte);} 
+        if (blocNom === 'video1' || blocNom === 'video2') {    
+            numVideo = blocNom === 'video1' ? 1 : 2;
             htmlFinal += renderitzarBlocVideo(projecte, numVideo);}
-        else if (blocNom === 'imatgeText1' || blocNom === 'imatgeText2') {            
+        if (blocNom === 'imatgeText1' || blocNom === 'imatgeText2') {   
+            numImatgeText = blocNom === 'imatgeText1' ? 1 : 2;
             htmlFinal += renderitzarBlocImatgeText(projecte, numImatgeText);}          
 
         console.log('blocNom: ', blocNom);
@@ -1929,6 +1930,66 @@ function crearComponentVideoProjecte(item) {
         </div>
     `;
 }
+
+function renderitzarBlocImatgeText(projecte, numImatgeText) {
+    const videoAtributs = projecte[`video${numVideo}Atributs`];
+    const videoTitol = projecte[`video${numVideo}Titol`] || '';
+    const videoText = projecte[`video${numVideo}Text`] || '';
+    const videoLink = projecte[`video${numVideo}Link`] || '';
+    const videoAlt = projecte[`video${numVideo}Alt`] || '420px';
+
+    if (!videoLink || videoLink.trim() === '') {
+        console.warn(`⚠️ No s'ha trobat l'enllaç del vídeo per al bloc Video_${numVideo}`);
+        return '';
+    }
+
+    const itemVideo = {
+        atributs: videoAtributs.trim(),
+        titol: videoTitol.trim(),
+        text: videoText.trim(),
+        link: videoLink.trim(),
+        alt: videoAlt.trim()
+    };
+
+    return `
+        <section class="seccio-bloc-video-targeta">
+            ${crearComponentVideoProjecte(itemVideo)}
+        </section>
+    `;
+}
+
+        
+function crearComponentImatgeTextProjecte(item) {
+    const srcVideo = item.link || '';
+    const titol = item.titol || '';
+    const text = item.text || '';
+    const alcadaVideo = item.alt && item.alt.trim() !== '' ? item.alt.trim() : '420px';
+    const atributs = item.atributs || 'controls';
+    
+    if (!srcVideo) return '';
+
+    return `
+        <div class="targeta-video-contenidor">
+            <!-- Columna Esquerra: Reproductor adaptable -->
+            <div class="columna-video-media-nativa" style="height: ${alcadaVideo};">
+                <video 
+                    src="${srcVideo}"                     
+                    ${atributs} 
+                    playsinline 
+                    preload="metadata"
+                    style="height: 100%; max-height: ${alcadaVideo}; width: auto; display: block;">                    
+                    El teu navegador no permet la reproducció de vídeo HTML5.
+                </video>
+            </div>
+
+            <!-- Columna Dreta: Textos alineats a TOP -->
+            <div class="columna-video-text">
+                ${titol ? `<h3 class="titol-video-targeta">${titol}</h3>` : ''}
+                ${text ? `<p class="text-video-targeta">${text}</p>` : ''}
+            </div>
+        </div>
+    `;
+}        
         
     </script>
 </body>
