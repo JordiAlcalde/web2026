@@ -1243,6 +1243,80 @@
 }
 
 
+/* ==========================================
+   COMPONENT: BLOC TEXT (MÍNIM MÓN)
+   ========================================== */
+
+.mm-bloc-text-container {
+    width: 100%;
+    background-color: #FFFFFF;
+    padding: 60px 20px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.mm-bloc-text-content {
+    max-width: 900px;
+    width: 100%;
+    text-align: center;
+    position: relative;
+}
+
+/* Accent superior decoratiu */
+.mm-bloc-text-content::before {
+    content: "";
+    display: block;
+    width: 45px;
+    height: 3px;
+    background-color: #AC80FF;
+    margin: 0 auto 24px auto;
+    border-radius: 2px;
+}
+
+.mm-bloc-text-title {
+    color: #301269;
+    font-size: 2rem; /* 32px */
+    font-weight: 700;
+    line-height: 1.25;
+    margin: 0 0 18px 0;
+    letter-spacing: -0.02em;
+}
+
+.mm-bloc-text-body {
+    color: #24153F;
+    font-size: 1.125rem; /* 18px */
+    font-weight: 400;
+    line-height: 1.6;
+    margin: 0;
+    opacity: 0.9;
+}
+
+.mm-bloc-text-body strong {
+    color: #340094;
+    font-weight: 600;
+}
+
+/* Adaptació mòbil */
+@media (max-width: 768px) {
+    .mm-bloc-text-container {
+        padding: 40px 16px;
+    }
+
+    .mm-bloc-text-title {
+        font-size: 1.5rem;
+        margin-bottom: 14px;
+    }
+
+    .mm-bloc-text-body {
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+}
+
+
 /* ==========================================================================
    ADAPTACIÓ MÒBIL GENERAL (REVISADA I FORÇADA AL 100%)
    ========================================================================== */
