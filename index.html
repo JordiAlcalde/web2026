@@ -1837,7 +1837,10 @@ function crearPaginaProjectes(idProjecte, llistaProjectes = []) {
         else if (blocNom.startsWith('imatgetext') || blocNom.startsWith('imatge')) {
             htmlFinal += renderitzarBlocImatgeText(projecte, numeroBloc);
         }
-
+        else if (blocNom.startsWith('bloctext')) {
+            htmlFinal += renderitzarBlocText(projecte, numeroBloc);
+        }
+        
         console.log(`🧩 Processat bloc: ${bloc} -> Tipus: ${blocNom} | Ídem/Número: ${numeroBloc}`);
     });
 
@@ -1995,6 +1998,40 @@ function crearComponentImatgeTextProjecte(item) {
         </div>
     `;
 }    
+
+/**
+ * Renderitza un bloc de text dins d'un contenidor específic.
+ * @param {HTMLElement|string} contenidor - Element DOM o ID de l'element on s'injectarà.
+ * @param {Object} dadesBloc - Objecte amb { titol, text }.
+ */
+function renderitzarBlotText(contenidor, dadesBloc) {
+    const pare = typeof contenidor === 'string' ? document.getElementById(contenidor) : contenidor;
+    
+    if (!pare) {
+        console.error("No s'ha trobat el contenidor per renderitzar el bloc de text.");
+        return;
+    }
+
+    if (!dadesBloc || !dadesBloc.titol) return;
+
+    const blocElement = crearComponentTextProjecte(dadesBloc.titol, dadesBloc.text);
+    pare.appendChild(blocElement);
+}
+
+function crearComponentBlocTextProjecte(item) {
+    const titol = item.titol || '';
+    const text = item.text || item.descripcio || '';
+
+    return `
+        <div class="targeta-imatge-contenidor">
+            <!-- Columna Dreta: Text alineat a TOP -->
+            <div class="columna-imatge-text">
+                ${titol ? `<h3 class="titol-imatge-targeta">${titol}</h3>` : ''}
+                ${text ? `<p class="text-imatge-targeta">${text}</p>` : ''}
+            </div>
+        </div>
+    `;
+}          
         
     </script>
 </body>
