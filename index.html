@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0056]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0057]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -105,9 +105,10 @@
         const URL_CSV_COMPONENTS    = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=606337148&single=true&output=csv";
         const URL_CSV_CONTINGUTS    = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=819396845&single=true&output=csv";
         const URL_CSV_FORM_CONTACTE = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=348010806&single=true&output=csv";
-        const URL_CSV_PROJECTES     = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=405305768&single=true&output=csv"
+        const URL_CSV_PROJECTES     = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=405305768&single=true&output=csv";
+        const URL_CSV_CARRUSELS     = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=1400064711&single=true&output=csv"
 
-        let dadesWeb = { config: {}, estructura: [], components: {}, continguts: [], projectes: {} };
+        let dadesWeb = { config: {}, estructura: [], components: {}, continguts: [], projectes: {}, carrusels: {} };
 
         document.addEventListener('DOMContentLoaded', () => {
             carregarDadesPagina();
@@ -143,7 +144,8 @@
                     COMPONENTS: URL_CSV_COMPONENTS,
                     CONTINGUTS: URL_CSV_CONTINGUTS,
                     FORM_CONTACTE: URL_CSV_FORM_CONTACTE,
-                    PROJECTES: URL_CSV_PROJECTES
+                    PROJECTES: URL_CSV_PROJECTES,
+                    CARRUSELS: URL_CSV_CARRUSELS
                 };
         
                 const respostes = await Promise.all([
@@ -152,7 +154,8 @@
                     fetch(URLS.COMPONENTS).then(res => res.text()),
                     fetch(URLS.CONTINGUTS).then(res => res.text()),
                     fetch(URLS.FORM_CONTACTE).then(res => res.text()),
-                    fetch(URLS.PROJECTES).then(res => res.text())                    
+                    fetch(URLS.PROJECTES).then(res => res.text()),
+                    fetch(URLS.CARRUSELS).then(res => res.text())
                 ]);
         
                 dadesWeb.config = parsejarCSVConfig(respostes[0]);
@@ -161,6 +164,7 @@
                 dadesWeb.continguts = parsejarCSVContinguts(respostes[3]);
                 dadesWeb['FORM_CONTACTE'] = parsejarCSVContinguts(respostes[4]);
                 dadesWeb.projectes = parsejarCSVProjectes(respostes[5]);
+                dadesWeb.carrusels = parsejarCSVCarrusels(respostes[6]);
                 
                 console.log('Dades carregades correctament:', dadesWeb);
 
@@ -369,13 +373,43 @@
         
                     // Opcions finals
                     carrusel: getBool(31),       // Si / No
-                    galeriaActivaId: getVal(32)
+                    carruselAlt: getVal(32);
+                    galeriaActivaId: getVal(33)
                 };
             }).filter(item => item.idProjecte !== '' && item.estat.toLowerCase() !== 'inactiu');
         }
         
-        
+        function parsejarCSVCarrusels(csvText) {
+            if (!csvText) return {};
+            
+                const carruselsPerProjecte = {};
+                const linies = csvText.split(/\r?\n/);
+            
+                // Comencem a la línia 1 per saltar la capçalera
+                for (let i = 1; i < linies.length; i++) {
+                    if (!linies[i].trim()) continue;
+            
+                    const cols = linies[i].split(',');
+                    const idProjecte = cols[0] ? cols[0].trim() : '';
+                    const idImatge   = cols[1] ? cols[1].trim() : '';
+                    const linkImatge = cols[2] ? cols[2].trim() : '';
+                    const descripcio = cols[3] ? cols[3].trim().replace(/^"|"$/g, '') : '';
+            
+                    if (idProjecte && linkImatge && !linkImatge.includes('#N/A')) {
+                        if (!carruselsPerProjecte[idProjecte]) {
+                            carruselsPerProjecte[idProjecte] = [];
+                        }
+                        carruselsPerProjecte[idProjecte].push({
+                            ID_Imatge: idImatge,
+                            Link_Imatge: linkImatge,
+                            Descripcio: descripcio
+                        });
+                    }
+                }            
+            return carruselsPerProjecte;
+        }
 
+        
         function construirMenuNavegacio() {
             const menuUL = document.getElementById('menu-navegacio');
             if (!menuUL) return;
@@ -1843,6 +1877,9 @@ function crearPaginaProjectes(idProjecte, llistaProjectes = []) {
         else if (blocNom.startsWith('bloctext')) {
             htmlFinal += renderitzarBlocText(projecte, numeroBloc);
         }
+        else if (blocNom.startsWith('carrusel')) {
+            htmlFinal += renderitzarCarrusel(projecte, numeroBloc);
+        }
         
         console.log(`🧩 Processat bloc: ${bloc} -> Tipus: ${blocNom} | Ídem/Número: ${numeroBloc}`);
     });
@@ -2045,6 +2082,115 @@ function crearComponentBlocTextProjecte(item) {
         </div>        
     `;
 }       
+
+        
+/**
+ * Renderitza el component carruselProjecte per a un projecte concret.
+ * S'encarrega de comprovar si el projecte té activat el carrusel ("Si")
+ * i si disposa d'imatges carregades des del full "Carrusels".
+ * 
+ * @param {Object} projecte - Objecte del projecte (llegit de la fila de Sheets)
+ * @param {Object} mapCarrusels - Mapa d'imatges per ID_Projecte obtingut amb parsejarCSVCarrusels
+ * @returns {string} HTML renderitzat del carrusel o cadena buida si no correspon
+ */
+function renderitzarCarrusel(projecte, mapCarrusels) {
+    if (!projecte) return '';
+
+    // Verificació del camp 'carrusel' (Si/No) a Sheets
+    const teCarrusel = projecte.carrusel && projecte.carrusel.toString().trim().toLowerCase() === 'si';
+    const idProjecte = projecte.ID_Projecte || projecte.id || '';
+
+    // Si no té carrusel o no hi ha imatges associades a l'ID del projecte, no renderitzem res
+    if (!teCarrusel || !idProjecte || !mapCarrusels || !mapCarrusels[idProjecte]) {
+        return '';
+    }
+
+    const llistaImatges = mapCarrusels[idProjecte];
+    const carruselAlt = projecte.carrusel_Alt || 380; // Mida d'alçada per defecte
+
+    // Crida a la funció que genera la targeta blanca idèntica a la resta de components
+    return crearComponentCarruselProjecte(llistaImatges, carruselAlt, idProjecte);
+}
+
+
+
+/**
+ * Genera el component de carrusel d'imatges per a un projecte.
+ * 
+ * @param {Array} llistaImatges - Llista d'objectes del full "Carrusels" { Link_Imatge, Descripcio }
+ * @param {number|string} carruselAlt - Valor 'carrusel_Alt' de Sheets (alçada en px)
+ * @param {string} idUnic - Identificador únic per al control JS del carrusel
+ * @returns {string} Codi HTML estructurat.
+ */
+function crearComponentCarruselProjecte(llistaImatges, carruselAlt, idUnic) {
+    if (!llistaImatges || llistaImatges.length === 0) return '';
+
+    const altPX = carruselAlt ? parseInt(carruselAlt) : 380;
+    
+    // Generació de les diapositives
+    const slidesHTML = llistaImatges.map((img, idx) => `
+        <div class="carrusel-slide-item ${idx === 0 ? 'activa' : ''}" data-index="${idx}">
+            <img src="${img.Link_Imatge}" alt="${img.Descripcio || 'Imatge del projecte'}" />
+        </div>
+    `).join('');
+
+    // La descripció inicial correspon a la primera imatge (si existeix)
+    const descripcioInicial = llistaImatges[0]?.Descripcio || '';
+
+    // Guardem les descripcions en un atribut per canviar-les dinàmicament al canviar d'imatge
+    const JSONDescripcions = JSON.stringify(llistaImatges.map(i => i.Descripcio || '')).replace(/"/g, '&quot;');
+
+    return `
+        <div class="seccio-carrusel-projecte-targeta" id="carrusel-wrapper-${idUnic}">
+            <div class="targeta-carrusel-contenidor">
+                
+                <!-- Columna Esquerra: Carrusel -->
+                <div class="columna-carrusel-visor" style="height: ${altPX}px; width: ${Math.round(altPX * 1.33)}px;">
+                    ${llistaImatges.length > 1 ? `
+                        <button class="boto-carrusel-nav anterior" onclick="moureCarruselProjecte('${idUnic}', -1)">&#10094;</button>
+                        <button class="boto-carrusel-nav seguent" onclick="moureCarruselProjecte('${idUnic}', 1)">&#10095;</button>
+                    ` : ''}
+                    ${slidesHTML}
+                </div>
+
+                <!-- Columna Dreta: Descripció -->
+                <div class="columna-carrusel-descripcio">
+                    <p class="text-carrusel-descripcio" id="carrusel-desc-${idUnic}" data-descripcions="${JSONDescripcions}">
+                        ${descripcioInicial}
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    `;
+}
+        
+/**
+ * Controla el canvi de imatge i actualitza la descripció dinàmicament.
+ */
+function moureCarruselProjecte(idUnic, direccio) {
+    const contenidor = document.getElementById(`carrusel-wrapper-${idUnic}`);
+    if (!contenidor) return;
+
+    const slides = contenidor.querySelectorAll('.carrusel-slide-item');
+    const elemDesc = document.getElementById(`carrusel-desc-${idUnic}`);
+    const llistaDesc = JSON.parse(elemDesc.getAttribute('data-descripcions').replace(/&quot;/g, '"'));
+
+    let indexActual = 0;
+    slides.forEach((slide, idx) => {
+        if (slide.classList.contains('activa')) {
+            indexActual = idx;
+            slide.classList.remove('activa');
+        }
+    });
+
+    let nouIndex = indexActual + direccio;
+    if (nouIndex >= slides.length) nouIndex = 0;
+    if (nouIndex < 0) nouIndex = slides.length - 1;
+
+    slides[nouIndex].classList.add('activa');
+    elemDesc.textContent = llistaDesc[nouIndex] || '';
+}        
         
     </script>
 </body>
