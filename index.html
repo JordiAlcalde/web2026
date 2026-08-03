@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0052]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0053]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -1974,16 +1974,8 @@ function renderitzarBlocText(projecte, numeroBloc = 1) {
     if (!projecte) return '';
 
     // Cerca de valors amb fallback (ex: blocText1_titol, blocText_1_titol o blocText_titol)
-    const titol = projecte[`blocText${numeroBloc}_titol`] || 
-                  projecte[`blocText_${numeroBloc}_titol`] || 
-                  (numeroBloc === 1 ? (projecte.blocText_titol || projecte.titolBlocText) : '') || 
-                  '';
-
-    const text = projecte[`blocText${numeroBloc}_text`] || 
-                 projecte[`blocText_${numeroBloc}_text`] || 
-                 projecte[`blocText${numeroBloc}_descripcio`] || 
-                 (numeroBloc === 1 ? (projecte.blocText_text || projecte.descripcioBlocText) : '') || 
-                 '';
+    const titol = projecte[`blocText${numeroBloc}Titol`] || '';
+    const text = projecte[`blocText${numeroBloc}Text`] || '';
 
     // Si no hi ha cap contingut, evitem generar un bloc buit
     if (!titol && !text) return '';
