@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0039]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0040]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -1933,57 +1933,48 @@ function crearComponentVideoProjecte(item) {
         */
 
 function crearComponentVideoProjecte(item) {
-    let rawSrc = item.videoId || item.link || '';
+    const rawSrc = item.videoId || item.link || '';
     const titol = item.titol || '';
     const text = item.text || '';
     const alcadaVideo = item.alt && item.alt.trim() !== '' ? item.alt.trim() : '420px';
 
     if (!rawSrc) return '';
 
-    let videoUrl = rawSrc.trim();
-
-    // 1. Si és un ID o enllaç de Google Drive, construïm la URL absoluta de streaming directament a Drive
-    if (!videoUrl.startsWith('http://') && !videoUrl.startsWith('https://')) {
-        // És un ID pur de Drive
-        videoUrl = `https://lh3.googleusercontent.com/d/${videoUrl}`;
-    } else if (videoUrl.includes('drive.google.com')) {
-        // És un enllaç de Drive complet, n'extraiem l'ID
-        let driveId = '';
-        if (videoUrl.includes('/file/d/')) {
-            const match = videoUrl.match(/\/d\/([^\/]+)/);
-            if (match && match[1]) driveId = match[1];
-        } else if (videoUrl.includes('id=')) {
-            const match = videoUrl.match(/id=([^&]+)/);
-            if (match && match[1]) driveId = match[1];
-        }
-        
-        if (driveId) {
-            videoUrl = `https://lh3.googleusercontent.com/d/${driveId}`;
-        }
+    // Neteja de la URL per extreure l'ID pur de Drive
+    let driveId = rawSrc.trim();
+    if (driveId.includes('id=')) {
+        driveId = driveId.split('id=')[1].split('&')[0];
+    } else if (driveId.includes('/d/')) {
+        driveId = driveId.split('/d/')[1].split('/')[0];
     }
+
+    // URL optimitzada per al reproductor natiu HTML5
+    const videoUrl = `https://lh3.googleusercontent.com/d/${driveId}`;
+    
+    // Opcional: Miniatura d'alta resolució mentre es carrega el vídeo
+    const posterUrl = `https://drive.google.com/thumbnail?id=${driveId}&sz=w1200`;
 
     return `
         <div class="targeta-video-contenidor">
-            <!-- Columna Esquerra: Reproductor natiu adaptable -->
             <div class="columna-video-media-nativa" style="height: ${alcadaVideo};">
                 <video 
                     src="${videoUrl}" 
+                    poster="${posterUrl}"
                     controls 
                     playsinline 
                     preload="metadata"
-                    style="height: 100%; max-height: ${alcadaVideo};">
+                    style="height: 100%; max-height: ${alcadaVideo}; width: auto;">
                     El teu navegador no permet la reproducció de vídeo HTML5.
                 </video>
             </div>
 
-            <!-- Columna Dreta: Textos alineats a TOP -->
             <div class="columna-video-text">
                 ${titol ? `<h3 class="titol-video-targeta">${titol}</h3>` : ''}
                 ${text ? `<p class="text-video-targeta">${text}</p>` : ''}
             </div>
         </div>
     `;
-}        
+}       
 
         
     </script>
