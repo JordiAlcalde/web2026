@@ -1122,6 +1122,92 @@
 }
 
 /* ==========================================================================
+   TARGETA BLANCA D'IMATGE I TEXT (PROJECTES MÍNIM MÓN)
+   ========================================================================== */
+
+.seccio-bloc-imatge-targeta {
+    width: 100%;
+    max-width: 1100px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    box-sizing: border-box;
+}
+
+.targeta-imatge-contenidor {
+    background-color: #FFFFFF !important;
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start; /* Alineació estricta a TOP */
+    gap: 2rem;
+    box-shadow: 0 4px 18px rgba(36, 21, 63, 0.15);
+}
+
+.columna-imatge-media {
+    flex: 0 0 auto;
+    max-width: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: transparent;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.columna-imatge-media img {
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.columna-imatge-text {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    text-align: left;
+}
+
+.titol-imatge-targeta {
+    font-family: 'Montserrat', sans-serif;
+    color: #301269 !important; /* Purple fosc oficial */
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin-top: 0 !important;
+    margin-bottom: 0.8rem;
+    line-height: 1.25;
+}
+
+.text-imatge-targeta {
+    font-family: 'Montserrat', sans-serif;
+    color: #24153F !important; /* Text fosc oficial */
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Responsivitat mòbil */
+@media (max-width: 768px) {
+    .targeta-imatge-contenidor {
+        flex-direction: column;
+        padding: 1.25rem;
+        gap: 1.25rem;
+    }
+    .columna-imatge-media {
+        width: 100%;
+        height: auto !important;
+    }
+    .columna-imatge-media img {
+        width: 100%;
+        height: auto !important;
+        max-height: none !important;
+    }
+}
+
+
+
+/* ==========================================================================
    ADAPTACIÓ MÒBIL GENERAL (REVISADA I FORÇADA AL 100%)
    ========================================================================== */
 
