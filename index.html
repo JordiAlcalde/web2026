@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0046]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0047]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -1826,6 +1826,12 @@ function crearPaginaProjectes(idProjecte, llistaProjectes = []) {
         else if (blocNom === 'video1' || blocNom === 'video2') {
             const numVideo = blocNom === 'video1' ? 1 : 2;
             htmlFinal += renderitzarBlocVideo(projecte, numVideo);
+        else if (blocNom === 'imatgeText1' || blocNom === 'imatgeText2') {
+            const numImatgeText = blocNom === 'imatgeText1' ? 1 : 2;
+            htmlFinal += renderitzarBlocImatgeText(projecte, numImatgeText);            
+
+        console.log('blocNom: ',blocNom);
+        console.log('numImatgeText: ',numImatgeText);    
         }
     });
         htmlFinal += `</article>`;
