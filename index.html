@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0043]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0044]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -1979,15 +1979,14 @@ function crearComponentVideoProjecte(item) {
         */
         
 function crearComponentVideoProjecte(item) {
-    let rawSrc = item.link || item.videoId || '';
-    const ampleContenidor = item.ample && item.ample.trim() !== '' ? item.ample.trim() : '100%';
+    const rawSrc = item.videoId || item.link || '';
+    const titol = item.titol || '';
+    const text = item.text || '';
     const alcadaVideo = item.alt && item.alt.trim() !== '' ? item.alt.trim() : '420px';
-    const atributAutoplay = item.videoAutoStart ? 'autoplay muted loop' : '';
-    const atributControls = item.videoControls !== false ? 'controls' : '';
 
     if (!rawSrc) return '';
 
-    // Extracció neta de l'ID de Google Drive
+    // Extreiem l'ID net de Google Drive
     let driveId = rawSrc.trim();
     if (driveId.includes('id=')) {
         driveId = driveId.split('id=')[1].split('&')[0];
@@ -1995,35 +1994,33 @@ function crearComponentVideoProjecte(item) {
         driveId = driveId.split('/d/')[1].split('/')[0];
     }
 
-    // URL optimitzada per a reproducció oberta en línia
+    // 1. URL per al flux de vídeo
     const videoUrl = `https://drive.google.com/uc?export=open&id=${driveId}`;
+    
+    // 2. Poster / Imatge de portada directa des de Drive (garanteix el primer fotograma)
     const posterUrl = `https://drive.google.com/thumbnail?id=${driveId}&sz=w1200`;
 
-    let htmlPeu = '';
-    if (item.titol || item.descripcio) {
-        htmlPeu = `
-            <div class="video-peu-text">
-                ${item.titol ? `<h3 class="titol-video-targeta">${item.titol}</h3>` : ''}
-                ${item.descripcio ? `<p class="text-video-targeta">${item.descripcio}</p>` : ''}
-            </div>
-        `;
-    }
-
     return `
-        <div class="contenidor-video-wrapper" style="max-width: ${ampleContenidor}; margin: 0 auto;">
-            <div class="caixa-reproductor-video-adaptable" style="height: ${alcadaVideo};">
+        <div class="targeta-video-contenidor">
+            <!-- Columna Esquerra: Reproductor adaptable -->
+            <div class="columna-video-media-nativa" style="height: ${alcadaVideo};">
                 <video 
+                    src="${videoUrl}" 
                     poster="${posterUrl}"
-                    ${atributControls} 
-                    ${atributAutoplay} 
+                    controls 
                     playsinline 
                     preload="metadata"
-                    style="height: 100%; max-height: ${alcadaVideo}; width: auto; display: block; margin: 0 auto;">
+                    style="height: 100%; max-height: ${alcadaVideo}; width: auto; display: block;">
                     <source src="${videoUrl}" type="video/mp4">
                     El teu navegador no permet la reproducció de vídeo HTML5.
                 </video>
             </div>
-            ${htmlPeu}
+
+            <!-- Columna Dreta: Textos alineats a TOP -->
+            <div class="columna-video-text">
+                ${titol ? `<h3 class="titol-video-targeta">${titol}</h3>` : ''}
+                ${text ? `<p class="text-video-targeta">${text}</p>` : ''}
+            </div>
         </div>
     `;
 }
