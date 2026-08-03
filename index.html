@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0053]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0054]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -1817,13 +1817,16 @@ function crearPaginaProjectes(idProjecte, llistaProjectes = []) {
 
     // Ordre per defecte si no s'especifica al CSV
     const ordresRaw = projecte.ordre && projecte.ordre.trim() !== '' ? projecte.ordre : 'Portada;Video_1';
+    console.log("ordresRaw: ", ordresRaw);
     const ordres = ordresRaw.split(';').map(o => o.trim());
+    console.log("ordres: ", ordres);
 
     let htmlFinal = `<article class="pantalla-projecte-singular" data-id="${projecte.idProjecte}">`;
 
     ordres.forEach(bloc => {
         const blocNom = bloc.toLowerCase().replace(/_/g, '');
-
+        console.log("blocNom: ", blocNom);
+        
         // Extracció dinàmica de l'índex numèric (Ex: "video1" -> 1, "imatgetext2" -> 2)
         const numExtret = bloc.match(/\d+/);
         const numeroBloc = numExtret ? parseInt(numExtret[0], 10) : 1;
