@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0047]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0048]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -1811,33 +1811,35 @@ function crearPaginaProjectes(idProjecte, llistaProjectes = []) {
         return `<div style="padding: 4rem; text-align: center;"><h2>Projecte no trobat</h2></div>`;
     }
 
-    // Ordre per defecte si no s'especifica
+    // Ordre per defecte si no s'especifica al CSV
     const ordresRaw = projecte.ordre && projecte.ordre.trim() !== '' ? projecte.ordre : 'Portada;Video_1';
     const ordres = ordresRaw.split(';').map(o => o.trim());
 
     let htmlFinal = `<article class="pantalla-projecte-singular" data-id="${projecte.idProjecte}">`;
 
     ordres.forEach(bloc => {
-        const blocNom = bloc.toLowerCase().replace('_', '');
-        const numVideo = blocNom === 'video1' ? 1 : 2;
-        const numImatgeText = blocNom === 'imatgeText1' ? 1 : 2;
-        
-        if (blocNom === 'portada' || blocNom === 'hero') {
-            htmlFinal += renderitzarBlocPortada(projecte);} 
-        if (blocNom === 'video1' || blocNom === 'video2') {    
-            numVideo = blocNom === 'video1' ? 1 : 2;
-            htmlFinal += renderitzarBlocVideo(projecte, numVideo);}
-        if (blocNom === 'imatgeText1' || blocNom === 'imatgeText2') {   
-            numImatgeText = blocNom === 'imatgeText1' ? 1 : 2;
-            htmlFinal += renderitzarBlocImatgeText(projecte, numImatgeText);}          
+        const blocNom = bloc.toLowerCase().replace(/_/g, '');
 
-        console.log('blocNom: ', blocNom);
-        console.log('numImatgeText: ', numImatgeText);    
-         
+        // Extracció dinàmica de l'índex numèric (Ex: "video1" -> 1, "imatgetext2" -> 2)
+        const numExtret = bloc.match(/\d+/);
+        const numeroBloc = numExtret ? parseInt(numExtret[0], 10) : 1;
+
+        if (blocNom.startsWith('portada') || blocNom.startsWith('hero')) {
+            htmlFinal += renderitzarBlocPortada(projecte);
+        } 
+        else if (blocNom.startsWith('video')) {
+            htmlFinal += renderitzarBlocVideo(projecte, numeroBloc);
+        } 
+        else if (blocNom.startsWith('imatgetext') || blocNom.startsWith('imatge')) {
+            htmlFinal += renderitzarBlocImatgeText(projecte, numeroBloc);
+        }
+
+        console.log(`🧩 Processat bloc: ${bloc} -> Tipus: ${blocNom} | Ídem/Número: ${numeroBloc}`);
     });
-        htmlFinal += `</article>`;
-        return htmlFinal;
-    }
+
+    htmlFinal += `</article>`;
+    return htmlFinal;
+}
 
 // Renderitzador del bloc HERO ajustat als camps del parsejarCSVProjectes
 function renderitzarBlocPortada(p) {
