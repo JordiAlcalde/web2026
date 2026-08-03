@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0044]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0045]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -332,14 +332,14 @@
                     // getVal(6) -> Hero_Imatge_Link (Intern, s'omet)
         
                     // Video 1
-                    video1Id: getVal(7),
+                    video1Atributs: getVal(7),
                     video1Link: getVal(8),
                     video1Titol: getVal(9),
                     video1Text: getVal(10),
                     video1Alt: getVal(11),
         
                     // Video 2
-                    video2Id: getVal(12),
+                    video2Atributs: getVal(12),
                     video2Link: getVal(13),
                     video2Titol: getVal(14),
                     video2Text: getVal(15),
@@ -1865,7 +1865,7 @@ function renderitzarBlocPortada(p) {
 }
         
 function renderitzarBlocVideo(projecte, numVideo = 1) {
-    const videoId = projecte[`video${numVideo}Id`];
+    const videoAtributs = projecte[`video${numVideo}Atributs`];
     const videoTitol = projecte[`video${numVideo}Titol`] || '';
     const videoText = projecte[`video${numVideo}Text`] || '';
     const videoLink = projecte[`video${numVideo}Link`] || '';
@@ -1877,13 +1877,11 @@ function renderitzarBlocVideo(projecte, numVideo = 1) {
     }
 
     const itemVideo = {
-        videoId: videoId.trim(),
+        atributs: videoAtributs.trim(),
         titol: videoTitol.trim(),
         text: videoText.trim(),
         link: videoLink.trim(),
-        alt: videoAlt.trim(),
-        videoControls: true,
-        videoAutoStart: false
+        alt: videoAlt.trim()
     };
 
     return `
@@ -1893,125 +1891,24 @@ function renderitzarBlocVideo(projecte, numVideo = 1) {
     `;
 }
 
-        /*
-function crearComponentVideoProjecte(item) {
-    const rawSrc = item.videoId || item.link || '';
-    const titol = item.titol || '';
-    const text = item.text || '';
-    
-    if (!rawSrc) return '';
-
-    // Gestionem l'alçada personalitzada des del full de dades (p. ex: '450px', '500px' o 'auto')
-    const alcadaVideo = item.alt && item.alt.trim() !== '' ? item.alt.trim() : '420px';
-    
-    // Atributs per al reproductor HTML5
-    const atributAutoplay = item.videoAutoStart ? 'autoplay muted loop' : '';
-    const atributControls = item.videoControls !== false ? 'controls' : 'controls';
-
-    return `
-        <div class="targeta-video-contenidor">
-            <!-- Columna Esquerra: Reproductor natiu adaptable -->
-            <div class="columna-video-media-nativa" style="height: ${alcadaVideo};">
-                <video 
-                    src="${rawSrc}" 
-                    ${atributControls} 
-                    ${atributAutoplay} 
-                    playsinline 
-                    preload="metadata"
-                    style="height: 100%; max-height: ${alcadaVideo};">
-                    El teu navegador no permet la reproducció de vídeo HTML5.
-                </video>
-            </div>
-
-            <!-- Columna Dreta: Textos alineats a TOP -->
-            <div class="columna-video-text">
-                ${titol ? `<h3 class="titol-video-targeta">${titol}</h3>` : ''}
-                ${text ? `<p class="text-video-targeta">${text}</p>` : ''}
-            </div>
-        </div>
-    `;
-}
-        
-
-function crearComponentVideoProjecte(item) {
-    const rawSrc = item.videoId || item.link || '';
-    const titol = item.titol || '';
-    const text = item.text || '';
-    const alcadaVideo = item.alt && item.alt.trim() !== '' ? item.alt.trim() : '420px';
-
-    if (!rawSrc) return '';
-
-    // Neteja de la URL per extreure l'ID pur de Drive
-    let driveId = rawSrc.trim();
-    if (driveId.includes('id=')) {
-        driveId = driveId.split('id=')[1].split('&')[0];
-    } else if (driveId.includes('/d/')) {
-        driveId = driveId.split('/d/')[1].split('/')[0];
-    }
-
-    // URL optimitzada per al reproductor natiu HTML5
-    const videoUrl = `https://lh3.googleusercontent.com/d/${driveId}`;
-    
-    // Opcional: Miniatura d'alta resolució mentre es carrega el vídeo
-    const posterUrl = `https://drive.google.com/thumbnail?id=${driveId}&sz=w1200`;
-
-    return `
-        <div class="targeta-video-contenidor">
-            <div class="columna-video-media-nativa" style="height: ${alcadaVideo};">
-                <video 
-                    src="${videoUrl}" 
-                    poster="${posterUrl}"
-                    controls 
-                    playsinline 
-                    preload="metadata"
-                    style="height: 100%; max-height: ${alcadaVideo}; width: auto;">
-                    El teu navegador no permet la reproducció de vídeo HTML5.
-                </video>
-            </div>
-
-            <div class="columna-video-text">
-                ${titol ? `<h3 class="titol-video-targeta">${titol}</h3>` : ''}
-                ${text ? `<p class="text-video-targeta">${text}</p>` : ''}
-            </div>
-        </div>
-    `;
-}       
-
-        */
         
 function crearComponentVideoProjecte(item) {
     // const rawSrc = item.videoId || item.link || '';
-    const rawSrc = item.link || '';
+    const srcVideo = item.link || '';
     const titol = item.titol || '';
     const text = item.text || '';
     const alcadaVideo = item.alt && item.alt.trim() !== '' ? item.alt.trim() : '420px';
-    const atributAutoplay = 'autoplay muted loop';
-    const atributControls = 'controls';
+    const atributs = item.atributs || 'controls';
     
-    if (!rawSrc) return '';
-
-    // Extreiem l'ID net de Google Drive
-    //let driveId = rawSrc.trim();
-    //if (driveId.includes('id=')) {
-    //    driveId = driveId.split('id=')[1].split('&')[0];
-    //} else if (driveId.includes('/d/')) {
-    //    driveId = driveId.split('/d/')[1].split('/')[0];
-    //}
-
-    // 1. URL per al flux de vídeo
-    //const videoUrl = `https://drive.google.com/uc?export=open&id=${driveId}`;
-    
-    // 2. Poster / Imatge de portada directa des de Drive (garanteix el primer fotograma)
-    //const posterUrl = `https://drive.google.com/thumbnail?id=${driveId}&sz=w1200`;
+    if (!srcVideo) return '';
 
     return `
         <div class="targeta-video-contenidor">
             <!-- Columna Esquerra: Reproductor adaptable -->
             <div class="columna-video-media-nativa" style="height: ${alcadaVideo};">
                 <video 
-                    src="${rawSrc}"                     
-                    ${atributControls} 
-                    ${atributAutoplay} 
+                    src="${srcVideo}"                     
+                    ${atributs} 
                     playsinline 
                     preload="metadata"
                     style="height: 100%; max-height: ${alcadaVideo}; width: auto; display: block;">                    
