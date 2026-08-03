@@ -1935,9 +1935,9 @@ function crearComponentVideoProjecte(item) {
 
 function renderitzarBlocImatgeText(projecte, numBloc = 1) {
     // Lectura dels camps parsejats des de Sheets
-    const imatgeId = projecte[`ImatgetText_${numBloc}_ID`] || projecte[`imatgetText_${numBloc}_id`] || projecte[`imatgetText${numBloc}Id`] || '';
-    const imatgeTitol = projecte[`ImatgetText_${numBloc}_Titol`] || projecte[`imatgetText${numBloc}Titol`] || '';
-    const imatgeText = projecte[`ImatgetText_${numBloc}_Text`] || projecte[`imatgetText${numBloc}Text`] || '';
+    const imatgeId = projecte[`ImatgeText_${numBloc}_ID`] || projecte[`imatgeText_${numBloc}_id`] || projecte[`imatgeText${numBloc}Id`] || '';
+    const imatgeTitol = projecte[`ImatgeText_${numBloc}_Titol`] || projecte[`imatgeText${numBloc}Titol`] || '';
+    const imatgeText = projecte[`ImatgeText_${numBloc}_Text`] || projecte[`imatgeText${numBloc}Text`] || '';
     const imatgeAlt = projecte[`Imatge_${numBloc}_Alt`] || projecte[`imatge_${numBloc}_alt`] || projecte[`imatge${numBloc}Alt`] || '420px';
 
     if (!imatgeId || imatgeId.trim() === '') return '';
