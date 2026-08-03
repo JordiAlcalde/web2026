@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0037]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0038]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -336,36 +336,40 @@
                     // getVal(8) -> Video_1_Link (Intern, s'omet)
                     video1Titol: getVal(9),
                     video1Text: getVal(10),
+                    video1Alt: getVal(11),
         
                     // Video 2
-                    video2Id: getVal(11),
+                    video2Id: getVal(12),
                     // getVal(12) -> Video_2_Link (Intern, s'omet)
-                    video2Titol: getVal(13),
-                    video2Text: getVal(14),
+                    video2Titol: getVal(14),
+                    video2Text: getVal(15),
+                    video2Alt: getVal(16),
         
                     // ImatgeText 1
-                    imatgeText1Id: getVal(15),
+                    imatgeText1Id: getVal(17),
                     // getVal(16) -> ImatgeText1_Link (Intern, s'omet)
-                    imatgeText1Titol: getVal(17),
-                    imatgeText1Text: getVal(18),
+                    imatgeText1Titol: getVal(19),
+                    imatgeText1Text: getVal(20),
+                    imatge1Alt: getVal(21),
         
                     // ImatgeText 2
-                    imatgeText2Id: getVal(19),
+                    imatgeText2Id: getVal(22),
                     // getVal(20) -> ImatgeText_2_Link (Intern, s'omet)
-                    imatgeText2Titol: getVal(21),
-                    imatgeText2Text: getVal(22),
+                    imatgeText2Titol: getVal(24),
+                    imatgeText2Text: getVal(25),
+                    imatge2Alt: getVal(26),
         
                     // BlocText 1
-                    blocText1Titol: getVal(23),
-                    blocText1Text: getVal(24),
+                    blocText1Titol: getVal(27),
+                    blocText1Text: getVal(28),
         
                     // BlocText 2
-                    blocText2Titol: getVal(25),
-                    blocText2Text: getVal(26),
+                    blocText2Titol: getVal(29),
+                    blocText2Text: getVal(30),
         
                     // Opcions finals
-                    carrusel: getBool(27),       // Si / No
-                    galeriaActivaId: getVal(28)
+                    carrusel: getBool(31),       // Si / No
+                    galeriaActivaId: getVal(32)
                 };
             }).filter(item => item.idProjecte !== '' && item.estat.toLowerCase() !== 'inactiu');
         }
@@ -686,16 +690,7 @@
             }
         }
 
-        /*
-        Versió cOK abans d'incorporar contingut a Projectes
-        function carregarPaginaProjectes(idProjecte) {
-            const main = document.getElementById('seccions-contenidor');
-            if (main) {
-                main.innerHTML = crearPaginaProjectes(idProjecte);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-        }
-        */
+
 
 function carregarPaginaProjectes(idProjecte) {
     console.log("🔍 [1] carregarPaginaProjectes cridada amb idProjecte:", idProjecte);
@@ -1869,10 +1864,12 @@ function renderitzarBlocPortada(p) {
     `;
 }
         
-function renderitzarBlocVideo(projecte, numVideo) {
-    const videoId = projecte[`video${numVideo}Id`];
+function renderitzarBlocVideo(projecte, numVideo = 1) {
+    const videoId = projecte[`video${numVideo}Id` style="margin-top:0;"];
     const videoTitol = projecte[`video${numVideo}Titol`] || '';
     const videoText = projecte[`video${numVideo}Text`] || '';
+    // Nova variable d'alçada des de la fulla de dades
+    const videoAlt = projecte[`video${numVideo}Alt`] || projecte[`video${numVideo}Alcada`] || '420px';
 
     if (!videoId || videoId.trim() === '') {
         console.warn(`⚠️ No s'ha trobat l'enllaç del vídeo per al bloc Video_${numVideo}`);
@@ -1883,6 +1880,7 @@ function renderitzarBlocVideo(projecte, numVideo) {
         videoId: videoId.trim(),
         titol: videoTitol.trim(),
         text: videoText.trim(),
+        alt: videoAlt.trim(),
         videoControls: true,
         videoAutoStart: false
     };
@@ -1896,35 +1894,32 @@ function renderitzarBlocVideo(projecte, numVideo) {
 
         
 function crearComponentVideoProjecte(item) {
-    let rawSrc = item.videoId || item.link || '';
+    const rawSrc = item.videoId || item.link || '';
     const titol = item.titol || '';
     const text = item.text || '';
     
     if (!rawSrc) return '';
 
-    // Extreiem només l'ID net de Google Drive
-    let driveId = rawSrc.trim();
-    if (driveId.includes('/file/d/')) {
-        const match = driveId.match(/\/d\/([^\/]+)/);
-        if (match && match[1]) driveId = match[1];
-    } else if (driveId.includes('id=')) {
-        const match = driveId.match(/id=([^&]+)/);
-        if (match && match[1]) driveId = match[1];
-    }
-
-    // URL oficial d'incrustació (preview) de Google Drive
-    const iframeUrl = `https://drive.google.com/file/d/${driveId}/preview`;
+    // Gestionem l'alçada personalitzada des del full de dades (p. ex: '450px', '500px' o 'auto')
+    const alcadaVideo = item.alt && item.alt.trim() !== '' ? item.alt.trim() : '420px';
+    
+    // Atributs per al reproductor HTML5
+    const atributAutoplay = item.videoAutoStart ? 'autoplay muted loop' : '';
+    const atributControls = item.videoControls !== false ? 'controls' : 'controls';
 
     return `
         <div class="targeta-video-contenidor">
-            <!-- Columna Esquerra: Reproductor adaptable de Google Drive -->
-            <div class="columna-video-media-flexible">
-                <iframe 
-                    src="${iframeUrl}" 
-                    title="${titol || 'Vídeo de Mínim Món'}" 
-                    allow="autoplay" 
-                    allowfullscreen>
-                </iframe>
+            <!-- Columna Esquerra: Reproductor natiu adaptable -->
+            <div class="columna-video-media-nativa" style="height: ${alcadaVideo};">
+                <video 
+                    src="${rawSrc}" 
+                    ${atributControls} 
+                    ${atributAutoplay} 
+                    playsinline 
+                    preload="metadata"
+                    style="height: 100%; max-height: ${alcadaVideo};">
+                    El teu navegador no permet la reproducció de vídeo HTML5.
+                </video>
             </div>
 
             <!-- Columna Dreta: Textos alineats a TOP -->
