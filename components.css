@@ -1038,7 +1038,7 @@
 }
 
 /* ==========================================================================
-   TARGETA BLANCA AMB VÍDEO HTML5 ADAPTABLE
+   TARGETA BLANCA AMB VÍDEO HTML5 ADAPTABLE (MÍNIM MÓN)
    ========================================================================== */
 
 .seccio-bloc-video-targeta {
@@ -1057,27 +1057,35 @@
     flex-direction: row;
     align-items: flex-start; /* Alineació estricta a TOP */
     gap: 2rem;
-    box-shadow: 0 4px 15px rgba(36, 21, 63, 0.15);
+    box-shadow: 0 4px 18px rgba(36, 21, 63, 0.15); /* Ombra amb el fosc #24153F */
 }
 
+/* Columna del reproductor de vídeo */
 .columna-video-media-nativa {
-    flex: 0 0 auto;           /* No es deforma, respecta l'amplada i alçada del contingut */
+    flex: 0 0 auto;
+    width: auto;
     max-width: 100%;
     border-radius: 8px;
     overflow: hidden;
-    background-color: #000000;
+    background-color: #24153F; /* Fons fosc oficial de la paleta */
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.columna-video-media-nativa video {
+/* Comportament del vídeo en ordinador (PC) */
+.columna-video-media-nativa video,
+.video-responsive-mm {
     width: auto;
-    object-fit: contain;      /* Respecta la proporció exacta de la fusta/escena */
+    max-width: 100%;
+    height: auto;
+    max-height: var(--max-altura-desitjada, 420px);
+    object-fit: contain; /* Respecta la proporció exacta de la fusta/escena */
     border-radius: 8px;
     display: block;
 }
 
+/* Columna de text */
 .columna-video-text {
     flex: 1 1 auto;
     display: flex;
@@ -1089,7 +1097,7 @@
 
 .titol-video-targeta {
     font-family: var(--font-principal, 'Montserrat', sans-serif);
-    color: var(--color-primari, #301269) !important;
+    color: var(--color-primari, #301269) !important; /* Lila fosc principal */
     font-size: 1.4rem;
     font-weight: 700;
     margin-top: 0 !important;
@@ -1099,25 +1107,35 @@
 
 .text-video-targeta {
     font-family: var(--font-principal, 'Montserrat', sans-serif);
-    color: var(--color-fons-fosc, #24153F) !important;
+    color: var(--color-fons-fosc, #24153F) !important; /* Text fosc oficial */
     font-size: 0.95rem;
     line-height: 1.6;
     margin: 0;
 }
 
-/* Adaptació mòbil */
+/* ==========================================================================
+   RESPONSIVITAT MÒBIL (Ajustos de pantalla petita)
+   ========================================================================== */
+
 @media (max-width: 768px) {
     .targeta-video-contenidor {
         flex-direction: column;
-        padding: 1rem;
+        padding: 1.25rem;
+        gap: 1.25rem;
     }
+
     .columna-video-media-nativa {
         width: 100%;
         height: auto !important;
     }
-    .columna-video-media-nativa video {
-        width: 100%;
+
+    /* En mòbil el vídeo s'ajusta al 100% de l'amplada i calcula l'alçada automàticament */
+    .columna-video-media-nativa video,
+    .video-responsive-mm {
+        width: 100% !important;
         height: auto !important;
+        max-height: none !important; /* Elimina la restricció fixa en PX */
+        object-fit: cover;
     }
 }
 
