@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0040]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0041]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -1930,7 +1930,7 @@ function crearComponentVideoProjecte(item) {
         </div>
     `;
 }
-        */
+        
 
 function crearComponentVideoProjecte(item) {
     const rawSrc = item.videoId || item.link || '';
@@ -1976,6 +1976,49 @@ function crearComponentVideoProjecte(item) {
     `;
 }       
 
+        */
+        
+function crearComponentVideoProjecte(item) {
+    const rawSrc = item.videoId || item.link || '';
+    const titol = item.titol || '';
+    const text = item.text || '';
+    const alcadaVideo = item.alt && item.alt.trim() !== '' ? item.alt.trim() : '420px';
+
+    if (!rawSrc) return '';
+
+    // Extreiem l'ID net de Google Drive
+    let driveId = rawSrc.trim();
+    if (driveId.includes('id=')) {
+        driveId = driveId.split('id=')[1].split('&')[0];
+    } else if (driveId.includes('/d/')) {
+        driveId = driveId.split('/d/')[1].split('/')[0];
+    }
+
+    // URL de descàrrega directa que permet la reproducció de vídeo HTML5 fluida i activa els controls
+    const videoUrl = `https://drive.google.com/uc?export=download&id=${driveId}`;
+
+    return `
+        <div class="targeta-video-contenidor">
+            <!-- Columna Esquerra: Reproductor natiu adaptable -->
+            <div class="columna-video-media-nativa" style="height: ${alcadaVideo};">
+                <video 
+                    src="${videoUrl}" 
+                    controls 
+                    playsinline 
+                    preload="auto"
+                    style="height: 100%; max-height: ${alcadaVideo}; width: auto; display: block;">
+                    El teu navegador no permet la reproducció de vídeo HTML5.
+                </video>
+            </div>
+
+            <!-- Columna Dreta: Textos alineats a TOP -->
+            <div class="columna-video-text">
+                ${titol ? `<h3 class="titol-video-targeta">${titol}</h3>` : ''}
+                ${text ? `<p class="text-video-targeta">${text}</p>` : ''}
+            </div>
+        </div>
+    `;
+}
         
     </script>
 </body>
