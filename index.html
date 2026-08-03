@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0045]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0046]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -1871,7 +1871,7 @@ function renderitzarBlocVideo(projecte, numVideo) {
     const videoLink = projecte[`video${numVideo}Link`] || '';
     const videoAlt = projecte[`video${numVideo}Alt`] || '420px';
 
-    if (!videoId || videoId.trim() === '') {
+    if (!videoLink || videoLink.trim() === '') {
         console.warn(`⚠️ No s'ha trobat l'enllaç del vídeo per al bloc Video_${numVideo}`);
         return '';
     }
@@ -1893,7 +1893,6 @@ function renderitzarBlocVideo(projecte, numVideo) {
 
         
 function crearComponentVideoProjecte(item) {
-    // const rawSrc = item.videoId || item.link || '';
     const srcVideo = item.link || '';
     const titol = item.titol || '';
     const text = item.text || '';
