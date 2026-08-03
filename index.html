@@ -1964,6 +1964,43 @@ function renderitzarBlocImatgeText(projecte, numBloc = 1) {
     `;
 }
 
+/**
+ * Genera el component de Targeta d'Imatge + Text per als projectes de Mínim Món.
+ * @param {Object} item - Objecte amb l'ID net de Drive, titol, text i alt (alçada).
+ * @returns {string} Codi HTML estructurat.
+ */
+function crearComponentImatgeTextProjecte(item) {
+    const driveId = (item.id || item.imatgeId || '').trim();
+    const titol = item.titol || '';
+    const text = item.text || item.descripcio || '';
+    const alcadaImatge = item.alt && item.alt.trim() !== '' ? item.alt.trim() : '420px';
+    const altText = item.altText || titol || 'Mínim Món';
+
+    if (!driveId) return '';
+
+    const srcImatge = `https://drive.google.com/thumbnail?id=${driveId}&sz=w1600`;
+
+    return `
+        <div class="targeta-imatge-contenidor">
+            <!-- Columna Esquerra: Contenidor d'imatge flexible -->
+            <div class="columna-imatge-media" style="--max-altura-desitjada: ${alcadaImatge};">
+                <img 
+                    src="${srcImatge}" 
+                    alt="${altText}" 
+                    loading="lazy"
+                    class="imatge-responsive-mm"
+                />
+            </div>
+
+            <!-- Columna Dreta: Text alineat a TOP -->
+            <div class="columna-imatge-text">
+                ${titol ? `<h3 class="titol-imatge-targeta">${titol}</h3>` : ''}
+                ${text ? `<p class="text-imatge-targeta">${text}</p>` : ''}
+            </div>
+        </div>
+    `;
+}    
+        
         
 /**
  * Renderitza un bloc de text extret de les propietats del projecte segons el seu número de bloc.
