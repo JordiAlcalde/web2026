@@ -1933,29 +1933,23 @@ function crearComponentVideoProjecte(item) {
     `;
 }
 
-function renderitzarBlocImatgeText(projecte, numImatgeText) {
-    const videoAtributs = projecte[`video${numVideo}Atributs`];
-    const videoTitol = projecte[`video${numVideo}Titol`] || '';
-    const videoText = projecte[`video${numVideo}Text`] || '';
-    const videoLink = projecte[`video${numVideo}Link`] || '';
-    const videoAlt = projecte[`video${numVideo}Alt`] || '420px';
+function renderitzarBlocImatgeText(projecte, numBloc = 1) {
+    // Lectura dels camps parsejats des de Sheets
+    const imatgeId = projecte[`ImatgetText_${numBloc}_ID`] || projecte[`imatgetText_${numBloc}_id`] || projecte[`imatgetText${numBloc}Id`] || '';
+    const imatgeTitol = projecte[`ImatgetText_${numBloc}_Titol`] || projecte[`imatgetText${numBloc}Titol`] || '';
+    const imatgeText = projecte[`ImatgetText_${numBloc}_Text`] || projecte[`imatgetText${numBloc}Text`] || '';
+    const imatgeAlt = projecte[`Imatge_${numBloc}_Alt`] || projecte[`imatge_${numBloc}_alt`] || projecte[`imatge${numBloc}Alt`] || '420px';
 
-    if (!videoLink || videoLink.trim() === '') {
-        console.warn(`⚠️ No s'ha trobat l'enllaç del vídeo per al bloc Video_${numVideo}`);
-        return '';
-    }
-
-    const itemVideo = {
-        atributs: videoAtributs.trim(),
-        titol: videoTitol.trim(),
-        text: videoText.trim(),
-        link: videoLink.trim(),
-        alt: videoAlt.trim()
-    };
+    if (!imatgeId || imatgeId.trim() === '') return '';
 
     return `
-        <section class="seccio-bloc-video-targeta">
-            ${crearComponentVideoProjecte(itemVideo)}
+        <section class="seccio-bloc-imatge-targeta">
+            ${crearComponentImatgeTextProjecte({
+                id: imatgeId.trim(),
+                titol: imatgeTitol.trim(),
+                text: imatgeText.trim(),
+                alt: imatgeAlt.trim()
+            })}
         </section>
     `;
 }
