@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0051]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0052]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -1963,74 +1963,54 @@ function renderitzarBlocImatgeText(projecte, numBloc = 1) {
 
         
 /**
- * Genera el component de Targeta d'Imatge + Text per als projectes de Mínim Món.
- * @param {Object} item - Objecte amb l'ID net de Drive, titol, text i alt (alçada).
+ * Renderitza un bloc de text extret de les propietats del projecte segons el seu número de bloc.
+ * Retorna la cadena HTML per concatenar directament dins de crearPaginaProjectes.
+ * 
+ * @param {Object} projecte - Objecte de dades del projecte (CSV parsEJat).
+ * @param {number} numeroBloc - Índex del bloc (ex: 1 per a blocText_1).
  * @returns {string} Codi HTML estructurat.
  */
-function crearComponentImatgeTextProjecte(item) {
-    const driveId = (item.id || item.imatgeId || '').trim();
-    const titol = item.titol || '';
-    const text = item.text || item.descripcio || '';
-    const alcadaImatge = item.alt && item.alt.trim() !== '' ? item.alt.trim() : '420px';
-    const altText = item.altText || titol || 'Mínim Món';
+function renderitzarBlocText(projecte, numeroBloc = 1) {
+    if (!projecte) return '';
 
-    if (!driveId) return '';
+    // Cerca de valors amb fallback (ex: blocText1_titol, blocText_1_titol o blocText_titol)
+    const titol = projecte[`blocText${numeroBloc}_titol`] || 
+                  projecte[`blocText_${numeroBloc}_titol`] || 
+                  (numeroBloc === 1 ? (projecte.blocText_titol || projecte.titolBlocText) : '') || 
+                  '';
 
-    const srcImatge = `https://drive.google.com/thumbnail?id=${driveId}&sz=w1600`;
+    const text = projecte[`blocText${numeroBloc}_text`] || 
+                 projecte[`blocText_${numeroBloc}_text`] || 
+                 projecte[`blocText${numeroBloc}_descripcio`] || 
+                 (numeroBloc === 1 ? (projecte.blocText_text || projecte.descripcioBlocText) : '') || 
+                 '';
 
-    return `
-        <div class="targeta-imatge-contenidor">
-            <!-- Columna Esquerra: Contenidor d'imatge flexible -->
-            <div class="columna-imatge-media" style="--max-altura-desitjada: ${alcadaImatge};">
-                <img 
-                    src="${srcImatge}" 
-                    alt="${altText}" 
-                    loading="lazy"
-                    class="imatge-responsive-mm"
-                />
-            </div>
+    // Si no hi ha cap contingut, evitem generar un bloc buit
+    if (!titol && !text) return '';
 
-            <!-- Columna Dreta: Text alineat a TOP -->
-            <div class="columna-imatge-text">
-                ${titol ? `<h3 class="titol-imatge-targeta">${titol}</h3>` : ''}
-                ${text ? `<p class="text-imatge-targeta">${text}</p>` : ''}
-            </div>
-        </div>
-    `;
-}    
-
-/**
- * Renderitza un bloc de text dins d'un contenidor específic.
- * @param {HTMLElement|string} contenidor - Element DOM o ID de l'element on s'injectarà.
- * @param {Object} dadesBloc - Objecte amb { titol, text }.
- */
-function renderitzarBlocText(contenidor, dadesBloc) {
-    const pare = typeof contenidor === 'string' ? document.getElementById(contenidor) : contenidor;
-    
-    if (!pare) {
-        console.error("No s'ha trobat el contenidor per renderitzar el bloc de text.");
-        return;
-    }
-
-    if (!dadesBloc || !dadesBloc.titol) return;
-
-    const blocElement = crearComponentBlocTextProjecte(dadesBloc.titol, dadesBloc.text);
-    pare.appendChild(blocElement);
+    return crearComponentBlocTextProjecte({ titol, text });
 }
 
+/**
+ * Genera l'estructura HTML del component Bloc Text per a Mínim Món.
+ * Utilitza les classes CSS de marca (.mm-bloc-text-container, etc.).
+ * 
+ * @param {Object} item - Objecte amb { titol, text }.
+ * @returns {string} Codi HTML en format String.
+ */
 function crearComponentBlocTextProjecte(item) {
     const titol = item.titol || '';
     const text = item.text || item.descripcio || '';
 
     return `
-        <div class="targeta-imatge-contenidor">
-            <div class="columna-imatge-text">
-                ${titol ? `<h3 class="titol-imatge-targeta">${titol}</h3>` : ''}
-                ${text ? `<p class="text-imatge-targeta">${text}</p>` : ''}
+        <section class="mm-bloc-text-container">
+            <div class="mm-bloc-text-content">
+                ${titol ? `<h2 class="mm-bloc-text-title">${titol}</h2>` : ''}
+                ${text ? `<p class="mm-bloc-text-body">${text}</p>` : ''}
             </div>
-        </div>
+        </section>
     `;
-}          
+}       
         
     </script>
 </body>
