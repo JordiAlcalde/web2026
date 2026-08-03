@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0050]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0051]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -2014,7 +2014,7 @@ function renderitzarBlocText(contenidor, dadesBloc) {
 
     if (!dadesBloc || !dadesBloc.titol) return;
 
-    const blocElement = crearComponentTextProjecte(dadesBloc.titol, dadesBloc.text);
+    const blocElement = crearComponentBlocTextProjecte(dadesBloc.titol, dadesBloc.text);
     pare.appendChild(blocElement);
 }
 
@@ -2024,7 +2024,6 @@ function crearComponentBlocTextProjecte(item) {
 
     return `
         <div class="targeta-imatge-contenidor">
-            <!-- Columna Dreta: Text alineat a TOP -->
             <div class="columna-imatge-text">
                 ${titol ? `<h3 class="titol-imatge-targeta">${titol}</h3>` : ''}
                 ${text ? `<p class="text-imatge-targeta">${text}</p>` : ''}
