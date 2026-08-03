@@ -1819,8 +1819,8 @@ function crearPaginaProjectes(idProjecte, llistaProjectes = []) {
 
     ordres.forEach(bloc => {
         const blocNom = bloc.toLowerCase().replace('_', '');
-        const numVideo
-        const numImatgeText
+        const numVideo = blocNom === 'video1' ? 1 : 2;
+        const numImatgeText = blocNom === 'imatgeText1' ? 1 : 2;
         
         if (blocNom === 'portada' || blocNom === 'hero') {
             htmlFinal += renderitzarBlocPortada(projecte);} 
