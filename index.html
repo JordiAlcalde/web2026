@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0061]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0062]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -2099,8 +2099,13 @@ function crearComponentBlocTextProjecte(item) {
  * Renderitza el carrusel d'un projecte.
  */
 function renderitzarCarrusel(projecte, mapCarrusels) {
-    if (!projecte) return '';
+    if (!projecte) {
+        console.warn("⚠️ [Carrusel Debug] 'projecte' és null o undefined");
+        return '';
+    }
 
+    console.log("🔍 [Carrusel Debug] Dades rebudes:", { projecte, mapCarrusels });
+    
     // 1. Lectura robusta de l'ID del projecte (cobreix idProjecte, ID_Projecte i id)
     const idProjecte = projecte.idProjecte || projecte.ID_Projecte || projecte.id || '';
     
@@ -2108,6 +2113,18 @@ function renderitzarCarrusel(projecte, mapCarrusels) {
     const teCarrusel = projecte.carrusel && projecte.carrusel.toString().trim().toLowerCase() === 'si';
 
     // 3. Validació de seguretat
+    console.log(`🔍 [Carrusel Debug] ID: ${idProjecte} | camp carrusel: "${projecte.carrusel}" -> teCarrusel: ${teCarrusel}`);
+
+    if (!teCarrusel) {
+        console.warn("⚠️ [Carrusel Debug] Aturat: El camp 'carrusel' a Sheets no és 'Si'");
+        return '';
+    }
+
+    if (!idProjecte || !mapCarrusels) {
+        console.warn("⚠️ [Carrusel Debug] Aturat: Falta idProjecte o mapCarrusels");
+        return '';
+    }
+    
     if (!teCarrusel || !idProjecte || !mapCarrusels || typeof mapCarrusels !== 'object') {
         return '';
     }
@@ -2115,6 +2132,7 @@ function renderitzarCarrusel(projecte, mapCarrusels) {
     // 4. Obtenció de les imatges del mapa
     const llistaImatges = mapCarrusels[idProjecte];
     if (!llistaImatges || llistaImatges.length === 0) {
+        console.warn(`⚠️ [Carrusel Debug] Aturat: No s'han trobat imatges al mapCarrusels per a l'ID ${idProjecte}`);
         return '';
     }
 
