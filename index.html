@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0071]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0072]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -2186,34 +2186,69 @@ function crearComponentCarruselProjecte(llistaImatges, carruselAlt, idUnic) {
 }
         
 
+// Variable global o de mòdul per controlar el temporitzador
+let carruselTimer = null;
+const CADENCIA_MS = 4000; // Temps en mil·lisegons (4 segons)
+
 /**
- * Controla el canvi de diapositiva i text del carrusel de projecte.
+ * Mou la diapositiva i reinicia el temps d'espera
  */
 function moureCarruselProjecte(idUnic, direccio) {
     const contenidor = document.getElementById(`carrusel-projecte-wrapper-${idUnic}`);
     if (!contenidor) return;
 
     const slides = contenidor.querySelectorAll('.carrusel-projecte-slide-item');
-    const elemDesc = document.getElementById(`carrusel-projecte-desc-${idUnic}`);
-    if (!elemDesc) return;
+    let indexActiu = Array.from(slides).findIndex(s => s.classList.contains('activa'));
 
-    const llistaDesc = JSON.parse(elemDesc.getAttribute('data-descripcions').replace(/&quot;/g, '"'));
+    // Treure classe activa a l'actual
+    slides[indexActiu].classList.remove('activa');
 
-    let indexActual = 0;
-    slides.forEach((slide, idx) => {
-        if (slide.classList.contains('activa')) {
-            indexActual = idx;
-            slide.classList.remove('activa');
-        }
-    });
-
-    let nouIndex = indexActual + direccio;
-    if (nouIndex >= slides.length) nouIndex = 0;
-    if (nouIndex < 0) nouIndex = slides.length - 1;
-
+    // Calcular nou índex
+    let nouIndex = (indexActiu + direccio + slides.length) % slides.length;
     slides[nouIndex].classList.add('activa');
-    elemDesc.textContent = llistaDesc[nouIndex] || '';
-}     
+
+    // Actualitzar la descripció si existeix el dades de text
+    const textEl = document.getElementById(`carrusel-projecte-desc-${idUnic}`);
+    if (textEl && textEl.dataset.descripcions) {
+        const llistaDesc = JSON.parse(textEl.dataset.descripcions);
+        if (llistaDesc[nouIndex]) {
+            textEl.textContent = llistaDesc[nouIndex];
+        }
+    }
+
+    // Reiniciar el compte enrere quan l'usuari fa clic manualment
+    reiniciarAutoplay(idUnic, slides.length);
+}
+
+/**
+ * Inicia el desplaçament automàtic
+ */
+function iniciarAutoplay(idUnic, totalSlides) {
+    if (totalSlides <= 1) return; // Si només hi ha 1 imatge, no fa falta carrusel
+    
+    pararAutoplay(); // Evita duplicar temporitzadors
+    carruselTimer = setInterval(() => {
+        moureCarruselProjecte(idUnic, 1);
+    }, CADENCIA_MS);
+}
+
+/**
+ * Atura el temporitzador
+ */
+function pararAutoplay() {
+    if (carruselTimer) {
+        clearInterval(carruselTimer);
+        carruselTimer = null;
+    }
+}
+
+/**
+ * Reinicia el temporitzador des de zero quan l'usuari interactua
+ */
+function reiniciarAutoplay(idUnic, totalSlides) {
+    pararAutoplay();
+    iniciarAutoplay(idUnic, totalSlides);
+}
         
     </script>
 </body>
