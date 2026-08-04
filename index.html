@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0083]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0084]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -1132,9 +1132,13 @@
         
                 const enllac = item.linkBoto || item.link || '';
                 const teEnllac = enllac !== '' && enllac !== '#' && enllac !== '#N/A';
+                console.log("Enllaç: ", enllac);
+                console.log("teEnllac: ", teEnllac);
+                
         
                 if (teEnllac) {
                     card.classList.add('es-clicable');
+                    card.style.cursor = 'pointer';
                     card.addEventListener('click', (e) => {
                         e.preventDefault();
                         e.stopPropagation();
