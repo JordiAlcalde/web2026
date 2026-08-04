@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0065]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0066]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -2152,7 +2152,7 @@ function renderitzarCarrusel(projecte, mapCarrusels) {
 /**
  * Genera el component de carrusel d'imatges per a un projecte.
  * 
- * @param {Array} llistaImatges - Llista d'objectes del full "Carrusels" { Link_Imatge, Descripcio }
+ * @param {Array} llistaImatges - Llista d'objectes del full "Carrusels"
  * @param {number|string} carruselAlt - Valor 'carrusel_Alt' de Sheets (alçada en px)
  * @param {string} idUnic - Identificador únic per al control JS del carrusel
  * @returns {string} Codi HTML estructurat.
@@ -2162,24 +2162,44 @@ function crearComponentCarruselProjecte(llistaImatges, carruselAlt, idUnic) {
 
     const altPX = carruselAlt ? parseInt(carruselAlt) : 380;
     
-    // Generació de les diapositives
-    const slidesHTML = llistaImatges.map((img, idx) => `
-        <div class="carrusel-slide-item ${idx === 0 ? 'activa' : ''}" data-index="${idx}">
-            <img src="${img.Link_Imatge}" alt="${img.Descripcio || 'Imatge del projecte'}" />
-        </div>
-    `).join('');
+    // Generació de les diapositives amb la URL de Drive BEN FORMATADA
+    const slidesHTML = llistaImatges.map((img, idx) => {
+        // Lectura robusta de l'ID o enllaç de la imatge
+        const idImg = img.Id_Imatge || img.id_imatge || img.ID_Imatge || img.Id || '';
+        const rawLink = img.Link_Imatge || img.link || '';
+        
+        let urlFinal = 'logo_mm_300.jpg'; // Imatge per defecte si falla
+        
+        if (idImg && idImg.trim() !== '' && idImg !== '#N/A') {
+            urlFinal = `https://drive.google.com/thumbnail?sz=w1200&id=${idImg.trim()}`;
+        } else if (rawLink && rawLink.includes('id=')) {
+            const match = rawLink.match(/id=([a-zA-Z0-9_-]+)/);
+            if (match && match[1]) {
+                urlFinal = `https://drive.google.com/thumbnail?sz=w1200&id=${match[1]}`;
+            }
+        }
 
-    // La descripció inicial correspon a la primera imatge (si existeix)
-    const descripcioInicial = llistaImatges[0]?.Descripcio || '';
+        const altText = img.Descripcio || img.descripcio || 'Imatge del projecte';
 
-    // Guardem les descripcions en un atribut per canviar-les dinàmicament al canviar d'imatge
-    const JSONDescripcions = JSON.stringify(llistaImatges.map(i => i.Descripcio || '')).replace(/"/g, '&quot;');
+        return `
+            <div class="carrusel-slide-item ${idx === 0 ? 'activa' : ''}" data-index="${idx}">
+                <img src="${urlFinal}" alt="${altText.replace(/"/g, '&quot;')}" />
+            </div>
+        `;
+    }).join('');
+        
+    // La descripció inicial correspon a la primera imatge
+    const descripcioInicial = llistaImatges[0]?.Descripcio || llistaImatges[0]?.descripcio || '';
+
+    // Guardem les descripcions netes en l'atribut data-descripcions
+    const arrayDescripcions = llistaImatges.map(i => i.Descripcio || i.descripcio || '');
+    const JSONDescripcions = JSON.stringify(arrayDescripcions).replace(/"/g, '&quot;');
 
     return `
         <div class="seccio-carrusel-projecte-targeta" id="carrusel-wrapper-${idUnic}">
             <div class="targeta-carrusel-contenidor">
                 
-                <!-- Columna Esquerra: Carrusel -->
+                <!-- Columna Esquerra: Visor de Carrusel -->
                 <div class="columna-carrusel-visor" style="height: ${altPX}px; width: ${Math.round(altPX * 1.33)}px;">
                     ${llistaImatges.length > 1 ? `
                         <button class="boto-carrusel-nav anterior" onclick="moureCarruselProjecte('${idUnic}', -1)">&#10094;</button>
@@ -2188,7 +2208,7 @@ function crearComponentCarruselProjecte(llistaImatges, carruselAlt, idUnic) {
                     ${slidesHTML}
                 </div>
 
-                <!-- Columna Dreta: Descripció -->
+                <!-- Columna Dreta: Descripció Canviant -->
                 <div class="columna-carrusel-descripcio">
                     <p class="text-carrusel-descripcio" id="carrusel-desc-${idUnic}" data-descripcions="${JSONDescripcions}">
                         ${descripcioInicial}
