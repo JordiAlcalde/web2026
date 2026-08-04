@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0081]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0082]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -2231,55 +2231,60 @@
            GALERIA_ACTIVA dins de Projectes
         *********************************************************** */   
 /**
- * Normalitza el text eliminant accents, majúscules i unificant apòstrofs 
- * per garantir la comparació exacta entre fulls de càlcul.
+ * Normalitza el text per a comparacions segures:
+ * unifica apòstrofs (' i ’), elimina accents i passa a minúscules.
  */
 function normalitzarText(text = '') {
     return text
         .toString()
         .toLowerCase()
-        .replace(/[\u2018\u2019']/g, "'") // Unifica apòstrofs curbs (’) i rectes (')
+        .replace(/[\u2018\u2019']/g, "'") // Unifica apòstrofs curbs i rectes
         .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '') // Elimina diacrítics/accents per a la comparació
+        .replace(/[\u0300-\u036f]/g, '') // Elimina accents/diacrítics
         .trim();
 }
 
 /**
- * Renderitza la galeria evitant la duplicació de les imatges del projecte actual 
- * o filtrant correctament segons la necessitat.
+ * Renderitza la galeria de projectes.
+ * @param {Object} projecteActual - L'objecte del projecte on estem situats.
+ * @param {Array} llistaContinguts - Llista completa llegida de 'Continguts'.
+ * @param {Boolean} nomesAltres - Si és true, mostra la resta de projectes (exclou l'actual).
  */
-function renderitzarGaleria(projecte, llistaContinguts = []) {
-    const titolProjecteNet = normalitzarText(projecte.portadaTitol || projecte.nomProjecte || '');
+function renderitzarGaleria(projecteActual, llistaContinguts = [], nomesAltres = false) {
+    const titolActualNet = normalitzarText(projecteActual.portadaTitol || projecteActual.Portada_Titol || projecteActual.nomProjecte || '');
 
-    if (!titolProjecteNet) {
-        console.warn("⚠️ El projecte no té un 'portadaTitol' vàlid.", projecte);
+    if (!titolActualNet) {
+        console.warn("⚠️ El projecte no té definit cap títol vàlid a 'Portada_Titol'.", projecteActual);
         return '';
     }
 
-    // 1. Filtrem les imatges del full Continguts comparant els textos normalitzats
-    const imatgesCoincidents = llistaContinguts.filter(item => {
-        const titolImatgeNet = normalitzarText(item.titol || '');
-        return titolImatgeNet === titolProjecteNet;
+    // Filtrem la llista de continguts comparant el títol de manera normalitzada
+    const imatgesFiltrades = llistaContinguts.filter(item => {
+        const titolItemNet = normalitzarText(item.titol || item.Titol || '');
+        if (!titolItemNet) return false;
+
+        // Si volem mostrar ELS ALTRES projectes: titolItemNet !== titolActualNet
+        // Si volem mostrar NOMÉS ELS D'AQUEST projecte: titolItemNet === titolActualNet
+        return nomesAltres ? (titolItemNet !== titolActualNet) : (titolItemNet === titolActualNet);
     });
 
-    if (imatgesCoincidents.length === 0) {
-        console.warn(`⚠️ No s'han trobat imatges a 'Continguts' per al títol: "${projecte.portadaTitol}"`);
+    if (imatgesFiltrades.length === 0) {
+        console.warn(`⚠️ No s'han trobat coincidències a 'Continguts' per al projecte: "${projecteActual.portadaTitol || projecteActual.Portada_Titol}"`);
         return '';
     }
 
-    // 2. Mapegem els resultats al format requerit per la galeria
-    const itemsGaleria = imatgesCoincidents.map(item => ({
-        imatgeId: item.imatgeId || item.id,
-        titol: item.titol,
-        descripcio: item.descripcio || '',
-        linkBoto: item.link || '',
+    // Mapeig de dades al format requerit pel component de galeria
+    const itemsGaleria = imatgesFiltrades.map(item => ({
+        imatgeId: item.imatgeId || item.ID_Imatge || item.id || item.ID,
+        titol: item.titol || item.Titol,
+        descripcio: item.descripcio || item.Descripcio || '',
+        linkBoto: item.link || item.Link_Imatge || '',
         colorFons: '#24153F',
         colorText: '#E3D4FF',
         ample: '280px',
         altImatge: '200px'
     }));
 
-    // 3. Generem el contenidor de la galeria activa
     const contenidorTemp = document.createElement('div');
     contenidorTemp.className = 'seccio-galeria-projecte';
     contenidorTemp.style.margin = '2rem 0';
