@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0075]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0076]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -689,21 +689,18 @@
 function canviarSeccio(nomNovaSeccio) {
     const hashNetejat = (nomNovaSeccio || '').replace('#', '').trim();
     
-    // Funció interna per assegurar que només hi hagi un peu global si escau
+    // Funció interna per netejar i afegir el peu de pàgina unificat
     const renderitzarPeu = () => {
         if (typeof crearPeuPagina === 'function') {
             const htmlPeu = crearPeuPagina();
             const main = document.getElementById('seccions-contenidor') || document.body;
             
-            // Eliminem qualsevol peu residual que s'hagi pogut duplicar fora de les seccions
-            const peusExistents = main.querySelectorAll(':scope > .peu-pagina');
+            // Eliminem qualsevol peu existent per evitar duplicats
+            const peusExistents = document.querySelectorAll('.peu-pagina');
             peusExistents.forEach(p => p.remove());
             
-            // Si no estem dins d'una secció amb el seu propi peu, l'injectem al final
-            const seccioActiva = document.querySelector('.seccio-web[style*="display: block"]');
-            if (seccioActiva && !seccioActiva.querySelector('.peu-pagina')) {
-                main.insertAdjacentHTML('beforeend', htmlPeu);
-            }
+            // Inserim el peu al final del contenidor principal
+            main.insertAdjacentHTML('beforeend', htmlPeu);
         }
     };
 
@@ -715,9 +712,15 @@ function canviarSeccio(nomNovaSeccio) {
         hashNetejat === 'projectes'
     ) {
         if (typeof carregarPaginaProjectes === 'function') {
+            // Executem la càrrega del contingut de projectes
             carregarPaginaProjectes(hashNetejat);
-        }        
-        renderitzarPeu();
+            
+            // Utilitzem setTimeout per garantir que el peu s'injecta 
+            // un cop el DOM de projectes s'ha dibuixat completament
+            setTimeout(() => {
+                renderitzarPeu();
+            }, 50);
+        }
         return; 
     }
 
@@ -730,26 +733,26 @@ function canviarSeccio(nomNovaSeccio) {
     ) {
         if (typeof carregarPaginaLegal === 'function') {
             carregarPaginaLegal(hashNetejat);
+            setTimeout(() => { renderitzarPeu(); }, 50);
         }
         return;
     }
 
-    // 3. RESTA DE SECCIONS PRINCIPALS (Univers Mínim, Móns Mínims, etc.)
+    // 3. RESTA DE SECCIONS PRINCIPALS
     const seccions = document.querySelectorAll('.seccio-web');
     seccions.forEach(sec => sec.style.display = 'none');
 
-    // Netejem qualsevol peu duplicat que hagi quedat fora de les seccions principals
-    const main = document.getElementById('seccions-contenidor');
-    if (main) {
-        const peusGlobals = main.querySelectorAll(':scope > .peu-pagina');
-        peusGlobals.forEach(p => p.remove());
-    }
+    // Neteja de peus residuals
+    const peusExistents = document.querySelectorAll('.peu-pagina');
+    peusExistents.forEach(p => p.remove());
 
     const targetId = hashNetejat.startsWith('pantalla-') ? hashNetejat : `pantalla-${hashNetejat}`;
     const seccioDesti = document.getElementById(targetId);
 
     if (seccioDesti) {
         seccioDesti.style.display = 'block';
+        // Inserim el peu de pàgina directament al final de la secció visible
+        seccioDesti.insertAdjacentHTML('beforeend', crearPeuPagina());
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 }
