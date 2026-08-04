@@ -2244,6 +2244,8 @@ function renderitzarGaleria(projecte, llistaContinguts = []) {
     }
 
     // 2. Filtrem a 'llistaContinguts' on el camp 'titol' coincideix exactament
+    console.log("Llista de Continguts: ", llistaContinguts)
+    
     const imatgesProjecte = llistaContinguts.filter(item => {
         const titolImatgeNet = (item.titol || '').toString().trim().toLowerCase();
         return titolImatgeNet === titolProjecteNet;
