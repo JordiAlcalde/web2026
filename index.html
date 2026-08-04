@@ -2266,6 +2266,9 @@ function renderitzarGaleria(projecteActual, llistaContinguts = [], nomesAltres =
         // Si volem mostrar ELS ALTRES projectes: titolItemNet !== titolActualNet
         // Si volem mostrar NOMÉS ELS D'AQUEST projecte: titolItemNet === titolActualNet
         return nomesAltres ? (titolItemNet !== titolActualNet) : (titolItemNet === titolActualNet);
+        console.log("titolItemNet", titolItemNet);
+        console.log("titolActualNet", titolActualNet);
+        console.log("nomesAltres", nomesAltres);
     });
 
     if (imatgesFiltrades.length === 0) {
