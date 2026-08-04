@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0079]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0080]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -2231,42 +2231,42 @@
            GALERIA_ACTIVA dins de Projectes
         *********************************************************** */   
 /**
- * Renderitza la galeria d'un projecte vinculant 'Continguts/Titol' 
- * amb 'Projectes/Portada_Titol'.
+ * Renderitza la galeria d'un projecte vinculant 'Continguts/titol' 
+ * amb 'Projectes/portadaTitol'.
  */
 function renderitzarGaleria(projecte, llistaContinguts = []) {
-    // 1. Obtenim el títol del projecte actual (p. ex. "Herboristeria del Rei")
-    const titolProjecte = (projecte.Portada_Titol || projecte.nomProjecte || '').trim().toLowerCase();
+    // 1. Obtenim el títol del projecte des de la propietat 'portadaTitol'
+    const titolProjecteNet = (projecte.portadaTitol || projecte.nomProjecte || '').toString().trim().toLowerCase();
 
-    if (!titolProjecte) {
-        console.warn("⚠️ El projecte no té definit cap 'Portada_Titol'.");
+    if (!titolProjecteNet) {
+        console.warn("⚠️ El projecte no té definit cap 'portadaTitol' vàlid.", projecte);
         return '';
     }
 
-    // 2. Filtrem els elements de 'Continguts' on el campo 'Titol' coincideix exactament
+    // 2. Filtrem a 'llistaContinguts' on el camp 'titol' coincideix exactament
     const imatgesProjecte = llistaContinguts.filter(item => {
-        const titolImatge = (item.Titol || '').trim().toLowerCase();
-        return titolImatge === titolProjecte;
+        const titolImatgeNet = (item.titol || '').toString().trim().toLowerCase();
+        return titolImatgeNet === titolProjecteNet;
     });
 
     if (imatgesProjecte.length === 0) {
-        console.warn(`⚠️ No s'han trobat imatges a 'Continguts' amb el títol: "${projecte.Portada_Titol}"`);
+        console.warn(`⚠️ No s'han trobat imatges a 'Continguts' per al títol: "${projecte.portadaTitol}"`);
         return '';
     }
 
-    // 3. Mapegem les imatges trobades al format per a crearGaleriaActiva()
+    // 3. Transformem les imatges al format de crearGaleriaActiva()
     const itemsGaleria = imatgesProjecte.map(item => ({
-        imatgeId: item.ID_Imatge || item.ID || item.Imatge,
-        titol: item.Titol,
-        descripcio: item.Descripcio || '',
-        linkBoto: item.Link_Imatge || '',
+        imatgeId: item.imatgeId || item.id,
+        titol: item.titol,
+        descripcio: item.descripcio || '',
+        linkBoto: item.link || '',
         colorFons: '#24153F',
         colorText: '#E3D4FF',
         ample: '280px',
         altImatge: '200px'
     }));
 
-    // 4. Creem el contenidor i invoquem la galeria activa
+    // 4. Invocació de la galeria activa
     const contenidorTemp = document.createElement('div');
     contenidorTemp.className = 'seccio-galeria-projecte';
     contenidorTemp.style.margin = '2rem 0';
