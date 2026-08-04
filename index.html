@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0064]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0065]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -1210,120 +1210,190 @@ function renderitzarBlocPortada(p) {
             return contenidor;
         }    
 
-/* ==========================================================================
-   FUNCIÓ: CREAR CARRUSEL D'IMATGES (Dades de Sheets / Drive)
-   ========================================================================== */
-function crearCarruselImatges(items) {
-    if (!items || items.length === 0) return document.createElement('div');
-
-    // 1. Crear l'envolcall principal del carrusel utilitzant les meves classes de components.css
-    const wrapper = document.createElement('div');
-    wrapper.className = 'carrusel-imatges-wrapper';
-
-    // 2. Caixa principal amb visors i botons de navegació
-    const caixaPrincipal = document.createElement('div');
-    caixaPrincipal.className = 'carrusel-caixa-principal';
-
-    const botoPrev = document.createElement('button');
-    botoPrev.className = 'boto-carrusel prev';
-    botoPrev.innerHTML = '&#10094;';
-    botoPrev.setAttribute('aria-label', 'Anterior');
-
-    const visor = document.createElement('div');
-    visor.className = 'carrusel-visor';
-
-    const contenidorDiapositives = document.createElement('div');
-    contenidorDiapositives.className = 'carrusel-diapositives';
-
-    const botoNext = document.createElement('button');
-    botoNext.className = 'boto-carrusel next';
-    botoNext.innerHTML = '&#10095;';
-    botoNext.setAttribute('aria-label', 'Següent');
-
-    // 3. Peu de text per a títols i descripcions de la diapo activa
-    const peuText = document.createElement('div');
-    peuText.className = 'carrusel-peu-text';
-    peuText.innerHTML = `
-        <h4 class="carrusel-titol" style="color: var(--color-clar, #E3D4FF);"></h4>
-        <p class="carrusel-descripcio" style="color: var(--color-accent-clar, #C8AAFF);"></p>
-    `;
-
-    // 4. Carregar les diapositives resolent l'ID de Google Drive
-    items.forEach((item, index) => {
-        const slide = document.createElement('div');
-        slide.className = `carrusel-slide ${index === 0 ? 'activa' : ''}`;
-
-        // Obtenir l'ID de Drive directament o extreure'l de la propietat de Sheets
-        const rawId = item.imatgeId || item.ID_Imatge || '';
-        const rawLink = item.link || item.Link_Imatge || '';
+        /* ==========================================================================
+           FUNCIÓ: CREAR CARRUSEL D'IMATGES (Dades de Sheets / Drive)
+           ========================================================================== */
+        function crearCarruselImatges(items, opcions = {}) {
+            if (!items || items.length === 0) return document.createElement('div');
         
-        let urlImatge = 'logo_mm_600.jpg';
-        if (rawId && rawId.trim() !== '' && rawId !== '#N/A') {
-            urlImatge = `https://drive.google.com/thumbnail?sz=w1200&id=${rawId.trim()}`;
-        } else if (rawLink && rawLink.includes('id=')) {
-            const match = rawLink.match(/id=([a-zA-Z0-9_-]+)/);
-            if (match && match[1]) {
-                urlImatge = `https://drive.google.com/thumbnail?sz=w1200&id=${match[1]}`;
+            const primerItem = items[0] || {};
+            let velocitatVal = opcions.velocitat || primerItem.velocitat || '5';
+            velocitatVal = (parseFloat(velocitatVal) || 5) * 1000;
+        
+            let esBucle = true;
+            const rawBucle = opcions.bucle !== undefined ? opcions.bucle : primerItem.bucle;
+            if (rawBucle !== undefined && rawBucle !== '') {
+                if (typeof rawBucle === 'boolean') {
+                    esBucle = rawBucle;
+                } else {
+                    const valStr = rawBucle.toString().trim().toLowerCase();
+                    esBucle = !(valStr === 'false' || valStr === 'no' || valStr === '0');
+                }
             }
+        
+            let ampleContenidor = '900px';
+            const valAmple = primerItem.ample;
+            if (valAmple && valAmple.toString().trim() !== '' && valAmple !== '#N/A') {
+                const v = valAmple.toString().trim();
+                ampleContenidor = (!isNaN(v)) ? `${v}px` : v;
+            }
+        
+            let alcadaVisor = '400px';
+            const valAlcada = primerItem.altImatge;
+            if (valAlcada && valAlcada.toString().trim() !== '' && valAlcada !== '#N/A') {
+                const v = valAlcada.toString().trim();
+                alcadaVisor = (!isNaN(v)) ? `${v}px` : v;
+            }
+        
+            const fonsContenidor = obtenirColorHex(opcions.colorFons || primerItem.colorFons, '#24153F');
+        
+            const wrapper = document.createElement('div');
+            wrapper.className = 'carrusel-imatges-wrapper';
+            wrapper.style.backgroundColor = fonsContenidor;
+            wrapper.style.maxWidth = ampleContenidor;
+        
+            let indexActual = 0;
+            let temporitzador = null;
+        
+            wrapper.innerHTML = `
+                <div class="carrusel-caixa-principal">
+                    <button class="boto-carrusel ant" aria-label="Anterior">&#10094;</button>
+                    <div class="carrusel-visor" style="height: ${alcadaVisor};">
+                        <div class="carrusel-diapositives"></div>
+                    </div>
+                    <button class="boto-carrusel seg" aria-label="Següent">&#10095;</button>
+                </div>
+                <div class="carrusel-peu-text">
+                    <h4 class="carrusel-titol"></h4>
+                    <p class="carrusel-descripcio"></p>
+                </div>
+            `;
+        
+            const elDiapositives = wrapper.querySelector('.carrusel-diapositives');
+            const elPeuText = wrapper.querySelector('.carrusel-peu-text');
+            const elTitol = wrapper.querySelector('.carrusel-titol');
+            const elDescripcio = wrapper.querySelector('.carrusel-descripcio');
+            const btnAnt = wrapper.querySelector('.boto-carrusel.ant');
+            const btnSeg = wrapper.querySelector('.boto-carrusel.seg');
+        
+            const obtenirEnllacValid = (item) => {
+                if (!item) return '';
+                const desti = (item.linkBoto || '').trim();
+                if (desti === '' || desti === '#' || desti === '#N/A') return '';
+                return desti;
+            };
+        
+            items.forEach((item, idx) => {
+                const slide = document.createElement('div');
+                slide.className = `carrusel-slide ${idx === 0 ? 'activa' : ''}`;
+        
+                const urlImatge = item.imatgeId && item.imatgeId !== '#N/A' && item.imatgeId.trim() !== ''
+                    ? `https://drive.google.com/thumbnail?sz=w1200&id=${item.imatgeId.trim()}`
+                    : 'logo_mm_600.jpg';
+        
+                slide.innerHTML = `<img src="${urlImatge}" alt="${item.titol || 'Mínim Món'}">`;
+        
+                const enllac = obtenirEnllacValid(item);
+                if (enllac) {
+                    slide.classList.add('es-clicable');
+                    slide.style.cursor = 'pointer';
+                    slide.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (typeof navegarA === 'function') navegarA(enllac, e);
+                        else window.location.href = enllac;
+                    });
+                } else {
+                    slide.classList.remove('es-clicable');
+                    slide.style.cursor = 'default';
+                }
+                elDiapositives.appendChild(slide);
+            });
+        
+            elPeuText.addEventListener('click', (e) => {
+                const itemActual = items[indexActual] || {};
+                const enllacActual = obtenirEnllacValid(itemActual);
+                if (enllacActual) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (typeof navegarA === 'function') navegarA(enllacActual, e);
+                    else window.location.href = enllacActual;
+                }
+            });
+        
+            const mostrarDiapositiva = (index) => {
+                const slides = wrapper.querySelectorAll('.carrusel-slide');
+                slides.forEach((s, i) => s.classList.toggle('activa', i === index));
+        
+                const itemActual = items[index] || {};
+                const colorText = obtenirColorHex(itemActual.colorText, '#E3D4FF');
+        
+                elTitol.style.color = colorText;
+                elDescripcio.style.color = colorText;
+                elTitol.innerText = itemActual.titol || '';
+                const desc = itemActual.descripcio || '';
+                elDescripcio.innerHTML = desc ? desc.replace(/\n/g, '<br>') : '';
+        
+                const enllacActual = obtenirEnllacValid(itemActual);
+                if (enllacActual) {
+                    elPeuText.classList.add('es-clicable');
+                    elPeuText.style.cursor = 'pointer';
+                } else {
+                    elPeuText.classList.remove('es-clicable');
+                    elPeuText.style.cursor = 'default';
+                }
+        
+                if (!esBucle) {
+                    btnAnt.style.opacity = index === 0 ? '0.25' : '1';
+                    btnAnt.style.pointerEvents = index === 0 ? 'none' : 'auto';
+                    btnSeg.style.opacity = index === items.length - 1 ? '0.25' : '1';
+                    btnSeg.style.pointerEvents = index === items.length - 1 ? 'none' : 'auto';
+                } else {
+                    btnAnt.style.opacity = '1';
+                    btnAnt.style.pointerEvents = 'auto';
+                    btnSeg.style.opacity = '1';
+                    btnSeg.style.pointerEvents = 'auto';
+                }
+            };
+        
+            const seguent = () => {
+                if (indexActual < items.length - 1) indexActual++;
+                else if (esBucle) indexActual = 0;
+                else { aturarAutoplay(); return; }
+                mostrarDiapositiva(indexActual);
+            };
+        
+            const anterior = () => {
+                if (indexActual > 0) indexActual--;
+                else if (esBucle) indexActual = items.length - 1;
+                mostrarDiapositiva(indexActual);
+            };
+        
+            const iniciarAutoplay = () => {
+                if (esBucle && velocitatVal > 0) {
+                    aturarAutoplay();
+                    temporitzador = setInterval(seguent, velocitatVal);
+                }
+            };
+        
+            const aturarAutoplay = () => {
+                if (temporitzador) {
+                    clearInterval(temporitzador);
+                    temporitzador = null;
+                }
+            };
+        
+            btnSeg.addEventListener('click', (e) => { e.stopPropagation(); seguent(); iniciarAutoplay(); });
+            btnAnt.addEventListener('click', (e) => { e.stopPropagation(); anterior(); iniciarAutoplay(); });
+            wrapper.addEventListener('mouseenter', aturarAutoplay);
+            wrapper.addEventListener('mouseleave', iniciarAutoplay);
+            wrapper.addEventListener('touchstart', aturarAutoplay, { passive: true });
+        
+            mostrarDiapositiva(0);
+            iniciarAutoplay();
+            return wrapper;
         }
 
-        const img = document.createElement('img');
-        img.src = urlImatge;
-        img.alt = item.titol || item.Descripcio || 'Mínim Món';
-
-        slide.appendChild(img);
-        contenidorDiapositives.appendChild(slide);
-    });
-
-    // Ensamblatge d'elements
-    visor.appendChild(contenidorDiapositives);
-    caixaPrincipal.appendChild(botoPrev);
-    caixaPrincipal.appendChild(visor);
-    caixaPrincipal.appendChild(botoNext);
-
-    wrapper.appendChild(caixaPrincipal);
-    wrapper.appendChild(peuText);
-
-    // 5. Lògica de control de navegació i visualització
-    let indexActiu = 0;
-    const slides = contenidorDiapositives.querySelectorAll('.carrusel-slide');
-
-    function actualitzarCarrusel(nouIndex) {
-        slides[indexActiu].classList.remove('activa');
-        indexActiu = (nouIndex + slides.length) % slides.length;
-        slides[indexActiu].classList.add('activa');
-
-        // Actualitzar peu de text si existeix la informació
-        const dadesActives = items[indexActiu] || {};
-        const titolElem = peuText.querySelector('.carrusel-titol');
-        const descElem = peuText.querySelector('.carrusel-descripcio');
-
-        if (titolElem) titolElem.textContent = dadesActives.titol || '';
-        if (descElem) descElem.textContent = dadesActives.descripcio || dadesActives.Descripcio || '';
-
-        // Si no hi ha ni títol ni descripció, amaguem el peu de text per mantenir el disseny net
-        if (!dadesActives.titol && !dadesActives.descripcio && !dadesActives.Descripcio) {
-            peuText.style.display = 'none';
-        } else {
-            peuText.style.display = 'block';
-        }
-    }
-
-    botoPrev.addEventListener('click', (e) => {
-        e.preventDefault();
-        actualitzarCarrusel(indexActiu - 1);
-    });
-
-    botoNext.addEventListener('click', (e) => {
-        e.preventDefault();
-        actualitzarCarrusel(indexActiu + 1);
-    });
-
-    // Inicialitzar el primer element
-    actualitzarCarrusel(0);
-
-    return wrapper;
-}
         
         function crearBlocText(item = {}) {
             const bloc = document.createElement('div');
