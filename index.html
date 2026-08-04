@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0069]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0070]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -2122,8 +2122,8 @@ function renderitzarCarrusel(projecte, mapCarrusels) {
 function crearComponentCarruselProjecte(llistaImatges, carruselAlt, idUnic) {
     if (!llistaImatges || llistaImatges.length === 0) return '';
 
-    // 1. Processat robust del camp 'Carrusel_Alt' (elimina 'px', espais o caràcters no numèrics)
-    let altCalculada = 380; // Valor per defecte
+    // Processat de l'alçada
+    let altCalculada = 380;
     if (carruselAlt) {
         const numExtret = parseInt(carruselAlt.toString().replace(/[^0-9]/g, ''), 10);
         if (!isNaN(numExtret) && numExtret > 0) {
@@ -2131,10 +2131,8 @@ function crearComponentCarruselProjecte(llistaImatges, carruselAlt, idUnic) {
         }
     }
 
-    // Proporció 4:3 per a l'amplada del visor en funció de l'alçada definida
     const ampleVisorCalculat = Math.round(altCalculada * 1.33);
     
-    // 2. Generació de les diapositives
     const slidesHTML = llistaImatges.map((img, idx) => {
         const idImg = img.Id_Imatge || img.id_imatge || img.ID_Imatge || img.Id || '';
         const rawLink = img.Link_Imatge || img.link || '';
@@ -2165,9 +2163,9 @@ function crearComponentCarruselProjecte(llistaImatges, carruselAlt, idUnic) {
 
     return `
         <div class="seccio-carrusel-projecte-targeta" id="carrusel-projecte-wrapper-${idUnic}">
-            <div class="targeta-carrusel-projecte-contenidor" style="min-height: ${altCalculada}px;">
+            <div class="targeta-carrusel-projecte-contenidor">
                 
-                <!-- Columna Esquerra: Visor amb alçada dinàmica de Sheets -->
+                <!-- Visor amb alçada dinàmica que marca la mida de la targeta -->
                 <div class="columna-carrusel-projecte-visor" style="height: ${altCalculada}px; width: ${ampleVisorCalculat}px;">
                     ${llistaImatges.length > 1 ? `
                         <button class="boto-carrusel-projecte-nav anterior" onclick="moureCarruselProjecte('${idUnic}', -1)">&#10094;</button>
@@ -2176,8 +2174,8 @@ function crearComponentCarruselProjecte(llistaImatges, carruselAlt, idUnic) {
                     ${slidesHTML}
                 </div>
 
-                <!-- Columna Dreta: Descripció (Alineada en alçada) -->
-                <div class="columna-carrusel-projecte-descripcio" style="min-height: ${altCalculada}px;">
+                <!-- Descripció ajustada automàticament -->
+                <div class="columna-carrusel-projecte-descripcio">
                     <p class="text-carrusel-projecte-descripcio" id="carrusel-projecte-desc-${idUnic}" data-descripcions="${JSONDescripcions}">
                         ${descripcioInicial}
                     </p>
