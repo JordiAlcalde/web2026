@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0066]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0067]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -2148,27 +2148,21 @@ function renderitzarCarrusel(projecte, mapCarrusels) {
 }
 
 
-
 /**
- * Genera el component de carrusel d'imatges per a un projecte.
- * 
- * @param {Array} llistaImatges - Llista d'objectes del full "Carrusels"
- * @param {number|string} carruselAlt - Valor 'carrusel_Alt' de Sheets (alçada en px)
- * @param {string} idUnic - Identificador únic per al control JS del carrusel
- * @returns {string} Codi HTML estructurat.
+ * Genera el component de carrusel d'imatges per a un projecte concret.
+ * Noms de classes aïllats amb 'projecte' per evitar conflictes amb altres carrusels.
  */
 function crearComponentCarruselProjecte(llistaImatges, carruselAlt, idUnic) {
     if (!llistaImatges || llistaImatges.length === 0) return '';
 
     const altPX = carruselAlt ? parseInt(carruselAlt) : 380;
     
-    // Generació de les diapositives amb la URL de Drive BEN FORMATADA
+    // Generació de les diapositives
     const slidesHTML = llistaImatges.map((img, idx) => {
-        // Lectura robusta de l'ID o enllaç de la imatge
         const idImg = img.Id_Imatge || img.id_imatge || img.ID_Imatge || img.Id || '';
         const rawLink = img.Link_Imatge || img.link || '';
         
-        let urlFinal = 'logo_mm_300.jpg'; // Imatge per defecte si falla
+        let urlFinal = 'logo_mm_300.jpg';
         
         if (idImg && idImg.trim() !== '' && idImg !== '#N/A') {
             urlFinal = `https://drive.google.com/thumbnail?sz=w1200&id=${idImg.trim()}`;
@@ -2182,35 +2176,32 @@ function crearComponentCarruselProjecte(llistaImatges, carruselAlt, idUnic) {
         const altText = img.Descripcio || img.descripcio || 'Imatge del projecte';
 
         return `
-            <div class="carrusel-slide-item ${idx === 0 ? 'activa' : ''}" data-index="${idx}">
+            <div class="carrusel-projecte-slide-item ${idx === 0 ? 'activa' : ''}" data-index="${idx}">
                 <img src="${urlFinal}" alt="${altText.replace(/"/g, '&quot;')}" />
             </div>
         `;
     }).join('');
         
-    // La descripció inicial correspon a la primera imatge
     const descripcioInicial = llistaImatges[0]?.Descripcio || llistaImatges[0]?.descripcio || '';
-
-    // Guardem les descripcions netes en l'atribut data-descripcions
     const arrayDescripcions = llistaImatges.map(i => i.Descripcio || i.descripcio || '');
     const JSONDescripcions = JSON.stringify(arrayDescripcions).replace(/"/g, '&quot;');
 
     return `
-        <div class="seccio-carrusel-projecte-targeta" id="carrusel-wrapper-${idUnic}">
-            <div class="targeta-carrusel-contenidor">
+        <div class="seccio-carrusel-projecte-targeta" id="carrusel-projecte-wrapper-${idUnic}">
+            <div class="targeta-carrusel-projecte-contenidor">
                 
-                <!-- Columna Esquerra: Visor de Carrusel -->
-                <div class="columna-carrusel-visor" style="height: ${altPX}px; width: ${Math.round(altPX * 1.33)}px;">
+                <!-- Columna Esquerra: Visor -->
+                <div class="columna-carrusel-projecte-visor" style="height: ${altPX}px; width: ${Math.round(altPX * 1.33)}px;">
                     ${llistaImatges.length > 1 ? `
-                        <button class="boto-carrusel-nav anterior" onclick="moureCarruselProjecte('${idUnic}', -1)">&#10094;</button>
-                        <button class="boto-carrusel-nav seguent" onclick="moureCarruselProjecte('${idUnic}', 1)">&#10095;</button>
+                        <button class="boto-carrusel-projecte-nav anterior" onclick="moureCarruselProjecte('${idUnic}', -1)">&#10094;</button>
+                        <button class="boto-carrusel-projecte-nav seguent" onclick="moureCarruselProjecte('${idUnic}', 1)">&#10095;</button>
                     ` : ''}
                     ${slidesHTML}
                 </div>
 
-                <!-- Columna Dreta: Descripció Canviant -->
-                <div class="columna-carrusel-descripcio">
-                    <p class="text-carrusel-descripcio" id="carrusel-desc-${idUnic}" data-descripcions="${JSONDescripcions}">
+                <!-- Columna Dreta: Descripció -->
+                <div class="columna-carrusel-projecte-descripcio">
+                    <p class="text-carrusel-projecte-descripcio" id="carrusel-projecte-desc-${idUnic}" data-descripcions="${JSONDescripcions}">
                         ${descripcioInicial}
                     </p>
                 </div>
@@ -2220,15 +2211,18 @@ function crearComponentCarruselProjecte(llistaImatges, carruselAlt, idUnic) {
     `;
 }
         
+
 /**
- * Controla el canvi de imatge i actualitza la descripció dinàmicament.
+ * Controla el canvi de diapositiva i text del carrusel de projecte.
  */
 function moureCarruselProjecte(idUnic, direccio) {
-    const contenidor = document.getElementById(`carrusel-wrapper-${idUnic}`);
+    const contenidor = document.getElementById(`carrusel-projecte-wrapper-${idUnic}`);
     if (!contenidor) return;
 
-    const slides = contenidor.querySelectorAll('.carrusel-slide-item');
-    const elemDesc = document.getElementById(`carrusel-desc-${idUnic}`);
+    const slides = contenidor.querySelectorAll('.carrusel-projecte-slide-item');
+    const elemDesc = document.getElementById(`carrusel-projecte-desc-${idUnic}`);
+    if (!elemDesc) return;
+
     const llistaDesc = JSON.parse(elemDesc.getAttribute('data-descripcions').replace(/&quot;/g, '"'));
 
     let indexActual = 0;
@@ -2245,7 +2239,7 @@ function moureCarruselProjecte(idUnic, direccio) {
 
     slides[nouIndex].classList.add('activa');
     elemDesc.textContent = llistaDesc[nouIndex] || '';
-}        
+}     
         
     </script>
 </body>
