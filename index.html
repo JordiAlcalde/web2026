@@ -1129,7 +1129,8 @@
                 card.style.width = ampleCard;
                 card.style.minWidth = ampleCard;
                 card.style.flex = `0 0 ${ampleCard}`;
-        
+
+                console.log("Enllaç real: ", item.linkBoto);
                 const enllac = item.linkBoto || item.link || '';
                 const teEnllac = enllac !== '' && enllac !== '#' && enllac !== '#N/A';
                 console.log("Enllaç: ", enllac);
