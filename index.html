@@ -2261,14 +2261,15 @@ function renderitzarGaleria(projecteActual, llistaContinguts = [], nomesAltres =
     // Filtrem la llista de continguts comparant el títol de manera normalitzada
     const imatgesFiltrades = llistaContinguts.filter(item => {
         const titolItemNet = normalitzarText(item.titol || item.Titol || '');
+        console.log("titolItemNet (1): ", titolItemNet);
         if (!titolItemNet) return false;
 
         // Si volem mostrar ELS ALTRES projectes: titolItemNet !== titolActualNet
         // Si volem mostrar NOMÉS ELS D'AQUEST projecte: titolItemNet === titolActualNet
         return nomesAltres ? (titolItemNet !== titolActualNet) : (titolItemNet === titolActualNet);
-        console.log("titolItemNet", titolItemNet);
-        console.log("titolActualNet", titolActualNet);
-        console.log("nomesAltres", nomesAltres);
+        console.log("titolItemNet: ", titolItemNet);
+        console.log("titolActualNet: ", titolActualNet);
+        console.log("nomesAltres: ", nomesAltres);
     });
 
     if (imatgesFiltrades.length === 0) {
