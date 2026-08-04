@@ -808,6 +808,8 @@
             // 1. Normalitzem el hash d'entrada
             const hashNetejat = hashDesti.startsWith('#') ? hashDesti : '#' + hashDesti;
             const idSeccio = hashNetejat.replace('#', '');
+
+            console.log("hashNetejat: ", hashNetejat);
             
             // Seccions de la pàgina principal (amb ancoratge)
             const seccionsHome = ['univers_minim', 'mons_minims', 'la_botiga', 'el_laboratori', 'home'];
@@ -1130,8 +1132,7 @@
                 card.style.minWidth = ampleCard;
                 card.style.flex = `0 0 ${ampleCard}`;
 
-                console.log("Enllaç real: ", item.linkBoto);
-                const enllac = item.linkBoto || item.link || '';
+                const enllac = item.linkBoto || '';
                 const teEnllac = enllac !== '' && enllac !== '#' && enllac !== '#N/A';
                 console.log("Enllaç: ", enllac);
                 console.log("teEnllac: ", teEnllac);
