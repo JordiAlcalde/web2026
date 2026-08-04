@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0080]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0081]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -2231,33 +2231,44 @@
            GALERIA_ACTIVA dins de Projectes
         *********************************************************** */   
 /**
- * Renderitza la galeria d'un projecte vinculant 'Continguts/titol' 
- * amb 'Projectes/portadaTitol'.
+ * Normalitza el text eliminant accents, majúscules i unificant apòstrofs 
+ * per garantir la comparació exacta entre fulls de càlcul.
+ */
+function normalitzarText(text = '') {
+    return text
+        .toString()
+        .toLowerCase()
+        .replace(/[\u2018\u2019']/g, "'") // Unifica apòstrofs curbs (’) i rectes (')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '') // Elimina diacrítics/accents per a la comparació
+        .trim();
+}
+
+/**
+ * Renderitza la galeria evitant la duplicació de les imatges del projecte actual 
+ * o filtrant correctament segons la necessitat.
  */
 function renderitzarGaleria(projecte, llistaContinguts = []) {
-    // 1. Obtenim el títol del projecte des de la propietat 'portadaTitol'
-    const titolProjecteNet = (projecte.portadaTitol || projecte.nomProjecte || '').toString().trim().toLowerCase();
+    const titolProjecteNet = normalitzarText(projecte.portadaTitol || projecte.nomProjecte || '');
 
     if (!titolProjecteNet) {
-        console.warn("⚠️ El projecte no té definit cap 'portadaTitol' vàlid.", projecte);
+        console.warn("⚠️ El projecte no té un 'portadaTitol' vàlid.", projecte);
         return '';
     }
 
-    // 2. Filtrem a 'llistaContinguts' on el camp 'titol' coincideix exactament
-    console.log("Llista de Continguts: ", llistaContinguts)
-    
-    const imatgesProjecte = llistaContinguts.filter(item => {
-        const titolImatgeNet = (item.titol || '').toString().trim().toLowerCase();
+    // 1. Filtrem les imatges del full Continguts comparant els textos normalitzats
+    const imatgesCoincidents = llistaContinguts.filter(item => {
+        const titolImatgeNet = normalitzarText(item.titol || '');
         return titolImatgeNet === titolProjecteNet;
     });
 
-    if (imatgesProjecte.length === 0) {
+    if (imatgesCoincidents.length === 0) {
         console.warn(`⚠️ No s'han trobat imatges a 'Continguts' per al títol: "${projecte.portadaTitol}"`);
         return '';
     }
 
-    // 3. Transformem les imatges al format de crearGaleriaActiva()
-    const itemsGaleria = imatgesProjecte.map(item => ({
+    // 2. Mapegem els resultats al format requerit per la galeria
+    const itemsGaleria = imatgesCoincidents.map(item => ({
         imatgeId: item.imatgeId || item.id,
         titol: item.titol,
         descripcio: item.descripcio || '',
@@ -2268,7 +2279,7 @@ function renderitzarGaleria(projecte, llistaContinguts = []) {
         altImatge: '200px'
     }));
 
-    // 4. Invocació de la galeria activa
+    // 3. Generem el contenidor de la galeria activa
     const contenidorTemp = document.createElement('div');
     contenidorTemp.className = 'seccio-galeria-projecte';
     contenidorTemp.style.margin = '2rem 0';
