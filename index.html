@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0078]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0079]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -2231,22 +2231,33 @@
            GALERIA_ACTIVA dins de Projectes
         *********************************************************** */   
 /**
- * Renderitza la galeria activa de la secció de Projectes
- * aprofitant la mecànica de crearGaleriaActiva() utilitzada a Móns Mínims.
+ * Renderitza la galeria d'un projecte vinculant 'Continguts/Titol' 
+ * amb 'Projectes/Portada_Titol'.
  */
-function renderitzarGaleria(projecte, dadesGaleries = {}) {
-    const idProj = (projecte.idProjecte || '').trim();
-    
-    // Si no hi ha imatges associades a aquest projecte a la galeria, no dibuixem res
-    if (!idProj || !dadesGaleries[idProj] || dadesGaleries[idProj].length === 0) {
-        console.warn(`⚠️ No s'han trobat imatges de galeria per al projecte: ${idProj}`);
+function renderitzarGaleria(projecte, llistaContinguts = []) {
+    // 1. Obtenim el títol del projecte actual (p. ex. "Herboristeria del Rei")
+    const titolProjecte = (projecte.Portada_Titol || projecte.nomProjecte || '').trim().toLowerCase();
+
+    if (!titolProjecte) {
+        console.warn("⚠️ El projecte no té definit cap 'Portada_Titol'.");
         return '';
     }
 
-    // 1. Transformem les dades de la galeria del projecte al format de crearGaleriaActiva()
-    const itemsGaleria = dadesGaleries[idProj].map(item => ({
-        imatgeId: item.ID_Imatge,
-        titol: projecte.nomProjecte || '',
+    // 2. Filtrem els elements de 'Continguts' on el campo 'Titol' coincideix exactament
+    const imatgesProjecte = llistaContinguts.filter(item => {
+        const titolImatge = (item.Titol || '').trim().toLowerCase();
+        return titolImatge === titolProjecte;
+    });
+
+    if (imatgesProjecte.length === 0) {
+        console.warn(`⚠️ No s'han trobat imatges a 'Continguts' amb el títol: "${projecte.Portada_Titol}"`);
+        return '';
+    }
+
+    // 3. Mapegem les imatges trobades al format per a crearGaleriaActiva()
+    const itemsGaleria = imatgesProjecte.map(item => ({
+        imatgeId: item.ID_Imatge || item.ID || item.Imatge,
+        titol: item.Titol,
         descripcio: item.Descripcio || '',
         linkBoto: item.Link_Imatge || '',
         colorFons: '#24153F',
@@ -2255,23 +2266,20 @@ function renderitzarGaleria(projecte, dadesGaleries = {}) {
         altImatge: '200px'
     }));
 
-    // 2. Contenidor on s'allotjarà la galeria activa
+    // 4. Creem el contenidor i invoquem la galeria activa
     const contenidorTemp = document.createElement('div');
     contenidorTemp.className = 'seccio-galeria-projecte';
     contenidorTemp.style.margin = '2rem 0';
 
-    // 3. Opcions d'execució per a crearGaleriaActiva
-    const opcionsGaleria = {
+    const elementGaleria = crearGaleriaActiva(itemsGaleria, {
         velocitat: 20,
         bucle: true,
         colorFons: 'transparent'
-    };
+    });
 
-    const elementGaleria = crearGaleriaActiva(itemsGaleria, opcionsGaleria);
     contenidorTemp.appendChild(elementGaleria);
-
     return contenidorTemp.outerHTML;
-}        
+}
         
     </script>
 </body>
