@@ -1339,6 +1339,121 @@
     }
 }
 
+
+/* ==========================================================================
+   CARRUSEL DE PROJECTES (Aïllat per a la pàgina de Projectes)
+   ========================================================================== */
+
+/* Contenidor exterior: Targeta blanca destacada */
+.seccio-carrusel-projecte-targeta {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 24px;
+    margin: 28px 0;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Disposició interna (Flexbox 2 columnes) */
+.targeta-carrusel-projecte-contenidor {
+    display: flex;
+    flex-direction: row;
+    gap: 24px;
+    align-items: center;
+}
+
+/* Adaptació per a pantalles estretes/mòbils */
+@media (max-width: 768px) {
+    .targeta-carrusel-projecte-contenidor {
+        flex-direction: column;
+    }
+    
+    .columna-carrusel-projecte-visor {
+        width: 100% !important; /* Es restableix l'ample en mòbil */
+        height: auto !important;
+        aspect-ratio: 4/3;
+    }
+}
+
+/* Visor d'imatges */
+.columna-carrusel-projecte-visor {
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    background-color: #f0f0f0;
+    flex-shrink: 0;
+}
+
+/* Elements individuals de la diapositiva */
+.carrusel-projecte-slide-item {
+    display: none;
+    width: 100%;
+    height: 100%;
+}
+
+.carrusel-projecte-slide-item.activa {
+    display: block;
+}
+
+.carrusel-projecte-slide-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+    display: block;
+}
+
+/* Botons de navegació (Anterior / Següent) */
+.boto-carrusel-projecte-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(48, 18, 105, 0.85); /* #301269 amb opacitat */
+    color: #ffffff;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 20px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.boto-carrusel-projecte-nav:hover {
+    background-color: #340094;
+    transform: translateY(-50%) scale(1.1);
+}
+
+.boto-carrusel-projecte-nav.anterior {
+    left: 12px;
+}
+
+.boto-carrusel-projecte-nav.seguent {
+    right: 12px;
+}
+
+/* Columna de text lateral */
+.columna-carrusel-projecte-descripcio {
+    flex: 1;
+    padding: 8px 12px;
+}
+
+.text-carrusel-projecte-descripcio {
+    font-family: 'Montserrat', sans-serif;
+    color: #24153F;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    margin: 0;
+    font-weight: 400;
+}
+
+
+
 /* ==========================================================================
    ADAPTACIÓ MÒBIL GENERAL (REVISADA I FORÇADA AL 100%)
    ========================================================================== */
