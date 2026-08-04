@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0070]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0071]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -2165,7 +2165,7 @@ function crearComponentCarruselProjecte(llistaImatges, carruselAlt, idUnic) {
         <div class="seccio-carrusel-projecte-targeta" id="carrusel-projecte-wrapper-${idUnic}">
             <div class="targeta-carrusel-projecte-contenidor">
                 
-                <!-- Visor amb alçada dinàmica que marca la mida de la targeta -->
+                <!-- L'alçada només s'aplica al visor. La targeta exterior blanca créixerà naturalment -->
                 <div class="columna-carrusel-projecte-visor" style="height: ${altCalculada}px; width: ${ampleVisorCalculat}px;">
                     ${llistaImatges.length > 1 ? `
                         <button class="boto-carrusel-projecte-nav anterior" onclick="moureCarruselProjecte('${idUnic}', -1)">&#10094;</button>
@@ -2173,14 +2173,13 @@ function crearComponentCarruselProjecte(llistaImatges, carruselAlt, idUnic) {
                     ` : ''}
                     ${slidesHTML}
                 </div>
-
-                <!-- Descripció ajustada automàticament -->
+    
                 <div class="columna-carrusel-projecte-descripcio">
                     <p class="text-carrusel-projecte-descripcio" id="carrusel-projecte-desc-${idUnic}" data-descripcions="${JSONDescripcions}">
                         ${descripcioInicial}
                     </p>
                 </div>
-
+    
             </div>
         </div>
     `;
