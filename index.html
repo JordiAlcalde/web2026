@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0077]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0078]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -1849,7 +1849,9 @@
                 else if (blocNom.startsWith('carrusel')) {
                     htmlFinal += renderitzarCarrusel(projecte, dadesWeb.carrusels);
                 }
-                
+                else if (blocNom.startsWith('galeria')) {
+                    htmlFinal += renderitzarGaleria(projecte, dadesWeb.galeries);
+                }
                 console.log(`🧩 Processat bloc: ${bloc} -> Tipus: ${blocNom} | Ídem/Número: ${numeroBloc}`);
             });
         
@@ -2223,6 +2225,53 @@
             pararAutoplay();
             iniciarAutoplay(idUnic, totalSlides);
         }
+
+
+        /* ***********************************************************
+           GALERIA_ACTIVA dins de Projectes
+        *********************************************************** */   
+/**
+ * Renderitza la galeria activa de la secció de Projectes
+ * aprofitant la mecànica de crearGaleriaActiva() utilitzada a Móns Mínims.
+ */
+function renderitzarGaleria(projecte, dadesGaleries = {}) {
+    const idProj = (projecte.idProjecte || '').trim();
+    
+    // Si no hi ha imatges associades a aquest projecte a la galeria, no dibuixem res
+    if (!idProj || !dadesGaleries[idProj] || dadesGaleries[idProj].length === 0) {
+        console.warn(`⚠️ No s'han trobat imatges de galeria per al projecte: ${idProj}`);
+        return '';
+    }
+
+    // 1. Transformem les dades de la galeria del projecte al format de crearGaleriaActiva()
+    const itemsGaleria = dadesGaleries[idProj].map(item => ({
+        imatgeId: item.ID_Imatge,
+        titol: projecte.nomProjecte || '',
+        descripcio: item.Descripcio || '',
+        linkBoto: item.Link_Imatge || '',
+        colorFons: '#24153F',
+        colorText: '#E3D4FF',
+        ample: '280px',
+        altImatge: '200px'
+    }));
+
+    // 2. Contenidor on s'allotjarà la galeria activa
+    const contenidorTemp = document.createElement('div');
+    contenidorTemp.className = 'seccio-galeria-projecte';
+    contenidorTemp.style.margin = '2rem 0';
+
+    // 3. Opcions d'execució per a crearGaleriaActiva
+    const opcionsGaleria = {
+        velocitat: 20,
+        bucle: true,
+        colorFons: 'transparent'
+    };
+
+    const elementGaleria = crearGaleriaActiva(itemsGaleria, opcionsGaleria);
+    contenidorTemp.appendChild(elementGaleria);
+
+    return contenidorTemp.outerHTML;
+}        
         
     </script>
 </body>
