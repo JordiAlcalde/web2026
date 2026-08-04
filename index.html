@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0076]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0077]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -612,30 +612,22 @@
             });
         }
 
-        /*
+        
         function canviarSeccio(nomNovaSeccio) {
             const hashNetejat = (nomNovaSeccio || '').replace('#', '').trim();
             
-            // Funció interna per renderitzar el peu allà on toqui
+            // Funció interna per netejar i afegir el peu de pàgina unificat
             const renderitzarPeu = () => {
                 if (typeof crearPeuPagina === 'function') {
-                    const htmlPeu = crearPeuPagina(); // Generem l'HTML
+                    const htmlPeu = crearPeuPagina();
+                    const main = document.getElementById('seccions-contenidor') || document.body;
                     
-                    // BUSQUEM ON INJECTAR-LO:
-                    // 1. Si tens un div específic per al peu fora del main:
-                    const contenidorPeu = document.getElementById('contenidor-peu-pagina');
-                    if (contenidorPeu) {
-                        contenidorPeu.innerHTML = htmlPeu;
-                    } else {
-                        // 2. Si no existeix, l'afegim al final de la secció o contenidor actiu
-                        const main = document.getElementById('seccions-contenidor') || document.body;
-                        
-                        // Evitem duplicar-lo si ja existeix
-                        const peuExistent = main.querySelector('.peu-pagina');
-                        if (peuExistent) peuExistent.remove();
-                        
-                        main.insertAdjacentHTML('beforeend', htmlPeu);
-                    }
+                    // Eliminem qualsevol peu existent per evitar duplicats
+                    const peusExistents = document.querySelectorAll('.peu-pagina');
+                    peusExistents.forEach(p => p.remove());
+                    
+                    // Inserim el peu al final del contenidor principal
+                    main.insertAdjacentHTML('beforeend', htmlPeu);
                 }
             };
         
@@ -647,10 +639,15 @@
                 hashNetejat === 'projectes'
             ) {
                 if (typeof carregarPaginaProjectes === 'function') {
+                    // Executem la càrrega del contingut de projectes
                     carregarPaginaProjectes(hashNetejat);
-                }        
-                // Dibuixem el peu després de carregar el projecte
-                renderitzarPeu();
+                    
+                    // Utilitzem setTimeout per garantir que el peu s'injecta 
+                    // un cop el DOM de projectes s'ha dibuixat completament
+                    setTimeout(() => {
+                        renderitzarPeu();
+                    }, 50);
+                }
                 return; 
             }
         
@@ -663,99 +660,29 @@
             ) {
                 if (typeof carregarPaginaLegal === 'function') {
                     carregarPaginaLegal(hashNetejat);
+                    setTimeout(() => { renderitzarPeu(); }, 50);
                 }
-                renderitzarPeu();
                 return;
             }
         
-            // 3. RESTA DE SECCIONS ESTÀNDARD
+            // 3. RESTA DE SECCIONS PRINCIPALS
             const seccions = document.querySelectorAll('.seccio-web');
             seccions.forEach(sec => sec.style.display = 'none');
+        
+            // Neteja de peus residuals
+            const peusExistents = document.querySelectorAll('.peu-pagina');
+            peusExistents.forEach(p => p.remove());
         
             const targetId = hashNetejat.startsWith('pantalla-') ? hashNetejat : `pantalla-${hashNetejat}`;
             const seccioDesti = document.getElementById(targetId);
         
             if (seccioDesti) {
                 seccioDesti.style.display = 'block';
+                // Inserim el peu de pàgina directament al final de la secció visible
+                seccioDesti.insertAdjacentHTML('beforeend', crearPeuPagina());
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
-        
-            // Renderitzem el peu per a les seccions generals
-            renderitzarPeu();
         }
-        */
-
-        
-function canviarSeccio(nomNovaSeccio) {
-    const hashNetejat = (nomNovaSeccio || '').replace('#', '').trim();
-    
-    // Funció interna per netejar i afegir el peu de pàgina unificat
-    const renderitzarPeu = () => {
-        if (typeof crearPeuPagina === 'function') {
-            const htmlPeu = crearPeuPagina();
-            const main = document.getElementById('seccions-contenidor') || document.body;
-            
-            // Eliminem qualsevol peu existent per evitar duplicats
-            const peusExistents = document.querySelectorAll('.peu-pagina');
-            peusExistents.forEach(p => p.remove());
-            
-            // Inserim el peu al final del contenidor principal
-            main.insertAdjacentHTML('beforeend', htmlPeu);
-        }
-    };
-
-    // 1. CAS PROJECTES
-    if (
-        hashNetejat.startsWith('projecte/') || 
-        hashNetejat.startsWith('projectes/') || 
-        hashNetejat.startsWith('pr_') ||
-        hashNetejat === 'projectes'
-    ) {
-        if (typeof carregarPaginaProjectes === 'function') {
-            // Executem la càrrega del contingut de projectes
-            carregarPaginaProjectes(hashNetejat);
-            
-            // Utilitzem setTimeout per garantir que el peu s'injecta 
-            // un cop el DOM de projectes s'ha dibuixat completament
-            setTimeout(() => {
-                renderitzarPeu();
-            }, 50);
-        }
-        return; 
-    }
-
-    // 2. CAS LEGAL
-    if (
-        hashNetejat.startsWith('legal') || 
-        hashNetejat.startsWith('avis-legal') || 
-        hashNetejat.startsWith('privacitat') || 
-        hashNetejat.startsWith('cookies')
-    ) {
-        if (typeof carregarPaginaLegal === 'function') {
-            carregarPaginaLegal(hashNetejat);
-            setTimeout(() => { renderitzarPeu(); }, 50);
-        }
-        return;
-    }
-
-    // 3. RESTA DE SECCIONS PRINCIPALS
-    const seccions = document.querySelectorAll('.seccio-web');
-    seccions.forEach(sec => sec.style.display = 'none');
-
-    // Neteja de peus residuals
-    const peusExistents = document.querySelectorAll('.peu-pagina');
-    peusExistents.forEach(p => p.remove());
-
-    const targetId = hashNetejat.startsWith('pantalla-') ? hashNetejat : `pantalla-${hashNetejat}`;
-    const seccioDesti = document.getElementById(targetId);
-
-    if (seccioDesti) {
-        seccioDesti.style.display = 'block';
-        // Inserim el peu de pàgina directament al final de la secció visible
-        seccioDesti.insertAdjacentHTML('beforeend', crearPeuPagina());
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-}
         
         
         function carregarPaginaLegal(idLegal) {
@@ -801,64 +728,64 @@ function canviarSeccio(nomNovaSeccio) {
 
 
 
-function carregarPaginaProjectes(idProjecte) {
-    console.log("🔍 [1] carregarPaginaProjectes cridada amb idProjecte:", idProjecte);
-
-    const main = document.getElementById('seccions-contenidor');
-    if (!main) {
-        console.error("❌ Error: No s'ha trobat l'element #seccions-contenidor");
-        return;
-    }
-
-    const llistaProjectes = (typeof dadesWeb !== 'undefined' && dadesWeb.projectes) 
-        ? dadesWeb.projectes 
-        : (window.dadesWeb && window.dadesWeb.projectes ? window.dadesWeb.projectes : []);
-
-    if (!llistaProjectes || llistaProjectes.length === 0) {
-        main.innerHTML = `
-            <div style="text-align:center; padding: 4rem 1.5rem; font-family: 'Montserrat', sans-serif; color: #24153F;">
-                <p style="font-size: 1.1rem; color: #301269;">Carregant el Món Mínim...</p>
-            </div>
-        `;
-        return;
-    }
-
-    main.innerHTML = crearPaginaProjectes(idProjecte, llistaProjectes);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
+        function carregarPaginaProjectes(idProjecte) {
+            console.log("🔍 [1] carregarPaginaProjectes cridada amb idProjecte:", idProjecte);
         
-function renderitzarBlocPortada(p) {
-    console.log("🖼️ [3] Renderitzant Portada reduït (320px) per:", p.nomProjecte || p.idProjecte);
-
-    let imatgeUrl = 'img/projecte_default.jpg';
-    if (p.portadaImatgeId && p.portadaImatgeId.trim() !== '') {
-        imatgeUrl = `https://drive.google.com/thumbnail?id=${p.portadaImatgeId.trim()}&sz=w1600`;
-    }
-
-    const titol = p.portadaTitol || p.nomProjecte || 'Projecte sense nom';
-
-    return `
-        <div class="portada-wrapper" style="width: 100%; height: 320px; max-height: 320px; overflow: hidden; position: relative; background-color: #24153F; border-radius: 0 0 12px 12px;">
-            <!-- Imatge retallada a 320px d'alçada i centrada -->
-            <img src="${imatgeUrl}" 
-                 alt="${titol}" 
-                 onload="console.log('✅ Imatge Portada carregada:', '${imatgeUrl}')"
-                 onerror="console.error('❌ Error carregant la imatge Portada:', '${imatgeUrl}');"
-                 style="width: 100%; height: 320px; object-fit: cover; object-position: center center; display: block; position: absolute; top: 0; left: 0; z-index: 1;" />
-
-            <!-- Capa de contrast violeta fosca (#24153F) -->
-            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 320px; background: linear-gradient(180deg, rgba(36, 21, 63, 0.3) 0%, rgba(36, 21, 63, 0.75) 100%); z-index: 2; pointer-events: none;"></div>
-
-            <!-- Títol amb font Montserrat proporcional -->
-            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 320px; display: flex; align-items: center; justify-content: center; z-index: 3; box-sizing: border-box; padding: 1rem;">
-                <h1 style="font-family: 'Montserrat', sans-serif !important; font-weight: 800 !important; color: #FFFFFF !important; font-size: 2.2rem !important; line-height: 1.15; margin: 0; text-align: center; text-shadow: 0 3px 12px rgba(0, 0, 0, 0.7); letter-spacing: -0.5px;">
-                    ${titol}
-                </h1>
-            </div>
-        </div>
-    `;
-}
+            const main = document.getElementById('seccions-contenidor');
+            if (!main) {
+                console.error("❌ Error: No s'ha trobat l'element #seccions-contenidor");
+                return;
+            }
+        
+            const llistaProjectes = (typeof dadesWeb !== 'undefined' && dadesWeb.projectes) 
+                ? dadesWeb.projectes 
+                : (window.dadesWeb && window.dadesWeb.projectes ? window.dadesWeb.projectes : []);
+        
+            if (!llistaProjectes || llistaProjectes.length === 0) {
+                main.innerHTML = `
+                    <div style="text-align:center; padding: 4rem 1.5rem; font-family: 'Montserrat', sans-serif; color: #24153F;">
+                        <p style="font-size: 1.1rem; color: #301269;">Carregant el Món Mínim...</p>
+                    </div>
+                `;
+                return;
+            }
+        
+            main.innerHTML = crearPaginaProjectes(idProjecte, llistaProjectes);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+                
+        function renderitzarBlocPortada(p) {
+            console.log("🖼️ [3] Renderitzant Portada reduït (320px) per:", p.nomProjecte || p.idProjecte);
+        
+            let imatgeUrl = 'img/projecte_default.jpg';
+            if (p.portadaImatgeId && p.portadaImatgeId.trim() !== '') {
+                imatgeUrl = `https://drive.google.com/thumbnail?id=${p.portadaImatgeId.trim()}&sz=w1600`;
+            }
+        
+            const titol = p.portadaTitol || p.nomProjecte || 'Projecte sense nom';
+        
+            return `
+                <div class="portada-wrapper" style="width: 100%; height: 320px; max-height: 320px; overflow: hidden; position: relative; background-color: #24153F; border-radius: 0 0 12px 12px;">
+                    <!-- Imatge retallada a 320px d'alçada i centrada -->
+                    <img src="${imatgeUrl}" 
+                         alt="${titol}" 
+                         onload="console.log('✅ Imatge Portada carregada:', '${imatgeUrl}')"
+                         onerror="console.error('❌ Error carregant la imatge Portada:', '${imatgeUrl}');"
+                         style="width: 100%; height: 320px; object-fit: cover; object-position: center center; display: block; position: absolute; top: 0; left: 0; z-index: 1;" />
+        
+                    <!-- Capa de contrast violeta fosca (#24153F) -->
+                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 320px; background: linear-gradient(180deg, rgba(36, 21, 63, 0.3) 0%, rgba(36, 21, 63, 0.75) 100%); z-index: 2; pointer-events: none;"></div>
+        
+                    <!-- Títol amb font Montserrat proporcional -->
+                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 320px; display: flex; align-items: center; justify-content: center; z-index: 3; box-sizing: border-box; padding: 1rem;">
+                        <h1 style="font-family: 'Montserrat', sans-serif !important; font-weight: 800 !important; color: #FFFFFF !important; font-size: 2.2rem !important; line-height: 1.15; margin: 0; text-align: center; text-shadow: 0 3px 12px rgba(0, 0, 0, 0.7); letter-spacing: -0.5px;">
+                            ${titol}
+                        </h1>
+                    </div>
+                </div>
+            `;
+        }
 
         
         function activarSeccioInicial() {
@@ -871,8 +798,6 @@ function renderitzarBlocPortada(p) {
             const menu = document.getElementById('menu-navegacio');
             if (menu) menu.classList.toggle('obert');
         }   
-
-
 
 
         function navegarA(hashDesti) {
@@ -898,11 +823,9 @@ function renderitzarBlocPortada(p) {
             
                 if (foraDeHome) {
                     // Actualitzem la URL
-                    window.location.hash = hashNetejat;
-                    
+                    window.location.hash = hashNetejat;                    
                     // Reconstruïm les seccions de la Home amb la teva funció real
-                    construirPantallesWeb();
-            
+                    construirPantallesWeb();            
                     // Esperem un instant a què el DOM es dibuixi per fer el smooth scroll
                     setTimeout(() => {
                         const el = document.getElementById(idSeccio);
@@ -940,9 +863,9 @@ function renderitzarBlocPortada(p) {
         window.addEventListener('hashchange', carregarPaginaPerHash);
         
         
-        // *****************************************
-        // COMPONENTS
-        // *****************************************
+        // ********************************************************************
+        // COMPONENTS  ** PÀGINES PRINCIPALS **
+        // ********************************************************************
         function crearTargetaElement(item) {
             const card = document.createElement('div');
             
@@ -1249,8 +1172,8 @@ function renderitzarBlocPortada(p) {
         }    
 
         /* ==========================================================================
-           FUNCIÓ: CREAR CARRUSEL D'IMATGES (Dades de Sheets / Drive)
-           ========================================================================== */
+           CARRUSEL D'IMATGES (Dades de Sheets / Drive)
+        ========================================================================== */
         function crearCarruselImatges(items, opcions = {}) {
             if (!items || items.length === 0) return document.createElement('div');
         
@@ -1883,463 +1806,423 @@ function renderitzarBlocPortada(p) {
         /* PROJECTES
         /* ******************************************************** */
  
-// Funció principal adaptada al parser del CSV de Projectes
-function crearPaginaProjectes(idProjecte, llistaProjectes = []) {
-    const idNeta = (idProjecte || '').replace('#', '').replace('projecte/', '').replace('projectes/', '').trim();
-    console.log("🔍 Cerca de projecte per ID neta:", idNeta);
-
-    const projecte = llistaProjectes.find(p => p.idProjecte === idNeta) || llistaProjectes[0];
-
-    if (!projecte) {
-        console.error("❌ No s'ha trobat cap projecte a la llista.");
-        return `<div style="padding: 4rem; text-align: center;"><h2>Projecte no trobat</h2></div>`;
-    }
-
-    // Ordre per defecte si no s'especifica al CSV
-    const ordresRaw = projecte.ordre && projecte.ordre.trim() !== '' ? projecte.ordre : 'Portada;Video_1';
-    console.log("ordresRaw: ", ordresRaw);
-    const ordres = ordresRaw.split(';').map(o => o.trim());
-    console.log("ordres: ", ordres);
-
-    let htmlFinal = `<article class="pantalla-projecte-singular" data-id="${projecte.idProjecte}">`;
-
-    ordres.forEach(bloc => {
-        const blocNom = bloc.toLowerCase().replace(/_/g, '');
-        console.log("blocNom: ", blocNom);
+        // Funció principal adaptada al parser del CSV de Projectes
+        function crearPaginaProjectes(idProjecte, llistaProjectes = []) {
+            const idNeta = (idProjecte || '').replace('#', '').replace('projecte/', '').replace('projectes/', '').trim();
+            console.log("🔍 Cerca de projecte per ID neta:", idNeta);
         
-        // Extracció dinàmica de l'índex numèric (Ex: "video1" -> 1, "imatgetext2" -> 2)
-        const numExtret = bloc.match(/\d+/);
-        const numeroBloc = numExtret ? parseInt(numExtret[0], 10) : 1;
-
-        if (blocNom.startsWith('portada') || blocNom.startsWith('hero')) {
-            htmlFinal += renderitzarBlocPortada(projecte);
-        } 
-        else if (blocNom.startsWith('video')) {
-            htmlFinal += renderitzarBlocVideo(projecte, numeroBloc);
-        } 
-        else if (blocNom.startsWith('imatgetext') || blocNom.startsWith('imatge')) {
-            htmlFinal += renderitzarBlocImatgeText(projecte, numeroBloc);
-        }
-        else if (blocNom.startsWith('bloctext')) {
-            htmlFinal += renderitzarBlocText(projecte, numeroBloc);
-        }
-        else if (blocNom.startsWith('carrusel')) {
-            htmlFinal += renderitzarCarrusel(projecte, dadesWeb.carrusels);
-        }
+            const projecte = llistaProjectes.find(p => p.idProjecte === idNeta) || llistaProjectes[0];
         
-        console.log(`🧩 Processat bloc: ${bloc} -> Tipus: ${blocNom} | Ídem/Número: ${numeroBloc}`);
-    });
-
-    htmlFinal += `</article>`;
-    return htmlFinal;
-}
-
-// Renderitzador del bloc HERO ajustat als camps del parsejarCSVProjectes
-function renderitzarBlocPortada(p) {
-    console.log("🖼️ [Portada] Renderitzant bloc Portada de Projectes per:", p.nomProjecte || p.idProjecte);
-
-    // Imatge optimitzada de Google Drive
-    let imatgeUrl = 'img/projecte_default.jpg';
-    if (p.portadaImatgeId && p.portadaImatgeId.trim() !== '') {
-        imatgeUrl = `https://drive.google.com/thumbnail?id=${p.portadaImatgeId.trim()}&sz=w1600`;
-    }
-
-    // Títol de Portada amb fallback al nom del projecte
-    const titol = p.portadaTitol || p.nomProjecte || 'Mínim Món';
-
-    return `
-        <div class="portada-wrapper-projecte">
-            <!-- Imatge retallada i ancorada al centre -->
-            <img src="${imatgeUrl}" 
-                 alt="${titol}" 
-                 onload="console.log('✅ Imatge de Portada carregada:', '${imatgeUrl}')"
-                 onerror="console.error('❌ Error carregant la imatge de Portada:', '${imatgeUrl}');" />
-
-            <!-- Gradient fosc de la paleta oficial -->
-            <div class="overlay-portada"></div>
-
-            <!-- Títol en font Montserrat i mida continguda -->
-            <div class="contingut-text-portada">
-                <h1>${titol}</h1>
-            </div>
-        </div>
-    `;
-}
-        
-function renderitzarBlocVideo(projecte, numVideo) {
-    const videoAtributs = projecte[`video${numVideo}Atributs`];
-    const videoTitol = projecte[`video${numVideo}Titol`] || '';
-    const videoText = projecte[`video${numVideo}Text`] || '';
-    const videoLink = projecte[`video${numVideo}Link`] || '';
-    const videoAlt = projecte[`video${numVideo}Alt`] || '420px';
-
-    if (!videoLink || videoLink.trim() === '') {
-        console.warn(`⚠️ No s'ha trobat l'enllaç del vídeo per al bloc Video_${numVideo}`);
-        return '';
-    }
-
-    const itemVideo = {
-        atributs: videoAtributs.trim(),
-        titol: videoTitol.trim(),
-        text: videoText.trim(),
-        link: videoLink.trim(),
-        alt: videoAlt.trim()
-    };
-
-    return `
-        <section class="seccio-bloc-video-targeta">
-            ${crearComponentVideoProjecte(itemVideo)}
-        </section>
-    `;
-}
-
-        
-function crearComponentVideoProjecte(item) {
-    const srcVideo = item.link || '';
-    const titol = item.titol || '';
-    const text = item.text || '';
-    const alcadaVideo = item.alt && item.alt.trim() !== '' ? item.alt.trim() : '420px';
-    const atributs = item.atributs || 'controls';
-    
-    if (!srcVideo) return '';
-
-    return `
-        <div class="targeta-video-contenidor">
-            <!-- Columna Esquerra: Reproductor adaptable -->
-            <div class="columna-video-media-nativa" style="height: ${alcadaVideo};">
-                <video 
-                    src="${srcVideo}"                     
-                    ${atributs} 
-                    playsinline 
-                    preload="metadata"
-                    style="height: 100%; max-height: ${alcadaVideo}; width: auto; display: block;">                    
-                    El teu navegador no permet la reproducció de vídeo HTML5.
-                </video>
-            </div>
-
-            <!-- Columna Dreta: Textos alineats a TOP -->
-            <div class="columna-video-text">
-                ${titol ? `<h3 class="titol-video-targeta">${titol}</h3>` : ''}
-                ${text ? `<p class="text-video-targeta">${text}</p>` : ''}
-            </div>
-        </div>
-    `;
-}
-
-function renderitzarBlocImatgeText(projecte, numBloc = 1) {
-    // Lectura dels camps parsejats des de Sheets
-    const imatgeId = projecte[`ImatgeText_${numBloc}_ID`] || projecte[`imatgeText_${numBloc}_id`] || projecte[`imatgeText${numBloc}Id`] || '';
-    const imatgeTitol = projecte[`ImatgeText_${numBloc}_Titol`] || projecte[`imatgeText${numBloc}Titol`] || '';
-    const imatgeText = projecte[`ImatgeText_${numBloc}_Text`] || projecte[`imatgeText${numBloc}Text`] || '';
-    const imatgeAlt = projecte[`Imatge_${numBloc}_Alt`] || projecte[`imatge_${numBloc}_alt`] || projecte[`imatge${numBloc}Alt`] || '420px';
-
-    if (!imatgeId || imatgeId.trim() === '') return '';
-
-    return `
-        <section class="seccio-bloc-imatge-targeta">
-            ${crearComponentImatgeTextProjecte({
-                id: imatgeId.trim(),
-                titol: imatgeTitol.trim(),
-                text: imatgeText.trim(),
-                alt: imatgeAlt.trim()
-            })}
-        </section>
-    `;
-}
-
-/**
- * Genera el component de Targeta d'Imatge + Text per als projectes de Mínim Món.
- * @param {Object} item - Objecte amb l'ID net de Drive, titol, text i alt (alçada).
- * @returns {string} Codi HTML estructurat.
- */
-function crearComponentImatgeTextProjecte(item) {
-    const driveId = (item.id || item.imatgeId || '').trim();
-    const titol = item.titol || '';
-    const text = item.text || item.descripcio || '';
-    const alcadaImatge = item.alt && item.alt.trim() !== '' ? item.alt.trim() : '420px';
-    const altText = item.altText || titol || 'Mínim Món';
-
-    if (!driveId) return '';
-
-    const srcImatge = `https://drive.google.com/thumbnail?id=${driveId}&sz=w1600`;
-
-    return `
-        <div class="targeta-imatge-contenidor">
-            <!-- Columna Esquerra: Contenidor d'imatge flexible -->
-            <div class="columna-imatge-media" style="--max-altura-desitjada: ${alcadaImatge};">
-                <img 
-                    src="${srcImatge}" 
-                    alt="${altText}" 
-                    loading="lazy"
-                    class="imatge-responsive-mm"
-                />
-            </div>
-
-            <!-- Columna Dreta: Text alineat a TOP -->
-            <div class="columna-imatge-text">
-                ${titol ? `<h3 class="titol-imatge-targeta">${titol}</h3>` : ''}
-                ${text ? `<p class="text-imatge-targeta">${text}</p>` : ''}
-            </div>
-        </div>
-    `;
-}    
-        
-        
-/**
- * Renderitza un bloc de text extret de les propietats del projecte segons el seu número de bloc.
- * Retorna la cadena HTML per concatenar directament dins de crearPaginaProjectes.
- * 
- * @param {Object} projecte - Objecte de dades del projecte (CSV parsEJat).
- * @param {number} numeroBloc - Índex del bloc (ex: 1 per a blocText_1).
- * @returns {string} Codi HTML estructurat.
- */
-function renderitzarBlocText(projecte, numeroBloc = 1) {
-    if (!projecte) return '';
-
-    // Cerca de valors amb fallback (ex: blocText1_titol, blocText_1_titol o blocText_titol)
-    const titol = projecte[`blocText${numeroBloc}Titol`] || '';
-    const text = projecte[`blocText${numeroBloc}Text`] || '';
-
-    // Si no hi ha cap contingut, evitem generar un bloc buit
-    if (!titol && !text) return '';
-
-    return crearComponentBlocTextProjecte({ titol, text });
-}
-
-/**
- * Genera l'estructura HTML del component Bloc Text per a Mínim Món.
- * Utilitza les classes CSS de marca (.mm-bloc-text-container, etc.).
- * 
- * @param {Object} item - Objecte amb { titol, text }.
- * @returns {string} Codi HTML en format String.
- */
-function crearComponentBlocTextProjecte(item) {
-    const titol = item.titol || '';
-    const text = item.text || '';
-
-    return `
-        <div class="seccio-bloc-text-targeta">
-            <div class="mm-bloc-text-container">
-                <div class="mm-bloc-text-content">
-                    <h2 class="mm-bloc-text-title">${titol}</h2>
-                    <div class="mm-bloc-text-body">${text}</div>
-                </div>
-            </div>
-        </div>        
-    `;
-}       
-
-        
-/**
- * Renderitza el component carruselProjecte per a un projecte concret.
- * S'encarrega de comprovar si el projecte té activat el carrusel ("Si")
- * i si disposa d'imatges carregades des del full "Carrusels".
- * 
- * @param {Object} projecte - Objecte del projecte (llegit de la fila de Sheets)
- * @param {Object} mapCarrusels - Mapa d'imatges per ID_Projecte obtingut amb parsejarCSVCarrusels
- * @returns {string} HTML renderitzat del carrusel o cadena buida si no correspon
- */
-/**
- * Renderitza el carrusel d'un projecte.
- */
-function renderitzarCarrusel(projecte, mapCarrusels) {
-    if (!projecte) {
-        console.warn("⚠️ [Carrusel Debug] 'projecte' és null o undefined");
-        return '';
-    }
-
-    console.log("🔍 [Carrusel Debug] Dades rebudes:", { projecte, mapCarrusels });
-    
-    // 1. Lectura robusta de l'ID del projecte (cobreix idProjecte, ID_Projecte i id)
-    const idProjecte = projecte.idProjecte || projecte.ID_Projecte || projecte.id || '';
-    
-    // 2. Comprovació del camp 'carrusel'
-    const teCarrusel = projecte.carrusel && projecte.carrusel.toString().trim().toLowerCase() === 'si';
-
-    // 3. Validació de seguretat
-    console.log(`🔍 [Carrusel Debug] ID: ${idProjecte} | camp carrusel: "${projecte.carrusel}" -> teCarrusel: ${teCarrusel}`);
-
-    if (!teCarrusel) {
-        console.warn("⚠️ [Carrusel Debug] Aturat: El camp 'carrusel' a Sheets no és 'Si'");
-        return '';
-    }
-
-    if (!idProjecte || !mapCarrusels) {
-        console.warn("⚠️ [Carrusel Debug] Aturat: Falta idProjecte o mapCarrusels");
-        return '';
-    }
-    
-    if (!teCarrusel || !idProjecte || !mapCarrusels || typeof mapCarrusels !== 'object') {
-        return '';
-    }
-
-    // 4. Obtenció de les imatges del mapa
-    const llistaImatges = mapCarrusels[idProjecte];
-    if (!llistaImatges || llistaImatges.length === 0) {
-        console.warn(`⚠️ [Carrusel Debug] Aturat: No s'han trobat imatges al mapCarrusels per a l'ID ${idProjecte}`);
-        return '';
-    }
-
-    const carruselAlt = projecte.carruselAlt || 380;
-
-    console.log("Alt carrusel: ",carruselAlt);
-    
-    return crearComponentCarruselProjecte(llistaImatges, carruselAlt, idProjecte);
-}
-
-
-/**
- * Genera el component de carrusel de projectes amb Autoplay integrat
- */
-function crearComponentCarruselProjecte(llistaImatges, carruselAlt, idUnic) {
-    if (!llistaImatges || llistaImatges.length === 0) return '';
-
-    // Processat de l'alçada
-    let altCalculada = 380;
-    if (carruselAlt) {
-        const numExtret = parseInt(carruselAlt.toString().replace(/[^0-9]/g, ''), 10);
-        if (!isNaN(numExtret) && numExtret > 0) {
-            altCalculada = numExtret;
-        }
-    }
-
-    const ampleVisorCalculat = Math.round(altCalculada * 1.33);
-    
-    const slidesHTML = llistaImatges.map((img, idx) => {
-        const idImg = img.Id_Imatge || img.id_imatge || img.ID_Imatge || img.Id || '';
-        const rawLink = img.Link_Imatge || img.link || '';
-        
-        let urlFinal = 'logo_mm_600.jpg';
-        
-        if (idImg && idImg.trim() !== '' && idImg !== '#N/A') {
-            urlFinal = `https://drive.google.com/thumbnail?sz=w1200&id=${idImg.trim()}`;
-        } else if (rawLink && rawLink.includes('id=')) {
-            const match = rawLink.match(/id=([a-zA-Z0-9_-]+)/);
-            if (match && match[1]) {
-                urlFinal = `https://drive.google.com/thumbnail?sz=w1200&id=${match[1]}`;
+            if (!projecte) {
+                console.error("❌ No s'ha trobat cap projecte a la llista.");
+                return `<div style="padding: 4rem; text-align: center;"><h2>Projecte no trobat</h2></div>`;
             }
-        }
-
-        const altText = img.Descripcio || img.descripcio || 'Imatge del projecte Mínim Món';
-
-        return `
-            <div class="carrusel-projecte-slide-item ${idx === 0 ? 'activa' : ''}" data-index="${idx}">
-                <img src="${urlFinal}" alt="${altText.replace(/"/g, '&quot;')}" />
-            </div>
-        `;
-    }).join('');
         
-    const descripcioInicial = llistaImatges[0]?.Descripcio || llistaImatges[0]?.descripcio || '';
-    const arrayDescripcions = llistaImatges.map(i => i.Descripcio || i.descripcio || '');
-    const JSONDescripcions = JSON.stringify(arrayDescripcions).replace(/"/g, '&quot;');
-
-    return `
-        <div class="seccio-carrusel-projecte-targeta" 
-             id="carrusel-projecte-wrapper-${idUnic}"
-             onmouseenter="pararAutoplay()" 
-             onmouseleave="iniciarAutoplay('${idUnic}', ${llistaImatges.length})">
-            
-            <div class="targeta-carrusel-projecte-contenidor">
+            // Ordre per defecte si no s'especifica al CSV
+            const ordresRaw = projecte.ordre && projecte.ordre.trim() !== '' ? projecte.ordre : 'Portada;Video_1';
+            console.log("ordresRaw: ", ordresRaw);
+            const ordres = ordresRaw.split(';').map(o => o.trim());
+            console.log("ordres: ", ordres);
+        
+            let htmlFinal = `<article class="pantalla-projecte-singular" data-id="${projecte.idProjecte}">`;
+        
+            ordres.forEach(bloc => {
+                const blocNom = bloc.toLowerCase().replace(/_/g, '');
+                console.log("blocNom: ", blocNom);
                 
-                <div class="columna-carrusel-projecte-visor" style="height: ${altCalculada}px; width: ${ampleVisorCalculat}px;">
-                    ${llistaImatges.length > 1 ? `
-                        <button class="boto-carrusel-projecte-nav anterior" onclick="moureCarruselProjecte('${idUnic}', -1)">&#10094;</button>
-                        <button class="boto-carrusel-projecte-nav seguent" onclick="moureCarruselProjecte('${idUnic}', 1)">&#10095;</button>
-                    ` : ''}
-                    ${slidesHTML}
-                </div>
-
-                <div class="columna-carrusel-projecte-descripcio">
-                    <p class="text-carrusel-projecte-descripcio" id="carrusel-projecte-desc-${idUnic}" data-descripcions="${JSONDescripcions}">
-                        ${descripcioInicial}
-                    </p>
-                </div>
-
-            </div>
-
-            <!-- Inicia l'autoplay un cop l'element està carregat a la pàgina -->
-            ${llistaImatges.length > 1 ? `
-                <script>
-                    setTimeout(function() {
-                        if (typeof iniciarAutoplay === 'function') {
-                            iniciarAutoplay('${idUnic}', ${llistaImatges.length});
-                        }
-                    }, 150);
-                <\/script>
-            ` : ''}
-        </div>
-    `;
-}
-
-/* ==========================================================================
-   LÒGICA DE NAVEGACIÓ I TEMPORITZADOR AUTOMÀTIC (AUTOPLAY)
-   ========================================================================== */
-
-let carruselTimer = null;
-const CADENCIA_MS = 4000; // Cadència de 4 segons entre imatges
-
-/**
- * Mou la diapositiva i actualitza el text descriptiu
- */
-function moureCarruselProjecte(idUnic, direccio) {
-    const contenidor = document.getElementById(`carrusel-projecte-wrapper-${idUnic}`);
-    if (!contenidor) return;
-
-    const slides = contenidor.querySelectorAll('.carrusel-projecte-slide-item');
-    if (!slides.length) return;
-
-    let indexActiu = Array.from(slides).findIndex(s => s.classList.contains('activa'));
-    if (indexActiu === -1) indexActiu = 0;
-
-    slides[indexActiu].classList.remove('activa');
-
-    let nouIndex = (indexActiu + direccio + slides.length) % slides.length;
-    slides[nouIndex].classList.add('activa');
-
-    const textEl = document.getElementById(`carrusel-projecte-desc-${idUnic}`);
-    if (textEl && textEl.dataset.descripcions) {
-        try {
-            const llistaDesc = JSON.parse(textEl.dataset.descripcions);
-            if (llistaDesc[nouIndex] !== undefined) {
-                textEl.textContent = llistaDesc[nouIndex];
-            }
-        } catch (e) {
-            console.error("Error en processar la descripció:", e);
+                // Extracció dinàmica de l'índex numèric (Ex: "video1" -> 1, "imatgetext2" -> 2)
+                const numExtret = bloc.match(/\d+/);
+                const numeroBloc = numExtret ? parseInt(numExtret[0], 10) : 1;
+        
+                if (blocNom.startsWith('portada') || blocNom.startsWith('hero')) {
+                    htmlFinal += renderitzarBlocPortada(projecte);
+                } 
+                else if (blocNom.startsWith('video')) {
+                    htmlFinal += renderitzarBlocVideo(projecte, numeroBloc);
+                } 
+                else if (blocNom.startsWith('imatgetext') || blocNom.startsWith('imatge')) {
+                    htmlFinal += renderitzarBlocImatgeText(projecte, numeroBloc);
+                }
+                else if (blocNom.startsWith('bloctext')) {
+                    htmlFinal += renderitzarBlocText(projecte, numeroBloc);
+                }
+                else if (blocNom.startsWith('carrusel')) {
+                    htmlFinal += renderitzarCarrusel(projecte, dadesWeb.carrusels);
+                }
+                
+                console.log(`🧩 Processat bloc: ${bloc} -> Tipus: ${blocNom} | Ídem/Número: ${numeroBloc}`);
+            });
+        
+            htmlFinal += `</article>`;
+            return htmlFinal;
         }
-    }
+        
+        // Renderitzador del bloc HERO ajustat als camps del parsejarCSVProjectes
+        function renderitzarBlocPortada(p) {
+            console.log("🖼️ [Portada] Renderitzant bloc Portada de Projectes per:", p.nomProjecte || p.idProjecte);
+        
+            // Imatge optimitzada de Google Drive
+            let imatgeUrl = 'img/projecte_default.jpg';
+            if (p.portadaImatgeId && p.portadaImatgeId.trim() !== '') {
+                imatgeUrl = `https://drive.google.com/thumbnail?id=${p.portadaImatgeId.trim()}&sz=w1600`;
+            }
+        
+            // Títol de Portada amb fallback al nom del projecte
+            const titol = p.portadaTitol || p.nomProjecte || 'Mínim Món';
+        
+            return `
+                <div class="portada-wrapper-projecte">
+                    <!-- Imatge retallada i ancorada al centre -->
+                    <img src="${imatgeUrl}" 
+                         alt="${titol}" 
+                         onload="console.log('✅ Imatge de Portada carregada:', '${imatgeUrl}')"
+                         onerror="console.error('❌ Error carregant la imatge de Portada:', '${imatgeUrl}');" />
+        
+                    <!-- Gradient fosc de la paleta oficial -->
+                    <div class="overlay-portada"></div>
+        
+                    <!-- Títol en font Montserrat i mida continguda -->
+                    <div class="contingut-text-portada">
+                        <h1>${titol}</h1>
+                    </div>
+                </div>
+            `;
+        }
+                
+        function renderitzarBlocVideo(projecte, numVideo) {
+            const videoAtributs = projecte[`video${numVideo}Atributs`];
+            const videoTitol = projecte[`video${numVideo}Titol`] || '';
+            const videoText = projecte[`video${numVideo}Text`] || '';
+            const videoLink = projecte[`video${numVideo}Link`] || '';
+            const videoAlt = projecte[`video${numVideo}Alt`] || '420px';
+        
+            if (!videoLink || videoLink.trim() === '') {
+                console.warn(`⚠️ No s'ha trobat l'enllaç del vídeo per al bloc Video_${numVideo}`);
+                return '';
+            }
+        
+            const itemVideo = {
+                atributs: videoAtributs.trim(),
+                titol: videoTitol.trim(),
+                text: videoText.trim(),
+                link: videoLink.trim(),
+                alt: videoAlt.trim()
+            };
+        
+            return `
+                <section class="seccio-bloc-video-targeta">
+                    ${crearComponentVideoProjecte(itemVideo)}
+                </section>
+            `;
+        }
+        
+                
+        function crearComponentVideoProjecte(item) {
+            const srcVideo = item.link || '';
+            const titol = item.titol || '';
+            const text = item.text || '';
+            const alcadaVideo = item.alt && item.alt.trim() !== '' ? item.alt.trim() : '420px';
+            const atributs = item.atributs || 'controls';
+            
+            if (!srcVideo) return '';
+        
+            return `
+                <div class="targeta-video-contenidor">
+                    <!-- Columna Esquerra: Reproductor adaptable -->
+                    <div class="columna-video-media-nativa" style="height: ${alcadaVideo};">
+                        <video 
+                            src="${srcVideo}"                     
+                            ${atributs} 
+                            playsinline 
+                            preload="metadata"
+                            style="height: 100%; max-height: ${alcadaVideo}; width: auto; display: block;">                    
+                            El teu navegador no permet la reproducció de vídeo HTML5.
+                        </video>
+                    </div>
+        
+                    <!-- Columna Dreta: Textos alineats a TOP -->
+                    <div class="columna-video-text">
+                        ${titol ? `<h3 class="titol-video-targeta">${titol}</h3>` : ''}
+                        ${text ? `<p class="text-video-targeta">${text}</p>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderitzarBlocImatgeText(projecte, numBloc = 1) {
+            // Lectura dels camps parsejats des de Sheets
+            const imatgeId = projecte[`ImatgeText_${numBloc}_ID`] || projecte[`imatgeText_${numBloc}_id`] || projecte[`imatgeText${numBloc}Id`] || '';
+            const imatgeTitol = projecte[`ImatgeText_${numBloc}_Titol`] || projecte[`imatgeText${numBloc}Titol`] || '';
+            const imatgeText = projecte[`ImatgeText_${numBloc}_Text`] || projecte[`imatgeText${numBloc}Text`] || '';
+            const imatgeAlt = projecte[`Imatge_${numBloc}_Alt`] || projecte[`imatge_${numBloc}_alt`] || projecte[`imatge${numBloc}Alt`] || '420px';
+        
+            if (!imatgeId || imatgeId.trim() === '') return '';
+        
+            return `
+                <section class="seccio-bloc-imatge-targeta">
+                    ${crearComponentImatgeTextProjecte({
+                        id: imatgeId.trim(),
+                        titol: imatgeTitol.trim(),
+                        text: imatgeText.trim(),
+                        alt: imatgeAlt.trim()
+                    })}
+                </section>
+            `;
+        }
+        
 
-    reiniciarAutoplay(idUnic, slides.length);
-}
+        function crearComponentImatgeTextProjecte(item) {
+            const driveId = (item.id || item.imatgeId || '').trim();
+            const titol = item.titol || '';
+            const text = item.text || item.descripcio || '';
+            const alcadaImatge = item.alt && item.alt.trim() !== '' ? item.alt.trim() : '420px';
+            const altText = item.altText || titol || 'Mínim Món';
+        
+            if (!driveId) return '';
+        
+            const srcImatge = `https://drive.google.com/thumbnail?id=${driveId}&sz=w1600`;
+        
+            return `
+                <div class="targeta-imatge-contenidor">
+                    <!-- Columna Esquerra: Contenidor d'imatge flexible -->
+                    <div class="columna-imatge-media" style="--max-altura-desitjada: ${alcadaImatge};">
+                        <img 
+                            src="${srcImatge}" 
+                            alt="${altText}" 
+                            loading="lazy"
+                            class="imatge-responsive-mm"
+                        />
+                    </div>
+        
+                    <!-- Columna Dreta: Text alineat a TOP -->
+                    <div class="columna-imatge-text">
+                        ${titol ? `<h3 class="titol-imatge-targeta">${titol}</h3>` : ''}
+                        ${text ? `<p class="text-imatge-targeta">${text}</p>` : ''}
+                    </div>
+                </div>
+            `;
+        }    
+                
+                
+        function renderitzarBlocText(projecte, numeroBloc = 1) {
+            if (!projecte) return '';
+        
+            // Cerca de valors amb fallback (ex: blocText1_titol, blocText_1_titol o blocText_titol)
+            const titol = projecte[`blocText${numeroBloc}Titol`] || '';
+            const text = projecte[`blocText${numeroBloc}Text`] || '';
+        
+            // Si no hi ha cap contingut, evitem generar un bloc buit
+            if (!titol && !text) return '';
+        
+            return crearComponentBlocTextProjecte({ titol, text });
+        }
+        
+        function crearComponentBlocTextProjecte(item) {
+            const titol = item.titol || '';
+            const text = item.text || '';
+        
+            return `
+                <div class="seccio-bloc-text-targeta">
+                    <div class="mm-bloc-text-container">
+                        <div class="mm-bloc-text-content">
+                            <h2 class="mm-bloc-text-title">${titol}</h2>
+                            <div class="mm-bloc-text-body">${text}</div>
+                        </div>
+                    </div>
+                </div>        
+            `;
+        }       
+        
+                
+         // Renderitza el carrusel d'un projecte.
+        function renderitzarCarrusel(projecte, mapCarrusels) {
+            if (!projecte) {
+                console.warn("⚠️ [Carrusel Debug] 'projecte' és null o undefined");
+                return '';
+            }
+        
+            console.log("🔍 [Carrusel Debug] Dades rebudes:", { projecte, mapCarrusels });
+            
+            // 1. Lectura robusta de l'ID del projecte (cobreix idProjecte, ID_Projecte i id)
+            const idProjecte = projecte.idProjecte || projecte.ID_Projecte || projecte.id || '';
+            
+            // 2. Comprovació del camp 'carrusel'
+            const teCarrusel = projecte.carrusel && projecte.carrusel.toString().trim().toLowerCase() === 'si';
+        
+            // 3. Validació de seguretat
+            console.log(`🔍 [Carrusel Debug] ID: ${idProjecte} | camp carrusel: "${projecte.carrusel}" -> teCarrusel: ${teCarrusel}`);
+        
+            if (!teCarrusel) {
+                console.warn("⚠️ [Carrusel Debug] Aturat: El camp 'carrusel' a Sheets no és 'Si'");
+                return '';
+            }
+        
+            if (!idProjecte || !mapCarrusels) {
+                console.warn("⚠️ [Carrusel Debug] Aturat: Falta idProjecte o mapCarrusels");
+                return '';
+            }
+            
+            if (!teCarrusel || !idProjecte || !mapCarrusels || typeof mapCarrusels !== 'object') {
+                return '';
+            }
+        
+            // 4. Obtenció de les imatges del mapa
+            const llistaImatges = mapCarrusels[idProjecte];
+            if (!llistaImatges || llistaImatges.length === 0) {
+                console.warn(`⚠️ [Carrusel Debug] Aturat: No s'han trobat imatges al mapCarrusels per a l'ID ${idProjecte}`);
+                return '';
+            }
+        
+            const carruselAlt = projecte.carruselAlt || 380;
+        
+            console.log("Alt carrusel: ",carruselAlt);
+            
+            return crearComponentCarruselProjecte(llistaImatges, carruselAlt, idProjecte);
+        }
+        
+        
+        // Genera el component de carrusel de projectes amb Autoplay integrat
+        function crearComponentCarruselProjecte(llistaImatges, carruselAlt, idUnic) {
+            if (!llistaImatges || llistaImatges.length === 0) return '';
+        
+            // Processat de l'alçada
+            let altCalculada = 380;
+            if (carruselAlt) {
+                const numExtret = parseInt(carruselAlt.toString().replace(/[^0-9]/g, ''), 10);
+                if (!isNaN(numExtret) && numExtret > 0) {
+                    altCalculada = numExtret;
+                }
+            }
+        
+            const ampleVisorCalculat = Math.round(altCalculada * 1.33);
+            
+            const slidesHTML = llistaImatges.map((img, idx) => {
+                const idImg = img.Id_Imatge || img.id_imatge || img.ID_Imatge || img.Id || '';
+                const rawLink = img.Link_Imatge || img.link || '';
+                
+                let urlFinal = 'logo_mm_600.jpg';
+                
+                if (idImg && idImg.trim() !== '' && idImg !== '#N/A') {
+                    urlFinal = `https://drive.google.com/thumbnail?sz=w1200&id=${idImg.trim()}`;
+                } else if (rawLink && rawLink.includes('id=')) {
+                    const match = rawLink.match(/id=([a-zA-Z0-9_-]+)/);
+                    if (match && match[1]) {
+                        urlFinal = `https://drive.google.com/thumbnail?sz=w1200&id=${match[1]}`;
+                    }
+                }
+        
+                const altText = img.Descripcio || img.descripcio || 'Imatge del projecte Mínim Món';
+        
+                return `
+                    <div class="carrusel-projecte-slide-item ${idx === 0 ? 'activa' : ''}" data-index="${idx}">
+                        <img src="${urlFinal}" alt="${altText.replace(/"/g, '&quot;')}" />
+                    </div>
+                `;
+            }).join('');
+                
+            const descripcioInicial = llistaImatges[0]?.Descripcio || llistaImatges[0]?.descripcio || '';
+            const arrayDescripcions = llistaImatges.map(i => i.Descripcio || i.descripcio || '');
+            const JSONDescripcions = JSON.stringify(arrayDescripcions).replace(/"/g, '&quot;');
+        
+            return `
+                <div class="seccio-carrusel-projecte-targeta" 
+                     id="carrusel-projecte-wrapper-${idUnic}"
+                     onmouseenter="pararAutoplay()" 
+                     onmouseleave="iniciarAutoplay('${idUnic}', ${llistaImatges.length})">
+                    
+                    <div class="targeta-carrusel-projecte-contenidor">
+                        
+                        <div class="columna-carrusel-projecte-visor" style="height: ${altCalculada}px; width: ${ampleVisorCalculat}px;">
+                            ${llistaImatges.length > 1 ? `
+                                <button class="boto-carrusel-projecte-nav anterior" onclick="moureCarruselProjecte('${idUnic}', -1)">&#10094;</button>
+                                <button class="boto-carrusel-projecte-nav seguent" onclick="moureCarruselProjecte('${idUnic}', 1)">&#10095;</button>
+                            ` : ''}
+                            ${slidesHTML}
+                        </div>
+        
+                        <div class="columna-carrusel-projecte-descripcio">
+                            <p class="text-carrusel-projecte-descripcio" id="carrusel-projecte-desc-${idUnic}" data-descripcions="${JSONDescripcions}">
+                                ${descripcioInicial}
+                            </p>
+                        </div>
+        
+                    </div>
+        
+                    <!-- Inicia l'autoplay un cop l'element està carregat a la pàgina -->
+                    ${llistaImatges.length > 1 ? `
+                        <script>
+                            setTimeout(function() {
+                                if (typeof iniciarAutoplay === 'function') {
+                                    iniciarAutoplay('${idUnic}', ${llistaImatges.length});
+                                }
+                            }, 150);
+                        <\/script>
+                    ` : ''}
+                </div>
+            `;
+        }
 
-/**
- * Inicia el temporitzador de desplaçament automàtic
- */
-function iniciarAutoplay(idUnic, totalSlides) {
-    if (totalSlides <= 1) return;
+        /* ==========================================================================
+           LÒGICA DE NAVEGACIÓ I TEMPORITZADOR AUTOMÀTIC (AUTOPLAY) CARRUSEL PROJECTES
+        ========================================================================== */
+        
+        let carruselTimer = null;
+        const CADENCIA_MS = 4000; // Cadència de 4 segons entre imatges
     
-    pararAutoplay();
-    carruselTimer = setInterval(() => {
-        moureCarruselProjecte(idUnic, 1);
-    }, CADENCIA_MS);
-}
-
-/**
- * Atura el temporitzador de l'Autoplay
- */
-function pararAutoplay() {
-    if (carruselTimer) {
-        clearInterval(carruselTimer);
-        carruselTimer = null;
-    }
-}
-
-/**
- * Reinicia el temporitzador des de zero quan l'usuari interactua
- */
-function reiniciarAutoplay(idUnic, totalSlides) {
-    pararAutoplay();
-    iniciarAutoplay(idUnic, totalSlides);
-}
+        // Mou la diapositiva i actualitza el text descriptiu        
+        function moureCarruselProjecte(idUnic, direccio) {
+            const contenidor = document.getElementById(`carrusel-projecte-wrapper-${idUnic}`);
+            if (!contenidor) return;
+        
+            const slides = contenidor.querySelectorAll('.carrusel-projecte-slide-item');
+            if (!slides.length) return;
+        
+            let indexActiu = Array.from(slides).findIndex(s => s.classList.contains('activa'));
+            if (indexActiu === -1) indexActiu = 0;
+        
+            slides[indexActiu].classList.remove('activa');
+        
+            let nouIndex = (indexActiu + direccio + slides.length) % slides.length;
+            slides[nouIndex].classList.add('activa');
+        
+            const textEl = document.getElementById(`carrusel-projecte-desc-${idUnic}`);
+            if (textEl && textEl.dataset.descripcions) {
+                try {
+                    const llistaDesc = JSON.parse(textEl.dataset.descripcions);
+                    if (llistaDesc[nouIndex] !== undefined) {
+                        textEl.textContent = llistaDesc[nouIndex];
+                    }
+                } catch (e) {
+                    console.error("Error en processar la descripció:", e);
+                }
+            }
+        
+            reiniciarAutoplay(idUnic, slides.length);
+        }
+        
+         //Inicia el temporitzador de desplaçament automàtic
+        function iniciarAutoplay(idUnic, totalSlides) {
+            if (totalSlides <= 1) return;
+            
+            pararAutoplay();
+            carruselTimer = setInterval(() => {
+                moureCarruselProjecte(idUnic, 1);
+            }, CADENCIA_MS);
+        }
+        
+        //Atura el temporitzador de l'Autoplay
+        function pararAutoplay() {
+            if (carruselTimer) {
+                clearInterval(carruselTimer);
+                carruselTimer = null;
+            }
+        }
+        
+        // Reinicia el temporitzador des de zero quan l'usuari interactua 
+        function reiniciarAutoplay(idUnic, totalSlides) {
+            pararAutoplay();
+            iniciarAutoplay(idUnic, totalSlides);
+        }
         
     </script>
 </body>
