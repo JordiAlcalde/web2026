@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0062]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0063]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -754,6 +754,7 @@ function carregarPaginaProjectes(idProjecte) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+/*        
 function crearPaginaProjectes(idProjecte, llistaProjectes = []) {
     // Netejem l'ID per si ve com "projectes/pr_0001" o "#projectes/pr_0001"
     const idNeta = (idProjecte || '').replace('#', '').replace('projecte/', '').replace('projectes/', '').trim();
@@ -787,7 +788,8 @@ function crearPaginaProjectes(idProjecte, llistaProjectes = []) {
     htmlFinal += `</article>`;
     return htmlFinal;
 }
-
+*/
+        
 function renderitzarBlocPortada(p) {
     console.log("🖼️ [3] Renderitzant Portada reduït (320px) per:", p.nomProjecte || p.idProjecte);
 
@@ -1880,7 +1882,7 @@ function crearPaginaProjectes(idProjecte, llistaProjectes = []) {
             htmlFinal += renderitzarBlocText(projecte, numeroBloc);
         }
         else if (blocNom.startsWith('carrusel')) {
-            htmlFinal += renderitzarCarrusel(projecte, numeroBloc);
+            htmlFinal += renderitzarCarrusel(projecte, dadesWeb.carrusels);
         }
         
         console.log(`🧩 Processat bloc: ${bloc} -> Tipus: ${blocNom} | Ídem/Número: ${numeroBloc}`);
