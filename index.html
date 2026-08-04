@@ -2288,16 +2288,25 @@ function renderitzarGaleria(projecteActual, llistaContinguts = [], nomesAltres =
 
     // 3. Mapegem els registres per passar-los al component
     const itemsGaleria = altresProjectesImatges.map(item => ({
-        imatgeId: item.imatgeId || item.ID_Imatge || item.id || item.ID,
+        //imatgeId: item.imatgeId || item.ID_Imatge || item.id || item.ID,
+        //titol: item.titol || item.Titol,
+        //descripcio: item.descripcio || item.Descripcio || '',
+        //linkBoto: item.link || item.Link_Imatge || '',
+        //colorFons: '#24153F',
+        //colorText: '#E3D4FF',
+        //ample: '280px',
+        //altImatge: '200px'
+
+        imatgeId: item.imatgeId || item.ID_Imatge,
         titol: item.titol || item.Titol,
         descripcio: item.descripcio || item.Descripcio || '',
-        linkBoto: item.link || item.Link_Imatge || '',
+        linkBoto: item.link || '',
         colorFons: '#24153F',
         colorText: '#E3D4FF',
-        ample: '280px',
-        altImatge: '200px'
+        ample: '200px',
+        altImatge: '150px'
     }));
-
+    
     // 4. Invocació del component galeria
     const contenidorTemp = document.createElement('div');
     contenidorTemp.className = 'seccio-galeria-projecte';
