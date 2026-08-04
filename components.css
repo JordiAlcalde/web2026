@@ -1341,10 +1341,20 @@
 
 
 /* ==========================================================================
-   CARRUSEL DE PROJECTES - MÍNIM MÓN (Estructura Identica a les Altres Targetes)
+   CARRUSEL DE PROJECTES - MÍNIM MÓN (Fons Blanc Integrat - Opció A)
    ========================================================================== */
 
-/* 1. Envolcall exterior (Coincident amb .seccio-bloc-video-targeta i .seccio-bloc-imatge-targeta) */
+:root {
+    --color-primari: #301269;
+    --color-fons-fosc: #24153F;
+    --color-vivid: #340094;
+    --color-accent: #AC80FF;
+    --color-suau-1: #C8AAFF;
+    --color-suau-2: #E3D4FF;
+    --font-principal: 'Montserrat', sans-serif;
+}
+
+/* 1. Envolcall exterior */
 .seccio-carrusel-projecte-targeta {
     width: 100%;
     max-width: 1100px;
@@ -1357,22 +1367,22 @@
 .targeta-carrusel-projecte-contenidor {
     background-color: #FFFFFF !important;
     border-radius: 12px;
-    padding: 1.5rem; /* Mateix interior de 24px que les targetes de vídeo/imatge */
+    padding: 1.5rem;
     display: flex;
     flex-direction: row;
-    align-items: center; /* Manté el centrat vertical de les dues columnes */
-    gap: 2rem; /* Mateix espaiat entre columna mitjà i columna text */
-    box-shadow: 0 4px 18px rgba(36, 21, 63, 0.15); /* Mateixa ombra oficial */
+    align-items: center;
+    gap: 2rem;
+    box-shadow: 0 4px 18px rgba(36, 21, 63, 0.15);
     box-sizing: border-box;
     width: 100%;
 }
 
-/* 3. Visor d'imatges amb mida dinàmica */
+/* 3. Visor d'imatges amb integració en blanc */
 .columna-carrusel-projecte-visor {
     position: relative;
     overflow: hidden;
     border-radius: 8px;
-    background-color: var(--color-fons-fosc, #24153F); /* Fons fosc oficial */
+    background-color: #FFFFFF !important; /* Fons blanc pur integrat */
     flex-shrink: 0;
     display: flex;
     align-items: center;
@@ -1384,18 +1394,25 @@
     display: none;
     width: 100%;
     height: 100%;
+    background-color: #FFFFFF !important;
 }
 
 .carrusel-projecte-slide-item.activa {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
+/* Imatge adaptativa completa (sense retalls) */
 .carrusel-projecte-slide-item img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 8px;
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain; /* Encaix de qualsevol proporció (16:9, 9:16, 1:1) */
+    border-radius: 6px;
     display: block;
+    margin: auto;
 }
 
 /* Botons de navegació */
@@ -1403,24 +1420,24 @@
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    background-color: rgba(48, 18, 105, 0.85); /* var(--color-primari) amb opacitat */
+    background-color: rgba(48, 18, 105, 0.85);
     color: #ffffff;
-    border: 1px solid var(--color-accent, #AC80FF);
-    width: 40px;
-    height: 40px;
+    border: 1px solid var(--color-accent);
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
     cursor: pointer;
-    font-size: 20px;
+    font-size: 18px;
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 10;
     transition: background-color 0.2s ease, transform 0.2s ease;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    box-shadow: 0 2px 8px rgba(36, 21, 63, 0.2);
 }
 
 .boto-carrusel-projecte-nav:hover {
-    background-color: var(--color-vivid, #340094);
+    background-color: var(--color-vivid);
     transform: translateY(-50%) scale(1.08);
 }
 
@@ -1438,9 +1455,9 @@
 }
 
 .text-carrusel-projecte-descripcio {
-    font-family: var(--font-principal, 'Montserrat', sans-serif);
-    color: var(--color-fons-fosc, #24153F) !important;
-    font-size: 0.95rem; /* Mateixa mida de lletra que les altres targetes */
+    font-family: var(--font-principal);
+    color: var(--color-fons-fosc) !important;
+    font-size: 0.95rem;
     line-height: 1.6;
     margin: 0;
     font-weight: 400;
@@ -1471,7 +1488,6 @@
         width: 100% !important;
     }
 }
-
 /* ==========================================================================
    ADAPTACIÓ MÒBIL GENERAL (REVISADA I FORÇADA AL 100%)
    ========================================================================== */
