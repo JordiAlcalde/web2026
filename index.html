@@ -1148,7 +1148,9 @@
                 } else {
                     card.classList.add('es-estatica');
                 }
-        
+
+                console.log(">> CARD: ",card);
+                
                 const urlImatge = item.imatgeId && item.imatgeId !== '#N/A' && item.imatgeId.trim() !== ''
                     ? `https://drive.google.com/thumbnail?sz=w800&id=${item.imatgeId.trim()}`
                     : 'logo_mm_300.jpg';
