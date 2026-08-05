@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0085]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0086]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -809,7 +809,7 @@
             const hashNetejat = hashDesti.startsWith('#') ? hashDesti : '#' + hashDesti;
             const idSeccio = hashNetejat.replace('#', '');
 
-            console.log("hashNetejat: ", hashNetejat);
+            console.log("navegarA -> hashNetejat: ", hashNetejat);
             
             // Seccions de la pàgina principal (amb ancoratge)
             const seccionsHome = ['univers_minim', 'mons_minims', 'la_botiga', 'el_laboratori', 'home'];
@@ -1075,7 +1075,6 @@
         
 
         function crearGaleriaActiva(items, opcions = {}) {
-            console.log("items: ", items);
             
             const contenidor = document.createElement('div');
             contenidor.className = 'galeria-activa-wrapper';
@@ -1137,9 +1136,7 @@
                 const enllac = item.linkBoto || '';
                 const teEnllac = enllac !== '' && enllac !== '#' && enllac !== '#N/A';
                 console.log("Enllaç: ", enllac);
-                console.log("teEnllac: ", teEnllac);
-                
-        
+                        
                 if (teEnllac) {
                     card.classList.add('es-clicable');
                     card.style.cursor = 'pointer';
@@ -1154,7 +1151,7 @@
         
                 const urlImatge = item.imatgeId && item.imatgeId !== '#N/A' && item.imatgeId.trim() !== ''
                     ? `https://drive.google.com/thumbnail?sz=w800&id=${item.imatgeId.trim()}`
-                    : 'logo_mm_600.jpg';
+                    : 'logo_mm_300.jpg';
         
                 card.innerHTML = `
                     <div class="caixa-img-galeria" style="height: ${alcadaImg}; pointer-events: none;">
