@@ -36,7 +36,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0088]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0089]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -548,7 +548,6 @@
                 return;
             }
         
-            // Comprovar si les seccions de la Home existeixen al DOM; si no, reconstruir-les
             let targetId = hashNetejat.startsWith('pantalla-') ? hashNetejat : `pantalla-${hashNetejat}`;
             let seccioDesti = document.getElementById(targetId);
             
@@ -778,9 +777,7 @@
                 carruselPista.style.animation = 'none';
             }
         
-            const generarTargeta = (item) => {
-                const card = document.createElement('div');
-                card.className = 'galeria-item';
+            const generarTargetaHTML = (item) => {
                 const fonsCard = obtenirColorHex(item.colorFons, '#24153F');
                 const textCard = obtenirColorHex(item.colorText, '#E3D4FF');
                 
@@ -789,42 +786,35 @@
         
                 let alcadaImg = item.altImatge && item.altImatge.trim() !== '' && item.altImatge.trim() !== '#N/A' ? item.altImatge.trim() : '180px';
                 if (!isNaN(alcadaImg)) alcadaImg += 'px';
-        
-                card.style.backgroundColor = fonsCard;
-                card.style.width = ampleCard;
-                card.style.minWidth = ampleCard;
-                card.style.flex = `0 0 ${ampleCard}`;
 
                 const enllac = item.linkBoto || item.link || '';
                 const teEnllac = enllac !== '' && enllac !== '#' && enllac !== '#N/A';
                 
-                if (teEnllac) {
-                    card.classList.add('es-clicable');
-                    card.style.cursor = 'pointer';
-                    card.onclick = (e) => navegarA(enllac, e);
-                } else {
-                    card.classList.add('es-estatica');
-                }
+                const clicAttr = teEnllac ? `onclick="navegarA('${enllac}', event)" style="cursor: pointer; background-color: ${fonsCard}; width: ${ampleCard}; min-width: ${ampleCard}; flex: 0 0 ${ampleCard};"` : `style="background-color: ${fonsCard}; width: ${ampleCard}; min-width: ${ampleCard}; flex: 0 0 ${ampleCard};"`;
+                const classeCard = teEnllac ? 'galeria-item es-clicable' : 'galeria-item es-estatica';
 
                 const urlImatge = item.imatgeId && item.imatgeId !== '#N/A' && item.imatgeId.trim() !== '' ? `https://drive.google.com/thumbnail?sz=w800&id=${item.imatgeId.trim()}` : 'logo_mm_300.jpg';
         
-                card.innerHTML = `
-                    <div class="caixa-img-galeria" style="height: ${alcadaImg}; pointer-events: none;">
-                        <img src="${urlImatge}" alt="${item.titol || 'Mínim Món'}">
-                    </div>
-                    ${(item.titol || item.descripcio) ? `
-                        <div class="caixa-text-galeria" style="pointer-events: none;">
-                            ${item.titol ? `<h4 style="color: ${textCard};">${item.titol}</h4>` : ''}
-                            ${item.descripcio ? `<p style="color: ${textCard};">${item.descripcio.replace(/\n/g, '<br>')}</p>` : ''}
+                return `
+                    <div class="${classeCard}" ${clicAttr}>
+                        <div class="caixa-img-galeria" style="height: ${alcadaImg}; pointer-events: none;">
+                            <img src="${urlImatge}" alt="${item.titol || 'Mínim Món'}">
                         </div>
-                    ` : ''}
+                        ${(item.titol || item.descripcio) ? `
+                            <div class="caixa-text-galeria" style="pointer-events: none;">
+                                ${item.titol ? `<h4 style="color: ${textCard};">${item.titol}</h4>` : ''}
+                                ${item.descripcio ? `<p style="color: ${textCard};">${item.descripcio.replace(/\n/g, '<br>')}</p>` : ''}
+                            </div>
+                        ` : ''}
+                    </div>
                 `;
-                return card;
             };
         
-            items.forEach(item => carruselPista.appendChild(generarTargeta(item)));
-            if (esBucle) items.forEach(item => carruselPista.appendChild(generarTargeta(item)));
+            let pistaHTML = '';
+            items.forEach(item => { pistaHTML += generarTargetaHTML(item); });
+            if (esBucle) items.forEach(item => { pistaHTML += generarTargetaHTML(item); });
             
+            carruselPista.innerHTML = pistaHTML;
             contenidor.appendChild(carruselPista);
             return contenidor;
         }    
@@ -1117,7 +1107,7 @@
                 </div>`;
         }
 
-        /* PROJECTES SINGULARS */
+        /* PROJECTES SINGULARS - ESTRUCTURA REPOSITORI ORIGINAL RESTAURADA */
         function crearPaginaProjectes(idProjecte, llistaProjectes = []) {
             const idNeta = (idProjecte || '').replace('#', '').replace('projecte/', '').replace('projectes/', '').trim();
             const projecte = llistaProjectes.find(p => p.idProjecte === idNeta) || llistaProjectes[0];
@@ -1128,6 +1118,7 @@
             const ordres = ordresRaw.split(';').map(o => o.trim());
         
             let htmlFinal = `<article class="pantalla-projecte-singular" data-id="${projecte.idProjecte}">`;
+            htmlFinal += `<div class="contingut-projecte">`;
         
             ordres.forEach(bloc => {
                 const blocNom = bloc.toLowerCase().replace(/_/g, '');
@@ -1149,7 +1140,7 @@
                 }
             });
         
-            htmlFinal += `</article>`;
+            htmlFinal += `</div></article>`;
             return htmlFinal;
         }
 
@@ -1158,11 +1149,11 @@
             const titol = p.portadaTitol || p.nomProjecte || 'Mínim Món';
         
             return `
-                <div class="portada-wrapper-projecte" style="position: relative; width: 100%; height: 320px; overflow: hidden; background-color: #24153F;">
+                <div class="portada-wrapper-projecte" style="position: relative; width: 100%; height: 350px; overflow: hidden; background-color: #24153F; border-bottom: 2px solid #340094;">
                     <img src="${imatgeUrl}" alt="${titol}" style="width: 100%; height: 100%; object-fit: cover;" />
                     <div class="overlay-portada" style="position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(180deg, rgba(36,21,63,0.3) 0%, rgba(36,21,63,0.85) 100%);"></div>
-                    <div class="contingut-text-portada" style="position: absolute; top:0; left:0; width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
-                        <h1 style="color:#FFF; font-family:'Montserrat', sans-serif; font-size: 2.2rem; text-align:center;">${titol}</h1>
+                    <div class="contingut-text-portada" style="position: absolute; top:0; left:0; width:100%; height:100%; display:flex; align-items:center; justify-content:center; padding: 0 1rem;">
+                        <h1 style="color:#FFF; font-family:'Montserrat', sans-serif; font-size: 2.5rem; font-weight: 700; text-align:center; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">${titol}</h1>
                     </div>
                 </div>`;
         }
@@ -1171,12 +1162,15 @@
             const videoLink = projecte[`video${numVideo}Link`] || '';
             if (!videoLink) return '';
 
+            const titol = projecte[`video${numVideo}Titol`] || '';
+            const desc = projecte[`video${numVideo}Text`] || '';
+
             return `
-                <section class="seccio-bloc-video-targeta" style="padding: 2rem 1rem; max-width: 1000px; margin: 0 auto;">
+                <section class="seccio-bloc-video-targeta" style="padding: 2.5rem 1rem; max-width: 1000px; margin: 0 auto;">
                     ${crearComponentVideo({
                         link: videoLink,
-                        titol: projecte[`video${numVideo}Titol`] || '',
-                        descripcio: projecte[`video${numVideo}Text`] || '',
+                        titol: titol,
+                        descripcio: desc,
                         videoControls: true
                     })}
                 </section>`;
@@ -1186,13 +1180,15 @@
             const imatgeId = projecte[`imatgeText${numBloc}Id`] || projecte[`imatgeText_${numBloc}_ID`] || '';
             if (!imatgeId) return '';
 
+            const elem = crearBlocImatgeText({
+                imatgeId: imatgeId,
+                titol: projecte[`imatgeText${numBloc}Titol`] || '',
+                descripcio: projecte[`imatgeText${numBloc}Text`] || ''
+            });
+
             return `
-                <section class="seccio-bloc-imatge-targeta" style="padding: 2rem 1rem; max-width: 1000px; margin: 0 auto;">
-                    ${crearBlocImatgeText({
-                        imatgeId: imatgeId,
-                        titol: projecte[`imatgeText${numBloc}Titol`] || '',
-                        descripcio: projecte[`imatgeText${numBloc}Text`] || ''
-                    }).outerHTML}
+                <section class="seccio-bloc-imatge-targeta" style="padding: 2rem 1rem; max-width: 1100px; margin: 0 auto;">
+                    ${elem.outerHTML}
                 </section>`;
         }
 
@@ -1201,10 +1197,16 @@
             const text = projecte[`blocText${numeroBloc}Text`] || '';
             if (!titol && !text) return '';
 
+            const elem = crearBlocText({
+                titol: titol,
+                descripcio: text,
+                colorFons: 'Fons fosc',
+                colorText: 'Clar'
+            });
+
             return `
-                <section class="seccio-bloc-text-targeta" style="padding: 2rem 1rem; max-width: 900px; margin: 0 auto; color: #E3D4FF; font-family: 'Montserrat', sans-serif;">
-                    ${titol ? `<h2 style="color: #FFF; font-size: 1.6rem; margin-bottom: 1rem;">${titol}</h2>` : ''}
-                    ${text ? `<div style="line-height: 1.6;">${text.replace(/\n/g, '<br>')}</div>` : ''}
+                <section class="seccio-bloc-text-targeta" style="padding: 2rem 1rem; max-width: 900px; margin: 0 auto;">
+                    ${elem.outerHTML}
                 </section>`;
         }
 
@@ -1219,11 +1221,10 @@
             }));
 
             const elCarrusel = crearCarruselImatges(itemsCarrusel);
-            return `<section class="seccio-carrusel-projecte" style="padding: 2rem 1rem; display: flex; justify-content: center;">${elCarrusel.outerHTML}</section>`;
+            return `<section class="seccio-carrusel-projecte" style="padding: 2.5rem 1rem; display: flex; justify-content: center; background-color: #24153F;">${elCarrusel.outerHTML}</section>`;
         }
 
         function renderitzarGaleriaProjecte(projecteActual) {
-            // Filtrar projectes actius excloent el projecte que s'està mostrant actualment
             const altresProjectes = (dadesWeb.projectes || []).filter(p => p.idProjecte !== projecteActual.idProjecte);
             if (altresProjectes.length === 0) return '';
 
@@ -1237,7 +1238,7 @@
             
             return `
                 <section class="seccio-galeria-relacionada" style="padding: 3rem 1rem; background-color: #24153F; border-top: 1px solid #340094;">
-                    <h3 style="text-align: center; color: #FFFFFF; font-family: 'Montserrat', sans-serif; margin-bottom: 1.5rem;">Descobreix altres Móns Mínims</h3>
+                    <h3 style="text-align: center; color: #FFFFFF; font-family: 'Montserrat', sans-serif; margin-bottom: 1.5rem; font-size: 1.5rem;">Descobreix altres Móns Mínims</h3>
                     ${galeriaElement.outerHTML}
                 </section>`;
         }
