@@ -39,7 +39,7 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0086]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0087]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
@@ -394,8 +394,6 @@
                     const idImatge   = cols[1] ? cols[1].trim() : '';
                     const linkImatge = cols[2] ? cols[2].trim() : '';
                     const descripcio = cols[3] ? cols[3].trim().replace(/^"|"$/g, '') : '';
-
-                    console.log("idImatge: ", idImatge);
                     
                     if (idProjecte && linkImatge && !linkImatge.includes('#N/A')) {
                         if (!carruselsPerProjecte[idProjecte]) {
@@ -1135,9 +1133,10 @@
 
                 const enllac = item.linkBoto || '';
                 const teEnllac = enllac !== '' && enllac !== '#' && enllac !== '#N/A';
-                console.log("Enllaç: ", enllac);
+                
                         
                 if (teEnllac) {
+                    console.log("Enllaç: ", enllac);
                     card.classList.add('es-clicable');
                     card.style.cursor = 'pointer';
                     card.addEventListener('click', (e) => {
@@ -1884,7 +1883,6 @@
                     <!-- Imatge retallada i ancorada al centre -->
                     <img src="${imatgeUrl}" 
                          alt="${titol}" 
-                         onload="console.log('✅ Imatge de Portada carregada:', '${imatgeUrl}')"
                          onerror="console.error('❌ Error carregant la imatge de Portada:', '${imatgeUrl}');" />
         
                     <!-- Gradient fosc de la paleta oficial -->
