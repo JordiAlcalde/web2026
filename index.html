@@ -9,7 +9,7 @@
     <!-- Font Montserrat -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="icon" type="image/jpg" href="logo_mm_300.jpg">
 </head>
 <body>
@@ -17,11 +17,9 @@
     <!-- Pantalla de Càrrega (Preloader Mínim Món) -->
     <div id="pantalla-carrega" class="carregador-overlay">
         <div class="carregador-contingut">
-            <!-- Logo animat o imatge -->
             <div class="logo-loader-wrap">
                 <img src="logo_mm_300.jpg" alt="Mínim Món Loading" class="logo-carrega">
             </div>
-            <!-- Indicator de rodament (Spinner) -->
             <div class="spinner-minim"></div>
             <p class="text-carrega">Creant espais...</p>
         </div>
@@ -30,7 +28,6 @@
     <!-- BARRA DE NAVEGACIÓ SUPERIOR -->
     <header class="nav-principal">
         <div class="nav-contenidor">
-            <!-- Botó Hamburguesa (Mòbil) -->
             <button class="btn-hamburguesa" id="btn-hamburguesa" aria-label="Obrir menú" onclick="toggleMenuMobil()">
                 <span></span>
                 <span></span>
@@ -39,13 +36,12 @@
     
             <a href="#" class="logo-link" onclick="activarSeccioInicial(); return false;">
                 <img id="logo-img" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge">
-                <span class="nom-marca" translate="no">Mínim Món [0087]</span>
+                <span class="nom-marca" translate="no">Mínim Món [0088]</span>
             </a>
     
             <ul id="menu-navegacio" class="menu-links">
                 <!-- Es construeix des de Google Sheets segons la navegació principal -->
             </ul>
-
         </div>
     </header>
 
@@ -54,7 +50,6 @@
     </main>
 
     <script>
-
         // Funció auxiliar per injectar l'script un cop el DOM està completat
         function carregarScriptTraduccio() {
             if (!document.getElementById('google-translate-script')) {
@@ -106,9 +101,9 @@
         const URL_CSV_CONTINGUTS    = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=819396845&single=true&output=csv";
         const URL_CSV_FORM_CONTACTE = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=348010806&single=true&output=csv";
         const URL_CSV_PROJECTES     = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=405305768&single=true&output=csv";
-        const URL_CSV_CARRUSELS     = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=1400064711&single=true&output=csv"
+        const URL_CSV_CARRUSELS     = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScSqZ3Oknz4LVr8OiATGxLZUTXc6EqkCRGIg1G2mxYemMvn8Bttn9w5eyV9sDVd5w4mI7kJtR7LjFt/pub?gid=1400064711&single=true&output=csv";
 
-        let dadesWeb = { config: {}, estructura: [], components: {}, continguts: [], projectes: {}, carrusels: {} };
+        let dadesWeb = { config: {}, estructura: [], components: {}, continguts: [], projectes: [], carrusels: {} };
 
         document.addEventListener('DOMContentLoaded', () => {
             carregarDadesPagina();
@@ -166,8 +161,6 @@
                 dadesWeb.projectes = parsejarCSVProjectes(respostes[5]);
                 dadesWeb.carrusels = parsejarCSVCarrusels(respostes[6]);
                 
-                console.log('Dades carregades correctament:', dadesWeb);
-
                 actualitzarLogo();
                 construirMenuNavegacio();
                 construirPantallesWeb();
@@ -280,7 +273,6 @@
                         navegacio: fila[15] ? fila[15].toUpperCase().trim() === 'TRUE' : true,
                         grupPagina: (fila[16] || 'principal').toLowerCase().trim()
                     };
-                    
                 }).sort((a, b) => a.ordre - b.ordre);
         }
 
@@ -314,65 +306,38 @@
 
         function parsejarCSVProjectes(csvText) {
             const files = parseCSV(csvText);
-            
-            // Ignorem la primera fila (capçaleres)
             return files.slice(1).map(fila => {
-                // Neteja d'espais en blanc per seguretat
                 const getVal = (idx) => (fila[idx] || '').trim();
-                const getBool = (idx) => {
-                    const val = getVal(idx).toUpperCase();
-                    return val === 'SI' || val === 'TRUE' || val === 'ACTIU';
-                };
-        
                 return {
                     idProjecte: getVal(0),
                     nomProjecte: getVal(1),
-                    estat: getVal(2) || 'Actiu', // Actiu / Esborrany / Inactiu
-                    ordre: getVal(3),            // Camps separats per ";"
-                    
-                    // Hero
+                    estat: getVal(2) || 'Actiu',
+                    ordre: getVal(3),
                     portadaTitol: getVal(4),
                     portadaImatgeId: getVal(5),
-                    // getVal(6) -> Hero_Imatge_Link (Intern, s'omet)
-        
-                    // Video 1
                     video1Atributs: getVal(7),
                     video1Link: getVal(8),
                     video1Titol: getVal(9),
                     video1Text: getVal(10),
                     video1Alt: getVal(11),
-        
-                    // Video 2
                     video2Atributs: getVal(12),
                     video2Link: getVal(13),
                     video2Titol: getVal(14),
                     video2Text: getVal(15),
                     video2Alt: getVal(16),
-        
-                    // ImatgeText 1
                     imatgeText1Id: getVal(17),
-                    // getVal(16) -> ImatgeText1_Link (Intern, s'omet)
                     imatgeText1Titol: getVal(19),
                     imatgeText1Text: getVal(20),
                     imatge1Alt: getVal(21),
-        
-                    // ImatgeText 2
                     imatgeText2Id: getVal(22),
-                    // getVal(20) -> ImatgeText_2_Link (Intern, s'omet)
                     imatgeText2Titol: getVal(24),
                     imatgeText2Text: getVal(25),
                     imatge2Alt: getVal(26),
-        
-                    // BlocText 1
                     blocText1Titol: getVal(27),
                     blocText1Text: getVal(28),
-        
-                    // BlocText 2
                     blocText2Titol: getVal(29),
                     blocText2Text: getVal(30),
-        
-                    // Opcions finals
-                    carrusel: getVal(31),       // Si / No
+                    carrusel: getVal(31),
                     carruselAlt: getVal(32),
                     galeriaActivaId: getVal(33)
                 };
@@ -381,35 +346,30 @@
         
         function parsejarCSVCarrusels(csvText) {
             if (!csvText) return {};
-            
-                const carruselsPerProjecte = {};
-                const linies = csvText.split(/\r?\n/);
-            
-                // Comencem a la línia 1 per saltar la capçalera
-                for (let i = 1; i < linies.length; i++) {
-                    if (!linies[i].trim()) continue;
-            
-                    const cols = linies[i].split(',');
-                    const idProjecte = cols[0] ? cols[0].trim() : '';
-                    const idImatge   = cols[1] ? cols[1].trim() : '';
-                    const linkImatge = cols[2] ? cols[2].trim() : '';
-                    const descripcio = cols[3] ? cols[3].trim().replace(/^"|"$/g, '') : '';
-                    
-                    if (idProjecte && linkImatge && !linkImatge.includes('#N/A')) {
-                        if (!carruselsPerProjecte[idProjecte]) {
-                            carruselsPerProjecte[idProjecte] = [];
-                        }
-                        carruselsPerProjecte[idProjecte].push({
-                            ID_Imatge: idImatge,
-                            Link_Imatge: linkImatge,
-                            Descripcio: descripcio
-                        });
+            const carruselsPerProjecte = {};
+            const linies = csvText.split(/\r?\n/);
+            for (let i = 1; i < linies.length; i++) {
+                if (!linies[i].trim()) continue;
+                const cols = linies[i].split(',');
+                const idProjecte = cols[0] ? cols[0].trim() : '';
+                const idImatge   = cols[1] ? cols[1].trim() : '';
+                const linkImatge = cols[2] ? cols[2].trim() : '';
+                const descripcio = cols[3] ? cols[3].trim().replace(/^"|"$/g, '') : '';
+                
+                if (idProjecte && linkImatge && !linkImatge.includes('#N/A')) {
+                    if (!carruselsPerProjecte[idProjecte]) {
+                        carruselsPerProjecte[idProjecte] = [];
                     }
-                }            
+                    carruselsPerProjecte[idProjecte].push({
+                        ID_Imatge: idImatge,
+                        Link_Imatge: linkImatge,
+                        Descripcio: descripcio
+                    });
+                }
+            }            
             return carruselsPerProjecte;
         }
 
-        
         function construirMenuNavegacio() {
             const menuUL = document.getElementById('menu-navegacio');
             if (!menuUL) return;
@@ -424,7 +384,6 @@
             });
         }
 
-        // --- Ocultar el carregador de pàgina
         window.addEventListener('load', function() {
             ocultarCarregador();
         });
@@ -435,9 +394,7 @@
                 loader.classList.add('carregat');
             }
         }
-        
 
-        // --- CONSTRUCCIÓ PANTALLES WEB I SECCIÓ HERO ---
         function construirPantallesWeb() {
             const contenidorPrincipal = document.getElementById('seccions-contenidor');
             if (!contenidorPrincipal) return;
@@ -457,44 +414,24 @@
                 
                 const teImatge = pagina.heroImatge && pagina.heroImatge.trim() !== '' && pagina.heroImatge.trim() !== '#N/A';
                 const urlHeroImatge = teImatge ? `https://drive.google.com/thumbnail?sz=w1600&id=${pagina.heroImatge.trim()}` : '';
-        
-                const alçadaHero = (pagina.heroMidaImatge && pagina.heroImatge.trim() !== '' && pagina.heroMidaImatge.trim() !== '#N/A') 
-                    ? pagina.heroMidaImatge.trim() 
-                    : '450px';
-        
+                const alçadaHero = (pagina.heroMidaImatge && pagina.heroImatge.trim() !== '' && pagina.heroMidaImatge.trim() !== '#N/A') ? pagina.heroMidaImatge.trim() : '450px';
                 const estilFons = teImatge 
                     ? `background-image: linear-gradient(to right, rgba(36, 21, 63, 0.95) 0%, rgba(36, 21, 63, 0.6) 50%, rgba(36, 21, 63, 0.15) 100%), url('${urlHeroImatge}'); background-size: cover; background-position: center;` 
                     : `background-color: var(--color-fons-fosc, #24153F);`;
         
-                const htmlHero = `
+                seccioHTML.innerHTML = `
                     <div class="hero-pagina" style="${estilFons} min-height: ${alçadaHero}; padding: 3rem 2rem; display: flex; align-items: center; justify-content: flex-start; box-sizing: border-box;">
                         <div class="hero-contenedor-flex" style="max-width: 1200px; width: 100%; margin: 0 auto; display: flex; align-items: center;">
-                            <div class="hero-caixa-contingut" style="
-                                flex: 1 1 ${pagina.heroAmple || '600px'};
-                                max-width: ${pagina.heroAmple || '650px'}; 
-                                transform: translateX(${pagina.heroLeftSpan || '0px'}); 
-                                text-align: ${pagina.heroAlign || 'left'};
-                                color: ${pagina.heroFontColor || '#FFFFFF'};">
-                                
+                            <div class="hero-caixa-contingut" style="flex: 1 1 ${pagina.heroAmple || '600px'}; max-width: ${pagina.heroAmple || '650px'}; transform: translateX(${pagina.heroLeftSpan || '0px'}); text-align: ${pagina.heroAlign || 'left'}; color: ${pagina.heroFontColor || '#FFFFFF'};">
                                 <h1 style="font-size: 2.5rem; font-weight: 700; color: ${pagina.heroFontColor || '#FFFFFF'}; line-height: 1.2; margin-bottom: 1rem; font-family: 'Montserrat', sans-serif;">
                                     ${pagina.heroTitol}
                                 </h1>
-                                
-                                ${pagina.heroText ? `
-                                    <div class="hero-cos-text" style="font-size: 1.15rem; font-weight: 400; color: ${pagina.heroFontColor || '#FFFFFF'}; margin-top: 1rem; line-height: 1.5; font-family: 'Montserrat', sans-serif;">
-                                        ${pagina.heroText}
-                                    </div>` : ''}
-                                
-                                ${pagina.heroDestacat ? `
-                                    <div class="destacat-hero" style="font-size: 1.25rem; font-weight: 600; color: #AC80FF; margin-top: 1.2rem; font-family: 'Montserrat', sans-serif;">
-                                        ${pagina.heroDestacat}
-                                    </div>` : ''}
+                                ${pagina.heroText ? `<div class="hero-cos-text" style="font-size: 1.15rem; font-weight: 400; color: ${pagina.heroFontColor || '#FFFFFF'}; margin-top: 1rem; line-height: 1.5; font-family: 'Montserrat', sans-serif;">${pagina.heroText}</div>` : ''}
+                                ${pagina.heroDestacat ? `<div class="destacat-hero" style="font-size: 1.25rem; font-weight: 600; color: #AC80FF; margin-top: 1.2rem; font-family: 'Montserrat', sans-serif;">${pagina.heroDestacat}</div>` : ''}
                             </div>
                         </div>
                     </div>
                 `;
-        
-                seccioHTML.innerHTML = htmlHero;
         
                 const elementsSeccio = dadesWeb.continguts.filter(item => {
                     const tipus = item.tipusComponent ? item.tipusComponent.toLowerCase().trim() : '';
@@ -532,47 +469,35 @@
                         if (tipus === 'galeria_activa') {
                             contenidorFilaFlex = null;
                             grupGaleria.push(item);
-        
                         } else if (tipus === 'espaiador') {
                             contenidorFilaFlex = null;
                             const tempDiv = document.createElement('div');
                             tempDiv.style.width = '100%';
                             tempDiv.innerHTML = crearEspaiador(item);
                             contenidorContinguts.appendChild(tempDiv.firstElementChild);
-        
                         } else if (tipus === 'separador') {
                             contenidorFilaFlex = null;
                             const tempDiv = document.createElement('div');
                             tempDiv.style.width = '100%';
                             tempDiv.innerHTML = crearSeparador(item);
                             contenidorContinguts.appendChild(tempDiv.firstElementChild);
-        
                         } else if (tipus === 'formulari') {
                             contenidorFilaFlex = null;
                             const nomFullFormulari = item.link ? item.link.trim() : '';
                             const campsAssociats = dadesWeb[nomFullFormulari] || [];
-        
                             const tempDiv = document.createElement('div');
                             tempDiv.style.width = '100%';
                             tempDiv.innerHTML = crearFormulari(item, campsAssociats);
                             contenidorContinguts.appendChild(tempDiv.firstElementChild);
-        
                         } else {
                             if (item.novaFila || !contenidorFilaFlex) {
                                 processarCarruselPendent();
-                                
                                 contenidorFilaFlex = document.createElement('div');
                                 contenidorFilaFlex.className = 'contenidor-fila-flex';
-                                
                                 const pos = (item.situacioImatge || '').toLowerCase().trim();
-                                if (pos === 'centre' || pos === 'center') {
-                                    contenidorFilaFlex.classList.add('posicio-centre');
-                                } else if (pos === 'dreta' || pos === 'right') {
-                                    contenidorFilaFlex.classList.add('posicio-dreta');
-                                } else {
-                                    contenidorFilaFlex.classList.add('posicio-esquerra');
-                                }
-        
+                                if (pos === 'centre' || pos === 'center') contenidorFilaFlex.classList.add('posicio-centre');
+                                else if (pos === 'dreta' || pos === 'right') contenidorFilaFlex.classList.add('posicio-dreta');
+                                else contenidorFilaFlex.classList.add('posicio-esquerra');
                                 contenidorContinguts.appendChild(contenidorFilaFlex);
                             }
         
@@ -610,181 +535,80 @@
             });
         }
 
-        
         function canviarSeccio(nomNovaSeccio) {
             const hashNetejat = (nomNovaSeccio || '').replace('#', '').trim();
             
-            // Funció interna per netejar i afegir el peu de pàgina unificat
-            const renderitzarPeu = () => {
-                if (typeof crearPeuPagina === 'function') {
-                    const htmlPeu = crearPeuPagina();
-                    const main = document.getElementById('seccions-contenidor') || document.body;
-                    
-                    // Eliminem qualsevol peu existent per evitar duplicats
-                    const peusExistents = document.querySelectorAll('.peu-pagina');
-                    peusExistents.forEach(p => p.remove());
-                    
-                    // Inserim el peu al final del contenidor principal
-                    main.insertAdjacentHTML('beforeend', htmlPeu);
-                }
-            };
-        
-            // 1. CAS PROJECTES
-            if (
-                hashNetejat.startsWith('projecte/') || 
-                hashNetejat.startsWith('projectes/') || 
-                hashNetejat.startsWith('pr_') ||
-                hashNetejat === 'projectes'
-            ) {
-                if (typeof carregarPaginaProjectes === 'function') {
-                    // Executem la càrrega del contingut de projectes
-                    carregarPaginaProjectes(hashNetejat);
-                    
-                    // Utilitzem setTimeout per garantir que el peu s'injecta 
-                    // un cop el DOM de projectes s'ha dibuixat completament
-                    setTimeout(() => {
-                        renderitzarPeu();
-                    }, 50);
-                }
+            if (hashNetejat.startsWith('projecte/') || hashNetejat.startsWith('projectes/') || hashNetejat.startsWith('pr_') || hashNetejat === 'projectes') {
+                carregarPaginaProjectes(hashNetejat);
                 return; 
             }
         
-            // 2. CAS LEGAL
-            if (
-                hashNetejat.startsWith('legal') || 
-                hashNetejat.startsWith('avis-legal') || 
-                hashNetejat.startsWith('privacitat') || 
-                hashNetejat.startsWith('cookies')
-            ) {
-                if (typeof carregarPaginaLegal === 'function') {
-                    carregarPaginaLegal(hashNetejat);
-                    setTimeout(() => { renderitzarPeu(); }, 50);
-                }
+            if (hashNetejat.startsWith('legal') || hashNetejat.startsWith('avis-legal') || hashNetejat.startsWith('privacitat') || hashNetejat.startsWith('cookies')) {
+                carregarPaginaLegal(hashNetejat);
                 return;
             }
         
-            // 3. RESTA DE SECCIONS PRINCIPALS
+            // Comprovar si les seccions de la Home existeixen al DOM; si no, reconstruir-les
+            let targetId = hashNetejat.startsWith('pantalla-') ? hashNetejat : `pantalla-${hashNetejat}`;
+            let seccioDesti = document.getElementById(targetId);
+            
+            if (!seccioDesti) {
+                construirPantallesWeb();
+                seccioDesti = document.getElementById(targetId);
+            }
+
             const seccions = document.querySelectorAll('.seccio-web');
             seccions.forEach(sec => sec.style.display = 'none');
-        
-            // Neteja de peus residuals
-            const peusExistents = document.querySelectorAll('.peu-pagina');
-            peusExistents.forEach(p => p.remove());
-        
-            const targetId = hashNetejat.startsWith('pantalla-') ? hashNetejat : `pantalla-${hashNetejat}`;
-            const seccioDesti = document.getElementById(targetId);
-        
+
             if (seccioDesti) {
                 seccioDesti.style.display = 'block';
-                // Inserim el peu de pàgina directament al final de la secció visible
-                seccioDesti.insertAdjacentHTML('beforeend', crearPeuPagina());
                 window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                activarSeccioInicial();
             }
         }
         
-        
         function carregarPaginaLegal(idLegal) {
             const idNormalitzat = idLegal.replace(/-/g, '_');
-            
-            // Mapa de títols amb accents i format correcte per a la capçalera
             const titolsLegals = {
                 'avis_legal': 'AVÍS LEGAL',
                 'privacitat': 'POLÍTICA DE PRIVACITAT',
                 'cookies': 'POLÍTICA DE COOKIES'
             };
         
-            // Si tenim el títol definit al mapa, el fem servir; si no, fem servir el nom per defecte
             const nomTitol = titolsLegals[idNormalitzat] || idNormalitzat.replace('_', ' ').toUpperCase();
             const paginaData = { nomPagina: nomTitol };
+            const contingutLegal = dadesWeb.continguts.filter(item => item.seccio === idNormalitzat || item.seccio === idLegal);
+            const configuracioPeu = dadesWeb.continguts.find(item => (item.tipusComponent || '').toLowerCase().trim() === 'peu_de_pagina') || {};
         
-            const contingutLegal = dadesWeb.continguts.filter(item => 
-                item.seccio === idNormalitzat || item.seccio === idLegal
-            );
-            
-            // Recuperem la configuració del peu de pàgina si existeix al CSV
-            const configuracioPeu = dadesWeb.continguts.find(item => {
-                const tipus = item.tipusComponent ? item.tipusComponent.toLowerCase().trim() : '';
-                return tipus === 'peu_de_pagina';
-            }) || {};
-        
-            let htmlText = contingutLegal.map(c => `<p>${c.descripcio || ''}</p>`).join('');
-            if (!htmlText) {
-                htmlText = `<p>Contingut legal en procés d'actualització.</p>`;
-            }
-        
+            let htmlText = contingutLegal.map(c => `<p>${c.descripcio || ''}</p>`).join('') || `<p>Contingut legal en procés d'actualització.</p>`;
             const main = document.getElementById('seccions-contenidor');
+            
             if (main) {
-                // Generem la pàgina legal amb el títol accentuat i el peu de pàgina
                 main.innerHTML = crearPaginaLegal(paginaData, htmlText) + crearPeuPagina(configuracioPeu);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
-        
-            if (window.location.hash !== '#' + idLegal) {
-                history.pushState(null, null, '#' + idLegal);
-            }
         }
 
-
-
         function carregarPaginaProjectes(idProjecte) {
-            console.log("🔍 [1] carregarPaginaProjectes cridada amb idProjecte:", idProjecte);
-        
             const main = document.getElementById('seccions-contenidor');
-            if (!main) {
-                console.error("❌ Error: No s'ha trobat l'element #seccions-contenidor");
-                return;
-            }
+            if (!main) return;
         
-            const llistaProjectes = (typeof dadesWeb !== 'undefined' && dadesWeb.projectes) 
-                ? dadesWeb.projectes 
-                : (window.dadesWeb && window.dadesWeb.projectes ? window.dadesWeb.projectes : []);
-        
+            const llistaProjectes = dadesWeb.projectes || [];
             if (!llistaProjectes || llistaProjectes.length === 0) {
                 main.innerHTML = `
                     <div style="text-align:center; padding: 4rem 1.5rem; font-family: 'Montserrat', sans-serif; color: #24153F;">
                         <p style="font-size: 1.1rem; color: #301269;">Carregant el Món Mínim...</p>
-                    </div>
-                `;
+                    </div>`;
                 return;
             }
         
-            main.innerHTML = crearPaginaProjectes(idProjecte, llistaProjectes);
+            const htmlProjecte = crearPaginaProjectes(idProjecte, llistaProjectes);
+            const configuracioPeu = dadesWeb.continguts.find(item => (item.tipusComponent || '').toLowerCase().trim() === 'peu_de_pagina') || {};
+            
+            main.innerHTML = htmlProjecte + crearPeuPagina(configuracioPeu);
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-        
-                
-        function renderitzarBlocPortada(p) {
-            console.log("🖼️ [3] Renderitzant Portada reduït (320px) per:", p.nomProjecte || p.idProjecte);
-        
-            let imatgeUrl = 'img/projecte_default.jpg';
-            if (p.portadaImatgeId && p.portadaImatgeId.trim() !== '') {
-                imatgeUrl = `https://drive.google.com/thumbnail?id=${p.portadaImatgeId.trim()}&sz=w1600`;
-            }
-        
-            const titol = p.portadaTitol || p.nomProjecte || 'Projecte sense nom';
-        
-            return `
-                <div class="portada-wrapper" style="width: 100%; height: 320px; max-height: 320px; overflow: hidden; position: relative; background-color: #24153F; border-radius: 0 0 12px 12px;">
-                    <!-- Imatge retallada a 320px d'alçada i centrada -->
-                    <img src="${imatgeUrl}" 
-                         alt="${titol}" 
-                         onload="console.log('✅ Imatge Portada carregada:', '${imatgeUrl}')"
-                         onerror="console.error('❌ Error carregant la imatge Portada:', '${imatgeUrl}');"
-                         style="width: 100%; height: 320px; object-fit: cover; object-position: center center; display: block; position: absolute; top: 0; left: 0; z-index: 1;" />
-        
-                    <!-- Capa de contrast violeta fosca (#24153F) -->
-                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 320px; background: linear-gradient(180deg, rgba(36, 21, 63, 0.3) 0%, rgba(36, 21, 63, 0.75) 100%); z-index: 2; pointer-events: none;"></div>
-        
-                    <!-- Títol amb font Montserrat proporcional -->
-                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 320px; display: flex; align-items: center; justify-content: center; z-index: 3; box-sizing: border-box; padding: 1rem;">
-                        <h1 style="font-family: 'Montserrat', sans-serif !important; font-weight: 800 !important; color: #FFFFFF !important; font-size: 2.2rem !important; line-height: 1.15; margin: 0; text-align: center; text-shadow: 0 3px 12px rgba(0, 0, 0, 0.7); letter-spacing: -0.5px;">
-                            ${titol}
-                        </h1>
-                    </div>
-                </div>
-            `;
-        }
-
         
         function activarSeccioInicial() {
             if (dadesWeb.estructura && dadesWeb.estructura.length > 0) {
@@ -797,58 +621,16 @@
             if (menu) menu.classList.toggle('obert');
         }   
 
-
-        function navegarA(hashDesti) {
-            // Tanca el menú desplegable mòbil si està obert
+        function navegarA(hashDesti, event) {
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
             const menu = document.getElementById('menu-navegacio');
             if (menu) menu.classList.remove('obert');
                     
-            // 1. Normalitzem el hash d'entrada
             const hashNetejat = hashDesti.startsWith('#') ? hashDesti : '#' + hashDesti;
-            const idSeccio = hashNetejat.replace('#', '');
-
-            console.log("navegarA -> hashNetejat: ", hashNetejat);
-            
-            // Seccions de la pàgina principal (amb ancoratge)
-            const seccionsHome = ['univers_minim', 'mons_minims', 'la_botiga', 'el_laboratori', 'home'];
-            
-            // 2. Si l'usuari vol anar a una secció de la pàgina principal
-            if (seccionsHome.includes(idSeccio)) {
-                
-                // Comprovem si actualment NO som a la pàgina principal (estem a #projectes, #avis-legal, etc.)
-                const foraDeHome = window.location.hash.includes('projectes') || 
-                                   window.location.hash.includes('avis-legal') || 
-                                   window.location.hash.includes('privacitat') || 
-                                   window.location.hash.includes('cookies');
-            
-                if (foraDeHome) {
-                    // Actualitzem la URL
-                    window.location.hash = hashNetejat;                    
-                    // Reconstruïm les seccions de la Home amb la teva funció real
-                    construirPantallesWeb();            
-                    // Esperem un instant a què el DOM es dibuixi per fer el smooth scroll
-                    setTimeout(() => {
-                        const el = document.getElementById(idSeccio);
-                        if (el) {
-                            el.scrollIntoView({ behavior: 'smooth' });
-                        } else {
-                            window.scrollTo({ top: 0, behavior: 'smooth' });
-                        }
-                    }, 100);
-            
-                } else {
-                    // Si JA som a la Home, només actualitzem hash i fem scroll
-                    window.location.hash = hashNetejat;
-                    const el = document.getElementById(idSeccio);
-                    if (el) {
-                        el.scrollIntoView({ behavior: 'smooth' });
-                    }
-                }
-            
-            } else {
-                // Per a rutes independents (#projectes/pr-0001, legals, etc.)
-                window.location.hash = hashNetejat;
-            }
+            window.location.hash = hashNetejat;
         }
             
         function carregarPaginaPerHash() {
@@ -862,51 +644,30 @@
     
         window.addEventListener('hashchange', carregarPaginaPerHash);
         
-        
-        // ********************************************************************
-        // COMPONENTS  ** PÀGINES PRINCIPALS **
-        // ********************************************************************
+        /* COMPONENTS GENERALS */
         function crearTargetaElement(item) {
             const card = document.createElement('div');
-            
-            const configDefecte = dadesWeb.components['targeta_imatge_text'] || {
-                colorFonsDefecte: '#24153F',
-                colorTextDefecte: '#E3D4FF'
-            };
+            const configDefecte = dadesWeb.components['targeta_imatge_text'] || { colorFonsDefecte: '#24153F', colorTextDefecte: '#E3D4FF' };
             const fons = obtenirColorHex(item.colorFons, configDefecte.colorFonsDefecte);
             const text = obtenirColorHex(item.colorText, configDefecte.colorTextDefecte);
         
-            let ampleCard = '280px';
-            if (item.ample && item.ample.trim() !== '' && item.ample.trim() !== '#N/A') {
-                const v = item.ample.trim();
-                ampleCard = (!isNaN(v)) ? `${v}px` : v;
-            }
-        
-            let alcadaImg = '200px';
-            if (item.altImatge && item.altImatge.trim() !== '' && item.altImatge.trim() !== '#N/A') {
-                const v = item.altImatge.trim();
-                alcadaImg = (!isNaN(v)) ? `${v}px` : v;
-            }
+            let ampleCard = item.ample && item.ample.trim() !== '' && item.ample.trim() !== '#N/A' ? item.ample.trim() : '280px';
+            if (!isNaN(ampleCard)) ampleCard += 'px';
+            
+            let alcadaImg = item.altImatge && item.altImatge.trim() !== '' && item.altImatge.trim() !== '#N/A' ? item.altImatge.trim() : '200px';
+            if (!isNaN(alcadaImg)) alcadaImg += 'px';
         
             card.style.backgroundColor = fons;
             card.style.width = ampleCard;
             card.style.flex = `0 1 ${ampleCard}`;
         
-            const urlImatge = item.imatgeId && item.imatgeId !== '#N/A' && item.imatgeId.trim() !== ''
-                ? `https://drive.google.com/thumbnail?sz=w800&id=${item.imatgeId.trim()}`
-                : 'logo_mm_300.jpg';
-        
+            const urlImatge = item.imatgeId && item.imatgeId !== '#N/A' && item.imatgeId.trim() !== '' ? `https://drive.google.com/thumbnail?sz=w800&id=${item.imatgeId.trim()}` : 'logo_mm_300.jpg';
             const enllac = item.linkBoto ? item.linkBoto.trim() : '';
             const teEnllac = enllac !== '' && enllac !== '#';
         
-            if (teEnllac) {
-                card.className = 'targeta-imatge-text es-clicable';
-                card.onclick = (e) => navegarA(enllac, e);
-            } else {
-                card.className = 'targeta-imatge-text es-estatica';
-                card.onclick = null;
-            }
-        
+            card.className = teEnllac ? 'targeta-imatge-text es-clicable' : 'targeta-imatge-text es-estatica';
+            if (teEnllac) card.onclick = (e) => navegarA(enllac, e);
+
             card.innerHTML = `
                 <div class="caixa-img-targeta" style="height: ${alcadaImg};">
                     <img src="${urlImatge}" alt="${item.titol || 'Mínim Món'}">
@@ -916,17 +677,13 @@
                     ${item.descripcio ? `<p style="color: ${text};">${item.descripcio.replace(/\n/g, '<br>')}</p>` : ''}
                 </div>
             `;
-        
             return card;
         }
 
         function crearBlocImatgeText(item) {
             const bloc = document.createElement('div');
             bloc.className = 'bloc-imatge-text';
-            
-            if (item.situacioImatge && item.situacioImatge.toLowerCase().trim() === 'dreta') {
-                bloc.classList.add('orientacio-dreta');
-            }
+            if (item.situacioImatge && item.situacioImatge.toLowerCase().trim() === 'dreta') bloc.classList.add('orientacio-dreta');
         
             let amplaImatge = '50%';
             if (item.midaImatge && item.midaImatge.trim() !== '' && item.midaImatge.trim() !== '#N/A') {
@@ -937,32 +694,21 @@
                 else amplaImatge = !isNaN(valor) ? `${valor}%` : valor;
             }
             
-            const configDefecte = dadesWeb.components['bloc_imatge_text'] || {
-                colorFonsDefecte: '#24153F',
-                colorTextDefecte: '#E3D4FF'
-            };
+            const configDefecte = dadesWeb.components['bloc_imatge_text'] || { colorFonsDefecte: '#24153F', colorTextDefecte: '#E3D4FF' };
             const fons = obtenirColorHex(item.colorFons, configDefecte.colorFonsDefecte);
             const text = obtenirColorHex(item.colorText, configDefecte.colorTextDefecte);
         
             bloc.style.backgroundColor = fons;
             bloc.style.borderColor = (fons.toUpperCase() === '#FFFFFF') ? 'var(--color-accent, #AC80FF)' : 'var(--color-vivid, #340094)';
-        
-            const urlImatge = item.imatgeId && item.imatgeId !== '#N/A' && item.imatgeId.trim() !== ''
-                ? `https://drive.google.com/thumbnail?sz=w800&id=${item.imatgeId.trim()}` 
-                : 'logo_mm_600.jpg';
+            const urlImatge = item.imatgeId && item.imatgeId !== '#N/A' && item.imatgeId.trim() !== '' ? `https://drive.google.com/thumbnail?sz=w800&id=${item.imatgeId.trim()}` : 'logo_mm_600.jpg';
         
             let htmlBoto = '';
             if (item.textBoto && item.linkBoto) {
                 const alineacio = (item.alineacioBoto || 'Esquerra').toLowerCase().trim();
-                let textAlign = 'left';
-                if (alineacio === 'centre') textAlign = 'center';
-                if (alineacio === 'dreta') textAlign = 'right';
-        
+                let textAlign = alineacio === 'centre' ? 'center' : (alineacio === 'dreta' ? 'right' : 'left');
                 htmlBoto = `
                     <div style="margin-top: 1.5rem; text-align: ${textAlign};">
-                        <a href="${item.linkBoto}" onclick="navegarA('${item.linkBoto}', event)" class="boto-cta estil-principal">
-                            ${item.textBoto}
-                        </a>
+                        <a href="${item.linkBoto}" onclick="navegarA('${item.linkBoto}', event)" class="boto-cta estil-principal">${item.textBoto}</a>
                     </div>
                 `;
             }
@@ -983,26 +729,14 @@
         function crearBotoCTA(item) {
             const contenidor = document.createElement('div');
             const alineacio = (item.alineacioBoto || 'Centre').toLowerCase().trim();
-            
-            let flexAlign = 'center';
-            if (alineacio === 'esquerra') flexAlign = 'flex-start';
-            if (alineacio === 'dreta') flexAlign = 'flex-end';
+            let flexAlign = alineacio === 'esquerra' ? 'flex-start' : (alineacio === 'dreta' ? 'flex-end' : 'center');
         
             contenidor.className = 'contenidor-boto-cta';
-            contenidor.style.cssText = `
-                display: flex;
-                justify-content: ${flexAlign};
-                width: 100%;
-                margin: 1.5rem 0;
-            `;
+            contenidor.style.cssText = `display: flex; justify-content: ${flexAlign}; width: 100%; margin: 1.5rem 0;`;
         
-            const configDefecte = dadesWeb.components['boto_cta'] || {
-                colorFonsDefecte: '#340094',
-                colorTextDefecte: '#FFFFFF'
-            };
+            const configDefecte = dadesWeb.components['boto_cta'] || { colorFonsDefecte: '#340094', colorTextDefecte: '#FFFFFF' };
             const fons = obtenirColorHex(item.colorFons, configDefecte.colorFonsDefecte);
             const text = obtenirColorHex(item.colorText, configDefecte.colorTextDefecte);
-        
             const enllac = item.linkBoto || '#';
             const textEtiqueta = item.textBoto || 'Descobreix més';
         
@@ -1014,90 +748,27 @@
             return contenidor;
         }
 
-        
         function crearTargetaImatgeText(item) {
-            const card = document.createElement('div');
-                
-            // Llegim directament la propietat corresponent de l'objecte item
-            const enllac = (item.linkBoto || '').toString().trim();
-            const teEnllac = enllac !== '' && enllac !== '#';           
-        
-            // Assignem la classe en funció de si té enllaç actiu o no
-            card.className = teEnllac ? 'targeta-imatge-text es-clicable' : 'targeta-imatge-text es-estatica';
-        
-            const configDefecte = dadesWeb.components['targeta_imatge_text'] || {
-                colorFonsDefecte: '#24153F',
-                colorTextDefecte: '#E3D4FF'
-            };
-            const fons = obtenirColorHex(item.colorFons, configDefecte.colorFonsDefecte);
-            const text = obtenirColorHex(item.colorText, configDefecte.colorTextDefecte);
-        
-            let ampleCard = '280px';
-            if (item.ample && item.ample.trim() !== '' && item.ample.trim() !== '#N/A') {
-                const v = item.ample.trim();
-                ampleCard = (!isNaN(v)) ? `${v}px` : v;
-            }
-        
-            let alcadaImg = '200px';
-            if (item.altImatge && item.altImatge.trim() !== '' && item.altImatge.trim() !== '#N/A') {
-                const v = item.altImatge.trim();
-                alcadaImg = (!isNaN(v)) ? `${v}px` : v;
-            }
-        
-            card.style.backgroundColor = fons;
-            card.style.width = ampleCard;
-            card.style.flex = `0 1 ${ampleCard}`;
-        
-            const urlImatge = item.imatgeId && item.imatgeId !== '#N/A' && item.imatgeId.trim() !== ''
-                ? `https://drive.google.com/thumbnail?sz=w800&id=${item.imatgeId.trim()}`
-                : 'logo_mm_600.jpg';
-        
-            if (teEnllac) {
-                card.onclick = (e) => navegarA(enllac, e);
-            } else {
-                card.onclick = null;
-            }
- 
-            card.innerHTML = `
-                <div class="caixa-img-targeta" style="height: ${alcadaImg};">
-                    <img src="${urlImatge}" alt="${item.titol || 'Mínim Món'}">
-                </div>
-                <div class="caixa-text-targeta">
-                    ${item.titol ? `<h3 style="color: ${text};">${item.titol}</h3>` : ''}
-                    ${item.descripcio ? `<p style="color: ${text};">${item.descripcio.replace(/\n/g, '<br>')}</p>` : ''}
-                </div>
-            `;
-            
-            return card;          
+            return crearTargetaElement(item);
         }    
-        
 
         function crearGaleriaActiva(items, opcions = {}) {
-            
             const contenidor = document.createElement('div');
             contenidor.className = 'galeria-activa-wrapper';
-        
             const primerItem = items[0] || {};
         
-            let velocitatVal = opcions.velocitat || primerItem.velocitat || '25';
-            velocitatVal = parseInt(velocitatVal) || 25;
-        
+            let velocitatVal = parseInt(opcions.velocitat || primerItem.velocitat) || 25;
             let esBucle = true;
-            if (opcions.bucle !== undefined) {
-                esBucle = Boolean(opcions.bucle);
-            } else if (primerItem.bucle !== undefined && primerItem.bucle !== '') {
+            if (opcions.bucle !== undefined) esBucle = Boolean(opcions.bucle);
+            else if (primerItem.bucle !== undefined && primerItem.bucle !== '') {
                 const valBucle = primerItem.bucle.toString().trim().toLowerCase();
                 esBucle = !(valBucle === 'false' || valBucle === 'no' || valBucle === '0');
             }
         
-            const espaiat = opcions.espaiat || '1.5rem';
-            const fonsContenidor = obtenirColorHex(opcions.colorFons || primerItem.colorFons, 'transparent');
-        
-            contenidor.style.backgroundColor = fonsContenidor;
-        
+            contenidor.style.backgroundColor = obtenirColorHex(opcions.colorFons || primerItem.colorFons, 'transparent');
             const carruselPista = document.createElement('div');
             carruselPista.className = 'galeria-activa-pista';
-            carruselPista.style.gap = espaiat;
+            carruselPista.style.gap = opcions.espaiat || '1.5rem';
         
             if (esBucle) {
                 contenidor.classList.add('mode-bucle');
@@ -1110,49 +781,32 @@
             const generarTargeta = (item) => {
                 const card = document.createElement('div');
                 card.className = 'galeria-item';
-        
                 const fonsCard = obtenirColorHex(item.colorFons, '#24153F');
                 const textCard = obtenirColorHex(item.colorText, '#E3D4FF');
                 
-                let ampleCard = '260px';
-                if (item.ample && item.ample.trim() !== '' && item.ample.trim() !== '#N/A') {
-                    const v = item.ample.trim();
-                    ampleCard = (!isNaN(v)) ? `${v}px` : v;
-                }
+                let ampleCard = item.ample && item.ample.trim() !== '' && item.ample.trim() !== '#N/A' ? item.ample.trim() : '260px';
+                if (!isNaN(ampleCard)) ampleCard += 'px';
         
-                let alcadaImg = '180px';
-                if (item.altImatge && item.altImatge.trim() !== '' && item.altImatge.trim() !== '#N/A') {
-                    const v = item.altImatge.trim();
-                    alcadaImg = (!isNaN(v)) ? `${v}px` : v;
-                }
+                let alcadaImg = item.altImatge && item.altImatge.trim() !== '' && item.altImatge.trim() !== '#N/A' ? item.altImatge.trim() : '180px';
+                if (!isNaN(alcadaImg)) alcadaImg += 'px';
         
                 card.style.backgroundColor = fonsCard;
                 card.style.width = ampleCard;
                 card.style.minWidth = ampleCard;
                 card.style.flex = `0 0 ${ampleCard}`;
 
-                const enllac = item.linkBoto || '';
+                const enllac = item.linkBoto || item.link || '';
                 const teEnllac = enllac !== '' && enllac !== '#' && enllac !== '#N/A';
                 
-                        
                 if (teEnllac) {
-                    console.log("Enllaç: ", enllac);
                     card.classList.add('es-clicable');
                     card.style.cursor = 'pointer';
-                    card.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        navegarA(enllac, e);
-                    });
+                    card.onclick = (e) => navegarA(enllac, e);
                 } else {
                     card.classList.add('es-estatica');
                 }
 
-                console.log(">> CARD: ",card);
-                
-                const urlImatge = item.imatgeId && item.imatgeId !== '#N/A' && item.imatgeId.trim() !== ''
-                    ? `https://drive.google.com/thumbnail?sz=w800&id=${item.imatgeId.trim()}`
-                    : 'logo_mm_300.jpg';
+                const urlImatge = item.imatgeId && item.imatgeId !== '#N/A' && item.imatgeId.trim() !== '' ? `https://drive.google.com/thumbnail?sz=w800&id=${item.imatgeId.trim()}` : 'logo_mm_300.jpg';
         
                 card.innerHTML = `
                     <div class="caixa-img-galeria" style="height: ${alcadaImg}; pointer-events: none;">
@@ -1169,54 +823,33 @@
             };
         
             items.forEach(item => carruselPista.appendChild(generarTargeta(item)));
-            if (esBucle) {
-                items.forEach(item => carruselPista.appendChild(generarTargeta(item)));
-            }
-        
+            if (esBucle) items.forEach(item => carruselPista.appendChild(generarTargeta(item)));
+            
             contenidor.appendChild(carruselPista);
             return contenidor;
         }    
 
-        /* ==========================================================================
-           CARRUSEL D'IMATGES (Dades de Sheets / Drive)
-        ========================================================================== */
         function crearCarruselImatges(items, opcions = {}) {
             if (!items || items.length === 0) return document.createElement('div');
-        
             const primerItem = items[0] || {};
-            let velocitatVal = opcions.velocitat || primerItem.velocitat || '5';
-            velocitatVal = (parseFloat(velocitatVal) || 5) * 1000;
+            let velocitatVal = (parseFloat(opcions.velocitat || primerItem.velocitat) || 5) * 1000;
         
             let esBucle = true;
             const rawBucle = opcions.bucle !== undefined ? opcions.bucle : primerItem.bucle;
             if (rawBucle !== undefined && rawBucle !== '') {
-                if (typeof rawBucle === 'boolean') {
-                    esBucle = rawBucle;
-                } else {
-                    const valStr = rawBucle.toString().trim().toLowerCase();
-                    esBucle = !(valStr === 'false' || valStr === 'no' || valStr === '0');
-                }
+                const valStr = rawBucle.toString().trim().toLowerCase();
+                esBucle = !(valStr === 'false' || valStr === 'no' || valStr === '0');
             }
         
-            let ampleContenidor = '900px';
-            const valAmple = primerItem.ample;
-            if (valAmple && valAmple.toString().trim() !== '' && valAmple !== '#N/A') {
-                const v = valAmple.toString().trim();
-                ampleContenidor = (!isNaN(v)) ? `${v}px` : v;
-            }
-        
-            let alcadaVisor = '400px';
-            const valAlcada = primerItem.altImatge;
-            if (valAlcada && valAlcada.toString().trim() !== '' && valAlcada !== '#N/A') {
-                const v = valAlcada.toString().trim();
-                alcadaVisor = (!isNaN(v)) ? `${v}px` : v;
-            }
-        
-            const fonsContenidor = obtenirColorHex(opcions.colorFons || primerItem.colorFons, '#24153F');
+            let ampleContenidor = primerItem.ample && primerItem.ample.trim() !== '' && primerItem.ample !== '#N/A' ? primerItem.ample.trim() : '900px';
+            if (!isNaN(ampleContenidor)) ampleContenidor += 'px';
+            
+            let alcadaVisor = primerItem.altImatge && primerItem.altImatge.trim() !== '' && primerItem.altImatge !== '#N/A' ? primerItem.altImatge.trim() : '400px';
+            if (!isNaN(alcadaVisor)) alcadaVisor += 'px';
         
             const wrapper = document.createElement('div');
             wrapper.className = 'carrusel-imatges-wrapper';
-            wrapper.style.backgroundColor = fonsContenidor;
+            wrapper.style.backgroundColor = obtenirColorHex(opcions.colorFons || primerItem.colorFons, '#24153F');
             wrapper.style.maxWidth = ampleContenidor;
         
             let indexActual = 0;
@@ -1243,49 +876,19 @@
             const btnAnt = wrapper.querySelector('.boto-carrusel.ant');
             const btnSeg = wrapper.querySelector('.boto-carrusel.seg');
         
-            const obtenirEnllacValid = (item) => {
-                if (!item) return '';
-                const desti = (item.linkBoto || '').trim();
-                if (desti === '' || desti === '#' || desti === '#N/A') return '';
-                return desti;
-            };
-        
             items.forEach((item, idx) => {
                 const slide = document.createElement('div');
                 slide.className = `carrusel-slide ${idx === 0 ? 'activa' : ''}`;
-        
-                const urlImatge = item.imatgeId && item.imatgeId !== '#N/A' && item.imatgeId.trim() !== ''
-                    ? `https://drive.google.com/thumbnail?sz=w1200&id=${item.imatgeId.trim()}`
-                    : 'logo_mm_600.jpg';
-        
+                const urlImatge = item.imatgeId && item.imatgeId !== '#N/A' && item.imatgeId.trim() !== '' ? `https://drive.google.com/thumbnail?sz=w1200&id=${item.imatgeId.trim()}` : 'logo_mm_600.jpg';
                 slide.innerHTML = `<img src="${urlImatge}" alt="${item.titol || 'Mínim Món'}">`;
-        
-                const enllac = obtenirEnllacValid(item);
-                if (enllac) {
+                
+                const enllac = (item.linkBoto || item.link || '').trim();
+                if (enllac && enllac !== '#' && enllac !== '#N/A') {
                     slide.classList.add('es-clicable');
                     slide.style.cursor = 'pointer';
-                    slide.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        if (typeof navegarA === 'function') navegarA(enllac, e);
-                        else window.location.href = enllac;
-                    });
-                } else {
-                    slide.classList.remove('es-clicable');
-                    slide.style.cursor = 'default';
+                    slide.onclick = (e) => navegarA(enllac, e);
                 }
                 elDiapositives.appendChild(slide);
-            });
-        
-            elPeuText.addEventListener('click', (e) => {
-                const itemActual = items[indexActual] || {};
-                const enllacActual = obtenirEnllacValid(itemActual);
-                if (enllacActual) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    if (typeof navegarA === 'function') navegarA(enllacActual, e);
-                    else window.location.href = enllacActual;
-                }
             });
         
             const mostrarDiapositiva = (index) => {
@@ -1294,39 +897,16 @@
         
                 const itemActual = items[index] || {};
                 const colorText = obtenirColorHex(itemActual.colorText, '#E3D4FF');
-        
                 elTitol.style.color = colorText;
                 elDescripcio.style.color = colorText;
                 elTitol.innerText = itemActual.titol || '';
-                const desc = itemActual.descripcio || '';
-                elDescripcio.innerHTML = desc ? desc.replace(/\n/g, '<br>') : '';
-        
-                const enllacActual = obtenirEnllacValid(itemActual);
-                if (enllacActual) {
-                    elPeuText.classList.add('es-clicable');
-                    elPeuText.style.cursor = 'pointer';
-                } else {
-                    elPeuText.classList.remove('es-clicable');
-                    elPeuText.style.cursor = 'default';
-                }
-        
-                if (!esBucle) {
-                    btnAnt.style.opacity = index === 0 ? '0.25' : '1';
-                    btnAnt.style.pointerEvents = index === 0 ? 'none' : 'auto';
-                    btnSeg.style.opacity = index === items.length - 1 ? '0.25' : '1';
-                    btnSeg.style.pointerEvents = index === items.length - 1 ? 'none' : 'auto';
-                } else {
-                    btnAnt.style.opacity = '1';
-                    btnAnt.style.pointerEvents = 'auto';
-                    btnSeg.style.opacity = '1';
-                    btnSeg.style.pointerEvents = 'auto';
-                }
+                elDescripcio.innerHTML = itemActual.descripcio ? itemActual.descripcio.replace(/\n/g, '<br>') : '';
             };
         
             const seguent = () => {
                 if (indexActual < items.length - 1) indexActual++;
                 else if (esBucle) indexActual = 0;
-                else { aturarAutoplay(); return; }
+                else return;
                 mostrarDiapositiva(indexActual);
             };
         
@@ -1338,30 +918,19 @@
         
             const iniciarAutoplay = () => {
                 if (esBucle && velocitatVal > 0) {
-                    aturarAutoplay();
+                    clearInterval(temporitzador);
                     temporitzador = setInterval(seguent, velocitatVal);
                 }
             };
-        
-            const aturarAutoplay = () => {
-                if (temporitzador) {
-                    clearInterval(temporitzador);
-                    temporitzador = null;
-                }
-            };
-        
-            btnSeg.addEventListener('click', (e) => { e.stopPropagation(); seguent(); iniciarAutoplay(); });
-            btnAnt.addEventListener('click', (e) => { e.stopPropagation(); anterior(); iniciarAutoplay(); });
-            wrapper.addEventListener('mouseenter', aturarAutoplay);
-            wrapper.addEventListener('mouseleave', iniciarAutoplay);
-            wrapper.addEventListener('touchstart', aturarAutoplay, { passive: true });
-        
+
+            btnSeg.onclick = (e) => { e.stopPropagation(); seguent(); iniciarAutoplay(); };
+            btnAnt.onclick = (e) => { e.stopPropagation(); anterior(); iniciarAutoplay(); };
+            
             mostrarDiapositiva(0);
             iniciarAutoplay();
             return wrapper;
         }
 
-        
         function crearBlocText(item = {}) {
             const bloc = document.createElement('div');
             bloc.className = 'component-bloc-text';
@@ -1379,56 +948,33 @@
             
             bloc.style.backgroundColor = colorFons;
             bloc.style.color = colorText;
-            
             if (colorFons !== 'transparent') {
                 bloc.style.padding = '1.8rem';
                 bloc.style.borderRadius = '8px';
             }
         
-            const teTitol = item.titol && item.titol.trim() !== '' && item.titol.trim() !== '#N/A';
-            if (teTitol) {
+            if (item.titol && item.titol.trim() !== '' && item.titol.trim() !== '#N/A') {
                 const elTitol = document.createElement('h3');
                 elTitol.className = 'bloc-text-titol';
                 elTitol.innerText = item.titol.trim();
                 elTitol.style.color = colorText;
-        
-                if (item.midaImatge && item.midaImatge !== '#N/A') { 
-                    elTitol.style.fontSize = !isNaN(item.midaImatge) ? `${item.midaImatge}px` : item.midaImatge;
-                } else {
-                    elTitol.style.fontSize = '1.6rem';
-                }
                 bloc.appendChild(elTitol);
             }
         
-            const teText = item.descripcio && item.descripcio.trim() !== '' && item.descripcio.trim() !== '#N/A';
-            if (teText) {
+            if (item.descripcio && item.descripcio.trim() !== '' && item.descripcio.trim() !== '#N/A') {
                 const elText = document.createElement('div');
                 elText.className = 'bloc-text-cos';
                 elText.innerHTML = item.descripcio.trim().replace(/\n/g, '<br>');
                 elText.style.color = colorText;
-        
-                if (item.midaFontText) {
-                    elText.style.fontSize = !isNaN(item.midaFontText) ? `${item.midaFontText}px` : item.midaFontText;
-                } else {
-                    elText.style.fontSize = '1.05rem';
-                }
                 bloc.appendChild(elText);
             }
         
             const desti = (item.linkBoto || item.link || '').trim();
-            const teEnllac = desti !== '' && desti !== '#' && desti !== '#N/A';
-        
-            if (teEnllac) {
+            if (desti && desti !== '#' && desti !== '#N/A') {
                 const boto = document.createElement('button');
                 boto.className = 'boto-cta-bloc-text';
                 boto.innerText = (item.textBoto && item.textBoto !== '#N/A') ? item.textBoto : 'Saber-ne més';
-                
-                boto.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    if (typeof navegarA === 'function') navegarA(desti, e);
-                    else window.location.href = desti;
-                });
+                boto.onclick = (e) => navegarA(desti, e);
                 bloc.appendChild(boto);
             }
             return bloc;
@@ -1440,121 +986,86 @@
             const atributAutoplay = item.videoAutoStart ? 'autoplay muted loop' : '';
             const atributControls = item.videoControls ? 'controls' : '';
         
-            let htmlPeu = '';
-            if (item.titol || item.descripcio) {
-                htmlPeu = `
-                    <div class="video-peu-text">
-                        ${item.titol ? `<h3>${item.titol}</h3>` : ''}
-                        ${item.descripcio ? `<p>${item.descripcio}</p>` : ''}
-                    </div>
-                `;
-            }
-        
             return `
                 <div class="contenidor-video-wrapper" style="max-width: ${ampleContenidor};">
                     <div class="caixa-reproductor-video-adaptable">
-                        <video 
-                            src="${srcVideo}" 
-                            ${atributControls} 
-                            ${atributAutoplay} 
-                            playsinline 
-                            preload="metadata">
+                        <video src="${srcVideo}" ${atributControls} ${atributAutoplay} playsinline preload="metadata">
                             El teu navegador no permet la reproducció de vídeo HTML5.
                         </video>
                     </div>
-                    ${htmlPeu}
+                    ${(item.titol || item.descripcio) ? `<div class="video-peu-text">${item.titol ? `<h3>${item.titol}</h3>` : ''}${item.descripcio ? `<p>${item.descripcio}</p>` : ''}</div>` : ''}
                 </div>
             `;
         }
 
         function crearEspaiador(item) {
             const alcada = item.alcadaImatge && item.alcadaImatge.trim() !== '' ? item.alcadaImatge.trim() : '30px';
-            const color = obtenirColorHex(item.colorFons, 'transparent');
-        
-            return `
-                <div class="component-espaiador" style="height: ${alcada}; background-color: ${color}; width: 100%;"></div>
-            `;
+            return `<div class="component-espaiador" style="height: ${alcada}; background-color: ${obtenirColorHex(item.colorFons, 'transparent')}; width: 100%;"></div>`;
         }
         
         function crearSeparador(item) {
             const gruix = item.alcadaImatge && item.alcadaImatge.trim() !== '' ? item.alcadaImatge.trim() : '1px';
-            const colorLinia = obtenirColorHex(item.colorFons, MAPA_COLORS['Accent'] || '#AC80FF');
-        
-            return `
-                <div class="component-separador-wrapper" style="width: 100%; padding: 0.8rem 0;">
-                    <hr class="linia-separadora" style="border: none; height: ${gruix}; background-color: ${colorLinia}; margin: 0; width: 100%;" />
-                </div>
-            `;
+            return `<div class="component-separador-wrapper" style="width: 100%; padding: 0.8rem 0;"><hr style="border: none; height: ${gruix}; background-color: ${obtenirColorHex(item.colorFons, MAPA_COLORS['Accent'] || '#AC80FF')}; margin: 0; width: 100%;" /></div>`;
         }      
 
         function crearPeuPagina(config) {
             return `
                 <footer class="peu-pagina">
-                        <div class="contenidor-peu-5-columnes">
-                            
-                            <!-- COLUMNA 1: Logo + Text descriptiu -->
-                            <div class="col-peu col-1" style="display: flex; align-items: center; gap: 12px; background-color: #FFFFFF; padding: 12px 16px; border-radius: 8px; box-shadow: 0 2px 8px rgba(36, 21, 63, 0.08);">
-                                <img id="logo-img-peu" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge" style="height: 48px; width: auto; object-fit: contain;">
-                                <div>
-                                    <strong style="font-size: 0.95rem; color: #24153F; display: block; line-height: 1.2;">
-                                        <span translate="no" class="notranslate">Mínim Món</span>
-                                    </strong>
-                                    <span style="font-size: 0.8rem; color: #301269;">Recreacions en fusta dels teus petits móns.</span>
-                                </div>
-                            </div>
-                
-                            <!-- GRUP COLUMNES 2 I 3 (Es posen costat a costat en mòbil) -->
-                            <div class="grup-col-2-3">
-                                <!-- COLUMNA 2: Selector d'Idiomes -->
-                                <div class="col-peu col-2" style="display: flex; flex-direction: column; gap: 4px; min-width: max-content;">
-                                    <strong style="color: #301269; margin-bottom: 4px; font-size: 0.85rem;">Idiomes</strong>
-                                    <a href="javascript:void(0)" onclick="establirIdioma('ca')" title="Català" style="color: #24153F; text-decoration: none; width: fit-content;" class="notranslate">CA</a>
-                                    <a href="javascript:void(0)" onclick="establirIdioma('es')" title="Español" style="color: #24153F; text-decoration: none; width: fit-content;" class="notranslate">ES</a>
-                                    <a href="javascript:void(0)" onclick="establirIdioma('en')" title="English" style="color: #24153F; text-decoration: none; width: fit-content;" class="notranslate">EN</a>
-                                    <a href="javascript:void(0)" onclick="establirIdioma('fr')" title="Français" style="color: #24153F; text-decoration: none; width: fit-content;" class="notranslate">FR</a>
-                                </div>
-                
-                                <!-- COLUMNA 3: Enllaços principals -->
-                                <div class="col-peu col-3" style="display: flex; flex-direction: column; gap: 8px;">
-                                    <strong style="color: #301269; margin-bottom: 4px; font-weight: 700;">Navegació</strong>                                    
-                                    <a href="#univers_minim" onclick="navegarA('#univers_minim'); return false;" title="Coneix l'essència" style="color: #301269; text-decoration: none;">Univers Mínim</a>                                    
-                                    <a href="#mons_minims" onclick="navegarA('#mons_minims'); return false;" title="Descobreix els projectes" style="color: #301269; text-decoration: none;">Mínims Móns</a>                                    
-                                    <a href="#la_botiga" onclick="navegarA('#la_botiga'); return false;" title="Tria i remena" style="color: #301269; text-decoration: none;">La botiga</a>                                    
-                                    <a href="#el_laboratori" onclick="navegarA('#el_laboratori'); return false;" title="El lloc d'on tot surt" style="color: #301269; text-decoration: none;">El laboratori</a>
-                                </div>
-                            </div>
-                
-                            <!-- COLUMNA 4: Enllaç d'acció / Contacte -->
-                            <div class="col-peu col-4">
-                                <strong style="color: #301269; margin-bottom: 4px; font-size: 0.85rem; display: block;">Començar</strong>
-                                <a href="#connecta" title="Formulari de contacte" style="color: #24153F; text-decoration: none; line-height: 1.3; display: inline-block;">
-                                    Encarrega una feina<br>o contacta amb nosaltres.
-                                </a>
-                            </div>
-                
-                            <!-- COLUMNA 5: Dades personals de contacte -->
-                            <div class="col-peu col-5" style="color: #24153F; font-size: 0.8rem; line-height: 1.4;">
-                                <strong style="color: #301269; margin-bottom: 4px; font-size: 0.85rem; display: block;">Jordi Alcalde Casalta</strong>
-                                <a href="mailto:info@minimmon.cat" title="Escriu-nos un correu" style="color: #24153F; text-decoration: none; display: block;">info@minimmon.cat</a>
-                                <a href="mailto:jordi.alcalde@outlook.com" title="Escriu-nos un correu" style="color: #24153F; text-decoration: none; display: block;">jordi.alcalde@outlook.com</a>
-                                <a href="tel:+34699592326" style="color: #24153F; text-decoration: none; display: block;">+34 699 592 326</a>
-                            </div>
-                
-                        </div>
-                
-                        <!-- FILA INFERIOR: Copyright i textos legals -->
-                        <div class="fila-inferior-peu">
-                            <div class="copyright-text">
-                                &copy; <span translate="no" class="notranslate">Mínim Món</span> de Jordi Alcalde &nbsp;&middot;&nbsp; 2026 &nbsp;&middot;&nbsp; Tots els drets reservats
-                            </div>
-                
-                            <div class="links-legals" style="display: flex; gap: 8px;">
-                                <a href="#avis-legal" style="color: #301269; text-decoration: none;">Avís legal</a> &middot;
-                                <a href="#privacitat" style="color: #301269; text-decoration: none;">Privacitat</a> &middot;
-                                <a href="#cookies" style="color: #301269; text-decoration: none;">Cookies</a>
+                    <div class="contenidor-peu-5-columnes">
+                        <div class="col-peu col-1" style="display: flex; align-items: center; gap: 12px; background-color: #FFFFFF; padding: 12px 16px; border-radius: 8px; box-shadow: 0 2px 8px rgba(36, 21, 63, 0.08);">
+                            <img id="logo-img-peu" src="logo_mm_300.jpg" alt="Logo Mínim Món" class="logo-imatge" style="height: 48px; width: auto; object-fit: contain;">
+                            <div>
+                                <strong style="font-size: 0.95rem; color: #24153F; display: block; line-height: 1.2;">
+                                    <span translate="no" class="notranslate">Mínim Món</span>
+                                </strong>
+                                <span style="font-size: 0.8rem; color: #301269;">Recreacions en fusta dels teus petits móns.</span>
                             </div>
                         </div>
-                    </footer>
+            
+                        <div class="grup-col-2-3">
+                            <div class="col-peu col-2" style="display: flex; flex-direction: column; gap: 4px; min-width: max-content;">
+                                <strong style="color: #301269; margin-bottom: 4px; font-size: 0.85rem;">Idiomes</strong>
+                                <a href="javascript:void(0)" onclick="establirIdioma('ca')" title="Català" style="color: #24153F; text-decoration: none;" class="notranslate">CA</a>
+                                <a href="javascript:void(0)" onclick="establirIdioma('es')" title="Español" style="color: #24153F; text-decoration: none;" class="notranslate">ES</a>
+                                <a href="javascript:void(0)" onclick="establirIdioma('en')" title="English" style="color: #24153F; text-decoration: none;" class="notranslate">EN</a>
+                                <a href="javascript:void(0)" onclick="establirIdioma('fr')" title="Français" style="color: #24153F; text-decoration: none;" class="notranslate">FR</a>
+                            </div>
+            
+                            <div class="col-peu col-3" style="display: flex; flex-direction: column; gap: 8px;">
+                                <strong style="color: #301269; margin-bottom: 4px; font-weight: 700;">Navegació</strong>                                    
+                                <a href="#univers_minim" onclick="navegarA('univers_minim', event); return false;" style="color: #301269; text-decoration: none;">Univers Mínim</a>                                    
+                                <a href="#mons_minims" onclick="navegarA('mons_minims', event); return false;" style="color: #301269; text-decoration: none;">Mínims Móns</a>                                    
+                                <a href="#la_botiga" onclick="navegarA('la_botiga', event); return false;" style="color: #301269; text-decoration: none;">La botiga</a>                                    
+                                <a href="#el_laboratori" onclick="navegarA('el_laboratori', event); return false;" style="color: #301269; text-decoration: none;">El laboratori</a>
+                            </div>
+                        </div>
+
+                        <div class="col-peu col-4">
+                            <strong style="color: #301269; margin-bottom: 4px; font-size: 0.85rem; display: block;">Començar</strong>
+                            <a href="#connecta" onclick="navegarA('connecta', event); return false;" style="color: #24153F; text-decoration: none; line-height: 1.3; display: inline-block;">
+                                Encarrega una feina<br>o contacta amb nosaltres.
+                            </a>
+                        </div>
+
+                        <div class="col-peu col-5" style="color: #24153F; font-size: 0.8rem; line-height: 1.4;">
+                            <strong style="color: #301269; margin-bottom: 4px; font-size: 0.85rem; display: block;">Jordi Alcalde Casalta</strong>
+                            <a href="mailto:info@minimmon.cat" style="color: #24153F; text-decoration: none; display: block;">info@minimmon.cat</a>
+                            <a href="mailto:jordi.alcalde@outlook.com" style="color: #24153F; text-decoration: none; display: block;">jordi.alcalde@outlook.com</a>
+                            <a href="tel:+34699592326" style="color: #24153F; text-decoration: none; display: block;">+34 699 592 326</a>
+                        </div>
+                    </div>
+            
+                    <div class="fila-inferior-peu">
+                        <div class="copyright-text">
+                            &copy; <span translate="no" class="notranslate">Mínim Món</span> de Jordi Alcalde &nbsp;&middot;&nbsp; 2026 &nbsp;&middot;&nbsp; Tots els drets reservats
+                        </div>
+                        <div class="links-legals" style="display: flex; gap: 8px;">
+                            <a href="#avis-legal" onclick="navegarA('avis-legal', event)" style="color: #301269; text-decoration: none;">Avís legal</a> &middot;
+                            <a href="#privacitat" onclick="navegarA('privacitat', event)" style="color: #301269; text-decoration: none;">Privacitat</a> &middot;
+                            <a href="#cookies" onclick="navegarA('cookies', event)" style="color: #301269; text-decoration: none;">Cookies</a>
+                        </div>
+                    </div>
+                </footer>
             `;
         }
 
@@ -1562,39 +1073,22 @@
             const titol = item.titol || 'Formulari de Contacte';
             const descripcio = item.descripcio || '';
             const formId = item.link || 'FORM_CONTACTE';
-        
             let campsHTML = '';
         
-            const campsValids = campsFormulari.filter(camp => {
-                const id = (camp.id || '').trim();
-                const etiqueta = (camp.seccio || '').trim();
-                const tipus = (camp.titol || '').trim();
-                return id !== '' && (etiqueta !== '' || tipus !== '');
-            });
+            const campsValids = campsFormulari.filter(camp => (camp.id || '').trim() !== '');
         
             campsValids.forEach(camp => {
                 const idCamp = camp.id || '';
                 const etiqueta = camp.seccio || '';
                 const tipus = (camp.titol || 'text').toLowerCase().trim();
-                
                 const rawOpcions = camp.descripcio || '';
                 const llistaOpcions = rawOpcions ? rawOpcions.split(';').map(o => o.trim()).filter(o => o !== '') : [];
-                const infoAddicional = (camp.link || camp.infoAddicional || camp['Info addicional'] || '').trim();
-                const valObligatori = (camp.imatgeId || camp.Obligatori || '').toString().toUpperCase().trim();
-                const esObligatori = valObligatori === 'SI' || valObligatori === 'TRUE';
-                
+                const esObligatori = (camp.imatgeId || camp.Obligatori || '').toString().toUpperCase().trim() === 'SI';
                 const reqAttr = esObligatori ? 'required' : '';
                 const astil = esObligatori ? '<span style="color: #AC80FF;"> *</span>' : '';
-        
-                let textEtiqueta = etiqueta ? `${etiqueta}${astil}` : '';
-                if (infoAddicional && infoAddicional !== '#N/A') {
-                    textEtiqueta += `<span style="color: #C8AAFF; font-weight: 400; font-size: 0.85em; margin-left: 0.5rem; font-style: italic; text-transform: none;"> · ${infoAddicional}</span>`;
-                }
-        
+
                 campsHTML += `<div class="camp-grup" style="margin-bottom: 1.2rem; text-align: left;">`;
-                if (textEtiqueta) {
-                    campsHTML += `<label class="camp-etiqueta" for="${idCamp}" style="display: block; color: #E3D4FF; font-weight: 500; margin-bottom: 0.4rem; font-family: 'Montserrat', sans-serif;">${textEtiqueta}</label>`;
-                }
+                if (etiqueta) campsHTML += `<label class="camp-etiqueta" for="${idCamp}" style="display: block; color: #E3D4FF; font-weight: 500; margin-bottom: 0.4rem; font-family: 'Montserrat', sans-serif;">${etiqueta}${astil}</label>`;
         
                 if (tipus === 'textarea') {
                     campsHTML += `<textarea id="${idCamp}" name="${etiqueta || idCamp}" class="camp-textarea" ${reqAttr} style="width: 100%; padding: 0.8rem; border-radius: 6px; border: 1px solid #AC80FF; background: #301269; color: #FFF; min-height: 100px; font-family: 'Montserrat', sans-serif;"></textarea>`;
@@ -1603,52 +1097,10 @@
                         <select id="${idCamp}" name="${etiqueta || idCamp}" class="camp-select" ${reqAttr} style="width: 100%; padding: 0.8rem; border-radius: 6px; border: 1px solid #AC80FF; background: #301269; color: #FFF; font-family: 'Montserrat', sans-serif;">
                             <option value="" disabled selected>Selecciona una opció...</option>
                             ${llistaOpcions.map(op => `<option value="${op}">${op}</option>`).join('')}
-                        </select>
-                    `;
-                } else if (tipus === 'radio') {
-                    campsHTML += `<div class="grup-opcions-multiples" style="display: flex; gap: 1rem; flex-wrap: wrap;">`;
-                    llistaOpcions.forEach((op, idx) => {
-                        campsHTML += `
-                            <label class="opcio-inline" style="color: #E3D4FF; cursor: pointer; font-family: 'Montserrat', sans-serif;">
-                                <input type="radio" name="${etiqueta || idCamp}" value="${op}" ${idx === 0 && esObligatori ? 'required' : ''} />
-                                <span style="margin-left: 0.3rem;">${op}</span>
-                            </label>
-                        `;
-                    });
-                    campsHTML += `</div>`;
-                } else if (tipus === 'checkbox') {
-                    campsHTML += `<div class="grup-opcions-multiples" style="display: flex; gap: 1rem; flex-wrap: wrap;">`;
-                    llistaOpcions.forEach(op => {
-                        campsHTML += `
-                            <label class="opcio-inline" style="color: #E3D4FF; cursor: pointer; font-family: 'Montserrat', sans-serif;">
-                                <input type="checkbox" name="${etiqueta || idCamp}" value="${op}" />
-                                <span style="margin-left: 0.3rem;">${op}</span>
-                            </label>
-                        `;
-                    });
-                    campsHTML += `</div>`;
-                } else if (tipus === 'file') {
-                    campsHTML += `
-                        <div style="display: flex; align-items: center; gap: 0.6rem;">
-                            <input type="file" id="${idCamp}" name="${etiqueta || idCamp}" class="camp-file" accept="image/*,.pdf" ${reqAttr} 
-                                   style="color: #E3D4FF; font-family: 'Montserrat', sans-serif; flex-grow: 1;" 
-                                   onchange="gestionarCanviFitxer(this, '${idCamp}')" />
-                            <button type="button" id="boto-netejar-${idCamp}" class="boto-paperera" onclick="netejarCampFitxer('${idCamp}')" 
-                                    title="Esborrar fitxer seleccionat" 
-                                    style="display: none; background: transparent; border: 1px solid #AC80FF; color: #AC80FF; padding: 0.4rem 0.6rem; border-radius: 6px; cursor: pointer; transition: all 0.2s ease;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="3 6 5 6 21 6"></polyline>
-                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                                    <line x1="10" y1="11" x2="10" y2="17"></line>
-                                    <line x1="14" y1="11" x2="14" y2="17"></line>
-                                </svg>
-                            </button>
-                        </div>
-                    `;
+                        </select>`;
                 } else {
                     campsHTML += `<input type="${tipus}" id="${idCamp}" name="${etiqueta || idCamp}" class="camp-input" ${reqAttr} style="width: 100%; padding: 0.8rem; border-radius: 6px; border: 1px solid #AC80FF; background: #301269; color: #FFF; font-family: 'Montserrat', sans-serif;" />`;
                 }
-        
                 campsHTML += `</div>`;
             });
         
@@ -1662,663 +1114,146 @@
                             <button type="submit" class="boto-enviar" style="background: #340094; color: #FFF; padding: 0.8rem 2rem; border: 1px solid #AC80FF; border-radius: 6px; font-weight: 600; cursor: pointer; font-family: 'Montserrat', sans-serif;">Enviar sol·licitud</button>
                         </div>
                     </form>
-                </div>
-            `;
-        }
-        
-        const URL_GOOGLE_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbwUuqy0X4UdDPNqrzKgA9Pp1eve2n27Vji8yjbkXHmYHTOaUWdVoo0fLGcKOunzw-fe3w/exec";
-        const MAX_FILE_SIZE_MB = 20;
-        const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
-        
-        async function enviarFormulariMinimMon(event, formId) {
-            event.preventDefault();
-            const formulari = document.getElementById(formId);
-            if (!formulari) return;
-        
-            const inputsFitxer = formulari.querySelectorAll('input[type="file"]');
-            for (let input of inputsFitxer) {
-                if (input.files && input.files[0]) {
-                    const fitxer = input.files[0];
-                    if (fitxer.size > MAX_FILE_SIZE_BYTES) {
-                        alert(`El fitxer "${fitxer.name}" supera el límit màxim permès de ${MAX_FILE_SIZE_MB} MB. Si us plau, tria un fitxer més lleuger.`);
-                        input.value = "";
-                        return;
-                    }
-                }
-            }
-        
-            const botoSubmit = formulari.querySelector('button[type="submit"]');
-            if (botoSubmit) {
-                botoSubmit.disabled = true;
-                botoSubmit.innerText = "Enviant...";
-            }
-        
-            const formData = new FormData(formulari);
-            const dadesForm = {};
-            let fitxerAdjunt = null;
-        
-            try {
-                for (let [clau, valor] of formData.entries()) {
-                    if (valor instanceof File && valor.name && valor.size > 0) {
-                        fitxerAdjunt = await convertirFitxerABase64(valor);
-                    } else if (!(valor instanceof File)) {
-                        dadesForm[clau] = valor;
-                    }
-                }
-        
-                const payload = {
-                    camps: dadesForm,
-                    fitxer: fitxerAdjunt
-                };
-        
-                await fetch(URL_GOOGLE_APPS_SCRIPT, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-        
-                alert("Moltes gràcies! La teva sol·licitud s'ha enviat correctament a Mínim Món.");
-                formulari.reset();
-        
-                if (window.history && window.history.replaceState) {
-                    window.history.replaceState(null, '', window.location.pathname);
-                }
-        
-            } catch (error) {
-                console.error("Error en l'enviament:", error);
-                alert("S'ha produït un error en enviar el formulari. Contacta directament a info@minimmon.cat");
-            } finally {
-                if (botoSubmit) {
-                    botoSubmit.disabled = false;
-                    botoSubmit.innerText = "Enviar sol·licitud";
-                }
-            }
-        }
-        
-        function convertirFitxerABase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => resolve({
-                    nom: file.name,
-                    tipus: file.type,
-                    base64: reader.result.split(',')[1]
-                });
-                reader.onerror = error => reject(error);
-            });
+                </div>`;
         }
 
-        function gestionarCanviFitxer(input, idCamp) {
-            const botoPaperera = document.getElementById(`boto-netejar-${idCamp}`);
-            if (!botoPaperera) return;
-        
-            if (input.files && input.files.length > 0) {
-                botoPaperera.style.display = 'inline-flex';
-                if (input.files[0].size > MAX_FILE_SIZE_BYTES) {
-                    alert(`El fitxer "${input.files[0].name}" supera el límit de ${MAX_FILE_SIZE_MB} MB.`);
-                    netejarCampFitxer(idCamp);
-                }
-            } else {
-                botoPaperera.style.display = 'none';
-            }
-        }
-        
-        function netejarCampFitxer(idCamp) {
-            const input = document.getElementById(idCamp);
-            const botoPaperera = document.getElementById(`boto-netejar-${idCamp}`);
-            
-            if (input) {
-                input.value = '';
-            }
-            if (botoPaperera) {
-                botoPaperera.style.display = 'none';
-            }
-        }        
-
-        function crearPaginaLegal(paginaData, continguts) {
-            return `
-            <div class="pantalla-legal" style="
-                background-color: #24153F; 
-                color: #E3D4FF; 
-                font-family: 'Montserrat', sans-serif; 
-                min-height: 80vh; 
-                padding: 3rem 1.5rem 5rem 1.5rem;
-                box-sizing: border-box;">
-                
-                <div style="max-width: 800px; margin: 0 auto;">
-                    <header style="border-bottom: 1px solid #AC80FF; padding-bottom: 1.5rem; margin-bottom: 2.5rem;">
-                        <h1 style="color: #FFFFFF; font-size: 2.2rem; font-weight: 700; margin: 0 0 0.5rem 0;">
-                            ${paginaData.nomPagina}
-                        </h1>
-                        <p style="color: #C8AAFF; font-size: 0.9rem; margin: 0;">
-                            Mínim Món &middot; Informació legal i transparència
-                        </p>
-                    </header>
-        
-                    <article class="contingut-legal" style="
-                        font-size: 0.95rem; 
-                        line-height: 1.7; 
-                        color: #E3D4FF;">
-                        ${continguts}
-                    </article>
-                </div>
-            </div>
-            `;
-        }
-
-        
-        /* ***********************************************************
-        /* PROJECTES
-        /* ******************************************************** */
- 
-        // Funció principal adaptada al parser del CSV de Projectes
+        /* PROJECTES SINGULARS */
         function crearPaginaProjectes(idProjecte, llistaProjectes = []) {
             const idNeta = (idProjecte || '').replace('#', '').replace('projecte/', '').replace('projectes/', '').trim();
-            console.log("🔍 Cerca de projecte per ID neta:", idNeta);
-        
             const projecte = llistaProjectes.find(p => p.idProjecte === idNeta) || llistaProjectes[0];
         
-            if (!projecte) {
-                console.error("❌ No s'ha trobat cap projecte a la llista.");
-                return `<div style="padding: 4rem; text-align: center;"><h2>Projecte no trobat</h2></div>`;
-            }
+            if (!projecte) return `<div style="padding: 4rem; text-align: center;"><h2>Projecte no trobat</h2></div>`;
         
-            // Ordre per defecte si no s'especifica al CSV
             const ordresRaw = projecte.ordre && projecte.ordre.trim() !== '' ? projecte.ordre : 'Portada;Video_1';
-            console.log("ordresRaw: ", ordresRaw);
             const ordres = ordresRaw.split(';').map(o => o.trim());
-            console.log("ordres: ", ordres);
         
             let htmlFinal = `<article class="pantalla-projecte-singular" data-id="${projecte.idProjecte}">`;
         
             ordres.forEach(bloc => {
                 const blocNom = bloc.toLowerCase().replace(/_/g, '');
-                console.log("blocNom: ", blocNom);
-                
-                // Extracció dinàmica de l'índex numèric (Ex: "video1" -> 1, "imatgetext2" -> 2)
                 const numExtret = bloc.match(/\d+/);
                 const numeroBloc = numExtret ? parseInt(numExtret[0], 10) : 1;
         
                 if (blocNom.startsWith('portada') || blocNom.startsWith('hero')) {
                     htmlFinal += renderitzarBlocPortada(projecte);
-                } 
-                else if (blocNom.startsWith('video')) {
+                } else if (blocNom.startsWith('video')) {
                     htmlFinal += renderitzarBlocVideo(projecte, numeroBloc);
-                } 
-                else if (blocNom.startsWith('imatgetext') || blocNom.startsWith('imatge')) {
-                    htmlFinal += renderitzarBlocImatgeText(projecte, numeroBloc);
+                } else if (blocNom.startsWith('imatgetext') || blocNom.startsWith('imatge')) {
+                    htmlFinal += renderitzarBlocImatgeTextProjecte(projecte, numeroBloc);
+                } else if (blocNom.startsWith('bloctext')) {
+                    htmlFinal += renderitzarBlocTextProjecte(projecte, numeroBloc);
+                } else if (blocNom.startsWith('carrusel')) {
+                    htmlFinal += renderitzarCarruselProjecte(projecte, dadesWeb.carrusels);
+                } else if (blocNom.startsWith('galeria')) {
+                    htmlFinal += renderitzarGaleriaProjecte(projecte);
                 }
-                else if (blocNom.startsWith('bloctext')) {
-                    htmlFinal += renderitzarBlocText(projecte, numeroBloc);
-                }
-                else if (blocNom.startsWith('carrusel')) {
-                    htmlFinal += renderitzarCarrusel(projecte, dadesWeb.carrusels);
-                }
-                else if (blocNom.startsWith('galeria')) {
-                    htmlFinal += renderitzarGaleria(projecte, dadesWeb.continguts);
-                }
-                console.log(`🧩 Processat bloc: ${bloc} -> Tipus: ${blocNom} | Ídem/Número: ${numeroBloc}`);
             });
         
             htmlFinal += `</article>`;
             return htmlFinal;
         }
-        
-        // Renderitzador del bloc HERO ajustat als camps del parsejarCSVProjectes
+
         function renderitzarBlocPortada(p) {
-            console.log("🖼️ [Portada] Renderitzant bloc Portada de Projectes per:", p.nomProjecte || p.idProjecte);
-        
-            // Imatge optimitzada de Google Drive
-            let imatgeUrl = 'img/projecte_default.jpg';
-            if (p.portadaImatgeId && p.portadaImatgeId.trim() !== '') {
-                imatgeUrl = `https://drive.google.com/thumbnail?id=${p.portadaImatgeId.trim()}&sz=w1600`;
-            }
-        
-            // Títol de Portada amb fallback al nom del projecte
+            let imatgeUrl = p.portadaImatgeId ? `https://drive.google.com/thumbnail?id=${p.portadaImatgeId.trim()}&sz=w1600` : 'logo_mm_600.jpg';
             const titol = p.portadaTitol || p.nomProjecte || 'Mínim Món';
         
             return `
-                <div class="portada-wrapper-projecte">
-                    <!-- Imatge retallada i ancorada al centre -->
-                    <img src="${imatgeUrl}" 
-                         alt="${titol}" 
-                         onerror="console.error('❌ Error carregant la imatge de Portada:', '${imatgeUrl}');" />
-        
-                    <!-- Gradient fosc de la paleta oficial -->
-                    <div class="overlay-portada"></div>
-        
-                    <!-- Títol en font Montserrat i mida continguda -->
-                    <div class="contingut-text-portada">
-                        <h1>${titol}</h1>
+                <div class="portada-wrapper-projecte" style="position: relative; width: 100%; height: 320px; overflow: hidden; background-color: #24153F;">
+                    <img src="${imatgeUrl}" alt="${titol}" style="width: 100%; height: 100%; object-fit: cover;" />
+                    <div class="overlay-portada" style="position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(180deg, rgba(36,21,63,0.3) 0%, rgba(36,21,63,0.85) 100%);"></div>
+                    <div class="contingut-text-portada" style="position: absolute; top:0; left:0; width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
+                        <h1 style="color:#FFF; font-family:'Montserrat', sans-serif; font-size: 2.2rem; text-align:center;">${titol}</h1>
                     </div>
-                </div>
-            `;
+                </div>`;
         }
-                
-        function renderitzarBlocVideo(projecte, numVideo) {
-            const videoAtributs = projecte[`video${numVideo}Atributs`];
-            const videoTitol = projecte[`video${numVideo}Titol`] || '';
-            const videoText = projecte[`video${numVideo}Text`] || '';
-            const videoLink = projecte[`video${numVideo}Link`] || '';
-            const videoAlt = projecte[`video${numVideo}Alt`] || '420px';
-        
-            if (!videoLink || videoLink.trim() === '') {
-                console.warn(`⚠️ No s'ha trobat l'enllaç del vídeo per al bloc Video_${numVideo}`);
-                return '';
-            }
-        
-            const itemVideo = {
-                atributs: videoAtributs.trim(),
-                titol: videoTitol.trim(),
-                text: videoText.trim(),
-                link: videoLink.trim(),
-                alt: videoAlt.trim()
-            };
-        
-            return `
-                <section class="seccio-bloc-video-targeta">
-                    ${crearComponentVideoProjecte(itemVideo)}
-                </section>
-            `;
-        }
-        
-                
-        function crearComponentVideoProjecte(item) {
-            const srcVideo = item.link || '';
-            const titol = item.titol || '';
-            const text = item.text || '';
-            const alcadaVideo = item.alt && item.alt.trim() !== '' ? item.alt.trim() : '420px';
-            const atributs = item.atributs || 'controls';
-            
-            if (!srcVideo) return '';
-        
-            return `
-                <div class="targeta-video-contenidor">
-                    <!-- Columna Esquerra: Reproductor adaptable -->
-                    <div class="columna-video-media-nativa" style="height: ${alcadaVideo};">
-                        <video 
-                            src="${srcVideo}"                     
-                            ${atributs} 
-                            playsinline 
-                            preload="metadata"
-                            style="height: 100%; max-height: ${alcadaVideo}; width: auto; display: block;">                    
-                            El teu navegador no permet la reproducció de vídeo HTML5.
-                        </video>
-                    </div>
-        
-                    <!-- Columna Dreta: Textos alineats a TOP -->
-                    <div class="columna-video-text">
-                        ${titol ? `<h3 class="titol-video-targeta">${titol}</h3>` : ''}
-                        ${text ? `<p class="text-video-targeta">${text}</p>` : ''}
-                    </div>
-                </div>
-            `;
-        }
-        
-        function renderitzarBlocImatgeText(projecte, numBloc = 1) {
-            // Lectura dels camps parsejats des de Sheets
-            const imatgeId = projecte[`ImatgeText_${numBloc}_ID`] || projecte[`imatgeText_${numBloc}_id`] || projecte[`imatgeText${numBloc}Id`] || '';
-            const imatgeTitol = projecte[`ImatgeText_${numBloc}_Titol`] || projecte[`imatgeText${numBloc}Titol`] || '';
-            const imatgeText = projecte[`ImatgeText_${numBloc}_Text`] || projecte[`imatgeText${numBloc}Text`] || '';
-            const imatgeAlt = projecte[`Imatge_${numBloc}_Alt`] || projecte[`imatge_${numBloc}_alt`] || projecte[`imatge${numBloc}Alt`] || '420px';
-        
-            if (!imatgeId || imatgeId.trim() === '') return '';
-        
-            return `
-                <section class="seccio-bloc-imatge-targeta">
-                    ${crearComponentImatgeTextProjecte({
-                        id: imatgeId.trim(),
-                        titol: imatgeTitol.trim(),
-                        text: imatgeText.trim(),
-                        alt: imatgeAlt.trim()
-                    })}
-                </section>
-            `;
-        }
-        
 
-        function crearComponentImatgeTextProjecte(item) {
-            const driveId = (item.id || item.imatgeId || '').trim();
-            const titol = item.titol || '';
-            const text = item.text || item.descripcio || '';
-            const alcadaImatge = item.alt && item.alt.trim() !== '' ? item.alt.trim() : '420px';
-            const altText = item.altText || titol || 'Mínim Món';
-        
-            if (!driveId) return '';
-        
-            const srcImatge = `https://drive.google.com/thumbnail?id=${driveId}&sz=w1600`;
-        
+        function renderitzarBlocVideo(projecte, numVideo) {
+            const videoLink = projecte[`video${numVideo}Link`] || '';
+            if (!videoLink) return '';
+
             return `
-                <div class="targeta-imatge-contenidor">
-                    <!-- Columna Esquerra: Contenidor d'imatge flexible -->
-                    <div class="columna-imatge-media" style="--max-altura-desitjada: ${alcadaImatge};">
-                        <img 
-                            src="${srcImatge}" 
-                            alt="${altText}" 
-                            loading="lazy"
-                            class="imatge-responsive-mm"
-                        />
-                    </div>
-        
-                    <!-- Columna Dreta: Text alineat a TOP -->
-                    <div class="columna-imatge-text">
-                        ${titol ? `<h3 class="titol-imatge-targeta">${titol}</h3>` : ''}
-                        ${text ? `<p class="text-imatge-targeta">${text}</p>` : ''}
-                    </div>
-                </div>
-            `;
-        }    
-                
-                
-        function renderitzarBlocText(projecte, numeroBloc = 1) {
-            if (!projecte) return '';
-        
-            // Cerca de valors amb fallback (ex: blocText1_titol, blocText_1_titol o blocText_titol)
+                <section class="seccio-bloc-video-targeta" style="padding: 2rem 1rem; max-width: 1000px; margin: 0 auto;">
+                    ${crearComponentVideo({
+                        link: videoLink,
+                        titol: projecte[`video${numVideo}Titol`] || '',
+                        descripcio: projecte[`video${numVideo}Text`] || '',
+                        videoControls: true
+                    })}
+                </section>`;
+        }
+
+        function renderitzarBlocImatgeTextProjecte(projecte, numBloc = 1) {
+            const imatgeId = projecte[`imatgeText${numBloc}Id`] || projecte[`imatgeText_${numBloc}_ID`] || '';
+            if (!imatgeId) return '';
+
+            return `
+                <section class="seccio-bloc-imatge-targeta" style="padding: 2rem 1rem; max-width: 1000px; margin: 0 auto;">
+                    ${crearBlocImatgeText({
+                        imatgeId: imatgeId,
+                        titol: projecte[`imatgeText${numBloc}Titol`] || '',
+                        descripcio: projecte[`imatgeText${numBloc}Text`] || ''
+                    }).outerHTML}
+                </section>`;
+        }
+
+        function renderitzarBlocTextProjecte(projecte, numeroBloc = 1) {
             const titol = projecte[`blocText${numeroBloc}Titol`] || '';
             const text = projecte[`blocText${numeroBloc}Text`] || '';
-        
-            // Si no hi ha cap contingut, evitem generar un bloc buit
             if (!titol && !text) return '';
-        
-            return crearComponentBlocTextProjecte({ titol, text });
-        }
-        
-        function crearComponentBlocTextProjecte(item) {
-            const titol = item.titol || '';
-            const text = item.text || '';
-        
+
             return `
-                <div class="seccio-bloc-text-targeta">
-                    <div class="mm-bloc-text-container">
-                        <div class="mm-bloc-text-content">
-                            <h2 class="mm-bloc-text-title">${titol}</h2>
-                            <div class="mm-bloc-text-body">${text}</div>
-                        </div>
-                    </div>
-                </div>        
-            `;
-        }       
-        
-                
-         // Renderitza el carrusel d'un projecte.
-        function renderitzarCarrusel(projecte, mapCarrusels) {
-            if (!projecte) {
-                console.warn("⚠️ [Carrusel Debug] 'projecte' és null o undefined");
-                return '';
-            }
-        
-            console.log("🔍 [Carrusel Debug] Dades rebudes:", { projecte, mapCarrusels });
-            
-            // 1. Lectura robusta de l'ID del projecte (cobreix idProjecte, ID_Projecte i id)
-            const idProjecte = projecte.idProjecte || projecte.ID_Projecte || projecte.id || '';
-            
-            // 2. Comprovació del camp 'carrusel'
-            const teCarrusel = projecte.carrusel && projecte.carrusel.toString().trim().toLowerCase() === 'si';
-        
-            // 3. Validació de seguretat
-            console.log(`🔍 [Carrusel Debug] ID: ${idProjecte} | camp carrusel: "${projecte.carrusel}" -> teCarrusel: ${teCarrusel}`);
-        
-            if (!teCarrusel) {
-                console.warn("⚠️ [Carrusel Debug] Aturat: El camp 'carrusel' a Sheets no és 'Si'");
-                return '';
-            }
-        
-            if (!idProjecte || !mapCarrusels) {
-                console.warn("⚠️ [Carrusel Debug] Aturat: Falta idProjecte o mapCarrusels");
-                return '';
-            }
-            
-            if (!teCarrusel || !idProjecte || !mapCarrusels || typeof mapCarrusels !== 'object') {
-                return '';
-            }
-        
-            // 4. Obtenció de les imatges del mapa
-            const llistaImatges = mapCarrusels[idProjecte];
-            if (!llistaImatges || llistaImatges.length === 0) {
-                console.warn(`⚠️ [Carrusel Debug] Aturat: No s'han trobat imatges al mapCarrusels per a l'ID ${idProjecte}`);
-                return '';
-            }
-        
-            const carruselAlt = projecte.carruselAlt || 380;
-        
-            console.log("Alt carrusel: ",carruselAlt);
-            
-            return crearComponentCarruselProjecte(llistaImatges, carruselAlt, idProjecte);
+                <section class="seccio-bloc-text-targeta" style="padding: 2rem 1rem; max-width: 900px; margin: 0 auto; color: #E3D4FF; font-family: 'Montserrat', sans-serif;">
+                    ${titol ? `<h2 style="color: #FFF; font-size: 1.6rem; margin-bottom: 1rem;">${titol}</h2>` : ''}
+                    ${text ? `<div style="line-height: 1.6;">${text.replace(/\n/g, '<br>')}</div>` : ''}
+                </section>`;
         }
-        
-        
-        // Genera el component de carrusel de projectes amb Autoplay integrat
-        function crearComponentCarruselProjecte(llistaImatges, carruselAlt, idUnic) {
-            if (!llistaImatges || llistaImatges.length === 0) return '';
-        
-            // Processat de l'alçada
-            let altCalculada = 380;
-            if (carruselAlt) {
-                const numExtret = parseInt(carruselAlt.toString().replace(/[^0-9]/g, ''), 10);
-                if (!isNaN(numExtret) && numExtret > 0) {
-                    altCalculada = numExtret;
-                }
-            }
-        
-            const ampleVisorCalculat = Math.round(altCalculada * 1.33);
+
+        function renderitzarCarruselProjecte(projecte, mapCarrusels) {
+            const idProj = projecte.idProjecte || '';
+            const fotosCarrusel = mapCarrusels[idProj] || [];
+            if (fotosCarrusel.length === 0) return '';
+
+            const itemsCarrusel = fotosCarrusel.map(f => ({
+                imatgeId: f.ID_Imatge,
+                descripcio: f.Descripcio
+            }));
+
+            const elCarrusel = crearCarruselImatges(itemsCarrusel);
+            return `<section class="seccio-carrusel-projecte" style="padding: 2rem 1rem; display: flex; justify-content: center;">${elCarrusel.outerHTML}</section>`;
+        }
+
+        function renderitzarGaleriaProjecte(projecteActual) {
+            // Filtrar projectes actius excloent el projecte que s'està mostrant actualment
+            const altresProjectes = (dadesWeb.projectes || []).filter(p => p.idProjecte !== projecteActual.idProjecte);
+            if (altresProjectes.length === 0) return '';
+
+            const itemsGaleria = altresProjectes.map(p => ({
+                titol: p.nomProjecte,
+                imatgeId: p.portadaImatgeId,
+                linkBoto: `#projecte/${p.idProjecte}`
+            }));
+
+            const galeriaElement = crearGaleriaActiva(itemsGaleria, { bucle: true, velocitat: 20 });
             
-            const slidesHTML = llistaImatges.map((img, idx) => {
-                const idImg = img.Id_Imatge || img.id_imatge || img.ID_Imatge || img.Id || '';
-                const rawLink = img.Link_Imatge || img.link || '';
-                
-                let urlFinal = 'logo_mm_600.jpg';
-                
-                if (idImg && idImg.trim() !== '' && idImg !== '#N/A') {
-                    urlFinal = `https://drive.google.com/thumbnail?sz=w1200&id=${idImg.trim()}`;
-                } else if (rawLink && rawLink.includes('id=')) {
-                    const match = rawLink.match(/id=([a-zA-Z0-9_-]+)/);
-                    if (match && match[1]) {
-                        urlFinal = `https://drive.google.com/thumbnail?sz=w1200&id=${match[1]}`;
-                    }
-                }
-        
-                const altText = img.Descripcio || img.descripcio || 'Imatge del projecte Mínim Món';
-        
-                return `
-                    <div class="carrusel-projecte-slide-item ${idx === 0 ? 'activa' : ''}" data-index="${idx}">
-                        <img src="${urlFinal}" alt="${altText.replace(/"/g, '&quot;')}" />
-                    </div>
-                `;
-            }).join('');
-                
-            const descripcioInicial = llistaImatges[0]?.Descripcio || llistaImatges[0]?.descripcio || '';
-            const arrayDescripcions = llistaImatges.map(i => i.Descripcio || i.descripcio || '');
-            const JSONDescripcions = JSON.stringify(arrayDescripcions).replace(/"/g, '&quot;');
-        
             return `
-                <div class="seccio-carrusel-projecte-targeta" 
-                     id="carrusel-projecte-wrapper-${idUnic}"
-                     onmouseenter="pararAutoplay()" 
-                     onmouseleave="iniciarAutoplay('${idUnic}', ${llistaImatges.length})">
-                    
-                    <div class="targeta-carrusel-projecte-contenidor">
-                        
-                        <div class="columna-carrusel-projecte-visor" style="height: ${altCalculada}px; width: ${ampleVisorCalculat}px;">
-                            ${llistaImatges.length > 1 ? `
-                                <button class="boto-carrusel-projecte-nav anterior" onclick="moureCarruselProjecte('${idUnic}', -1)">&#10094;</button>
-                                <button class="boto-carrusel-projecte-nav seguent" onclick="moureCarruselProjecte('${idUnic}', 1)">&#10095;</button>
-                            ` : ''}
-                            ${slidesHTML}
-                        </div>
-        
-                        <div class="columna-carrusel-projecte-descripcio">
-                            <p class="text-carrusel-projecte-descripcio" id="carrusel-projecte-desc-${idUnic}" data-descripcions="${JSONDescripcions}">
-                                ${descripcioInicial}
-                            </p>
-                        </div>
-        
-                    </div>
-        
-                    <!-- Inicia l'autoplay un cop l'element està carregat a la pàgina -->
-                    ${llistaImatges.length > 1 ? `
-                        <script>
-                            setTimeout(function() {
-                                if (typeof iniciarAutoplay === 'function') {
-                                    iniciarAutoplay('${idUnic}', ${llistaImatges.length});
-                                }
-                            }, 150);
-                        <\/script>
-                    ` : ''}
+                <section class="seccio-galeria-relacionada" style="padding: 3rem 1rem; background-color: #24153F; border-top: 1px solid #340094;">
+                    <h3 style="text-align: center; color: #FFFFFF; font-family: 'Montserrat', sans-serif; margin-bottom: 1.5rem;">Descobreix altres Móns Mínims</h3>
+                    ${galeriaElement.outerHTML}
+                </section>`;
+        }
+
+        function crearPaginaLegal(paginaData, continguts) {
+            return `
+            <div class="pantalla-legal" style="background-color: #24153F; color: #E3D4FF; font-family: 'Montserrat', sans-serif; min-height: 80vh; padding: 3rem 1.5rem; box-sizing: border-box;">
+                <div style="max-width: 800px; margin: 0 auto;">
+                    <header style="border-bottom: 1px solid #AC80FF; padding-bottom: 1.5rem; margin-bottom: 2.5rem;">
+                        <h1 style="color: #FFFFFF; font-size: 2.2rem; font-weight: 700; margin: 0 0 0.5rem 0;">${paginaData.nomPagina}</h1>
+                        <p style="color: #C8AAFF; font-size: 0.9rem; margin: 0;">Mínim Món &middot; Informació legal i transparència</p>
+                    </header>
+                    <article class="contingut-legal" style="font-size: 0.95rem; line-height: 1.7; color: #E3D4FF;">${continguts}</article>
                 </div>
-            `;
+            </div>`;
         }
-
-        /* ==========================================================================
-           LÒGICA DE NAVEGACIÓ I TEMPORITZADOR AUTOMÀTIC (AUTOPLAY) CARRUSEL PROJECTES
-        ========================================================================== */
-        
-        let carruselTimer = null;
-        const CADENCIA_MS = 4000; // Cadència de 4 segons entre imatges
-    
-        // Mou la diapositiva i actualitza el text descriptiu        
-        function moureCarruselProjecte(idUnic, direccio) {
-            const contenidor = document.getElementById(`carrusel-projecte-wrapper-${idUnic}`);
-            if (!contenidor) return;
-        
-            const slides = contenidor.querySelectorAll('.carrusel-projecte-slide-item');
-            if (!slides.length) return;
-        
-            let indexActiu = Array.from(slides).findIndex(s => s.classList.contains('activa'));
-            if (indexActiu === -1) indexActiu = 0;
-        
-            slides[indexActiu].classList.remove('activa');
-        
-            let nouIndex = (indexActiu + direccio + slides.length) % slides.length;
-            slides[nouIndex].classList.add('activa');
-        
-            const textEl = document.getElementById(`carrusel-projecte-desc-${idUnic}`);
-            if (textEl && textEl.dataset.descripcions) {
-                try {
-                    const llistaDesc = JSON.parse(textEl.dataset.descripcions);
-                    if (llistaDesc[nouIndex] !== undefined) {
-                        textEl.textContent = llistaDesc[nouIndex];
-                    }
-                } catch (e) {
-                    console.error("Error en processar la descripció:", e);
-                }
-            }
-        
-            reiniciarAutoplay(idUnic, slides.length);
-        }
-        
-         //Inicia el temporitzador de desplaçament automàtic
-        function iniciarAutoplay(idUnic, totalSlides) {
-            if (totalSlides <= 1) return;
-            
-            pararAutoplay();
-            carruselTimer = setInterval(() => {
-                moureCarruselProjecte(idUnic, 1);
-            }, CADENCIA_MS);
-        }
-        
-        //Atura el temporitzador de l'Autoplay
-        function pararAutoplay() {
-            if (carruselTimer) {
-                clearInterval(carruselTimer);
-                carruselTimer = null;
-            }
-        }
-        
-        // Reinicia el temporitzador des de zero quan l'usuari interactua 
-        function reiniciarAutoplay(idUnic, totalSlides) {
-            pararAutoplay();
-            iniciarAutoplay(idUnic, totalSlides);
-        }
-
-
-        /* ***********************************************************
-           GALERIA_ACTIVA dins de Projectes
-        *********************************************************** */   
-/**
- * Normalitza el text per a comparacions segures:
- * unifica apòstrofs (' i ’), elimina accents i passa a minúscules.
- */
-function normalitzarText(text = '') {
-    return text
-        .toString()
-        .toLowerCase()
-        .replace(/[\u2018\u2019']/g, "'") // Unifica apòstrofs curbs i rectes
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '') // Elimina accents/diacrítics
-        .trim();
-}
-
-/**
- * Renderitza la galeria de projectes.
- * @param {Object} projecteActual - L'objecte del projecte on estem situats.
- * @param {Array} llistaContinguts - Llista completa llegida de 'Continguts'.
- * @param {Boolean} nomesAltres - Si és true, mostra la resta de projectes (exclou l'actual).
- */
-function renderitzarGaleria(projecteActual, llistaContinguts = [], nomesAltres = false) {
-// 1. Obtenim i normalitzem el títol del projecte on estem situats
-    const titolActualNet = normalitzarText(projecteActual.portadaTitol || projecteActual.Portada_Titol || projecteActual.nomProjecte || '');
-
-    if (!titolActualNet) {
-        console.warn("⚠️ No s'ha trobat un títol vàlid per al projecte actual.", projecteActual);
-        return '';
-    }
-
-    // 2. Filtrem: NOMÉS 'galeria_activa' I EXCLOENT el projecte actual
-    const altresProjectesImatges = llistaContinguts.filter(item => {
-        // A. Comprovar tipus de component
-        const tipus = (item.tipusComponent || item.TipusComponent || '').toString().trim().toLowerCase();
-        if (tipus !== 'galeria_activa') return false;
-
-        // B. Comprovar títol del projecte
-        const titolItemNet = normalitzarText(item.titol || item.Titol || '');
-        if (!titolItemNet) return false;
-
-        // C. Retornar TRUE només si NO és el projecte actual
-        return titolItemNet !== titolActualNet;
-    });
-
-    if (altresProjectesImatges.length === 0) {
-        console.warn(`⚠️ No s'han trobat altres projectes amb 'galeria_activa' diferents de: "${titolActualNet}"`);
-        return '';
-    }
-
-    // 3. Mapegem els registres per passar-los al component
-    const itemsGaleria = altresProjectesImatges.map(item => ({
-        //imatgeId: item.imatgeId || item.ID_Imatge || item.id || item.ID,
-        //titol: item.titol || item.Titol,
-        //descripcio: item.descripcio || item.Descripcio || '',
-        //linkBoto: item.link || item.Link_Imatge || '',
-        //colorFons: '#24153F',
-        //colorText: '#E3D4FF',
-        //ample: '280px',
-        //altImatge: '200px'
-
-        imatgeId: item.imatgeId || item.ID_Imatge,
-        titol: item.titol || item.Titol,
-        descripcio: item.descripcio || item.Descripcio || '',
-        linkBoto: item.linkBoto || '',
-        colorFons: '#24153F',
-        colorText: '#E3D4FF',
-        ample: '200px',
-        altImatge: '150px'
-    }));
-    
-    // 4. Invocació del component galeria
-    const contenidorTemp = document.createElement('div');
-    contenidorTemp.className = 'seccio-galeria-projecte';
-    contenidorTemp.style.margin = '2rem 0';
-
-    const elementGaleria = crearGaleriaActiva(itemsGaleria, {
-        velocitat: 40,
-        bucle: true,
-        colorFons: '#FFFFFF'
-    });
-
-    contenidorTemp.appendChild(elementGaleria);
-    return contenidorTemp.outerHTML;
-}
-        
     </script>
 </body>
 </html>
